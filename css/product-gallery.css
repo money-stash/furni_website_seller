@@ -1,0 +1,258 @@
+.pg-thumbs-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px; /* вместо padding-right:6px; сделал общий padding для отступа от края */
+  box-sizing: border-box;
+}
+
+.pg-thumb {
+  width: 100%;
+  height: 84px; /* немного уменьшил высоту, чтобы все помещалось */
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  opacity: 0.8; /* чуть ярче, чем было */
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.pg-thumb:hover {
+  opacity: 1;
+  transform: translateX(-2px); /* меньше смещение */
+  border-color: rgba(59, 93, 80, 0.2);
+}
+
+.pg-thumb.pg-active {
+  opacity: 1;
+  border-color: #3b5d50;
+  box-shadow: 0 4px 12px rgba(59, 93, 80, 0.15);
+  transform: translateX(-2px); /* меньше смещение */
+}
+
+@media (max-width: 991px) {
+  .pg-thumbs-column {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+    padding: 4px;
+  }
+  
+  .pg-thumb {
+    height: 64px;
+  }
+}
+
+@media (max-width: 767px) {
+  .pg-thumbs-column {
+    width: 64px;
+    min-width: 64px;
+    max-width: 64px;
+    padding: 4px;
+  }
+  
+  .pg-thumb {
+    height: 56px;
+  }
+}
+
+
+/* === PRODUCT GALLERY ISOLATED STYLES === */
+/* Используйте эти классы вместо старых для избежания конфликтов */
+
+.pg-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.pg-gallery-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  width: 100%;
+  height: 520px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 8px 30px rgba(14, 30, 37, 0.04);
+  box-sizing: border-box;
+}
+
+.pg-thumbs-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+
+.pg-thumbs-column::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pg-thumbs-column::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.pg-thumbs-column::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.pg-thumbs-column::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+.pg-thumb {
+  width: 100%;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.pg-thumb:hover {
+  opacity: 1;
+  transform: translateX(-4px);
+  border-color: rgba(59, 93, 80, 0.2);
+}
+
+.pg-thumb.pg-active {
+  opacity: 1;
+  border-color: #3b5d50;
+  box-shadow: 0 4px 12px rgba(59, 93, 80, 0.15);
+  transform: translateX(-4px);
+}
+
+.pg-thumb:focus {
+  outline: 3px solid rgba(59, 93, 80, 0.3);
+  outline-offset: 2px;
+}
+
+.pg-main-image-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pg-main-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.3s ease; /* добавляем плавное появление */
+  opacity: 1;
+}
+
+
+/* Responsive styles */
+@media (max-width: 991px) {
+  .pg-gallery-wrapper {
+    height: 450px;
+  }
+  
+  .pg-thumbs-column {
+    width: 80px;
+    min-width: 80px;
+    max-width: 80px;
+  }
+  
+  .pg-thumb {
+    height: 80px;
+  }
+}
+
+@media (max-width: 767px) {
+  .pg-gallery-wrapper {
+    height: 400px;
+  }
+  
+  .pg-thumbs-column {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+  }
+  
+  .pg-thumb {
+    height: 72px;
+  }
+}
+
+@media (max-width: 576px) {
+  .pg-gallery-wrapper {
+    flex-direction: column;
+    height: auto;
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .pg-thumbs-column {
+    flex-direction: row;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 0;
+    padding-bottom: 6px;
+    gap: 8px;
+  }
+  
+  .pg-thumb {
+    width: 80px;
+    min-width: 80px;
+    height: 80px;
+    transform: none !important;
+  }
+  
+  .pg-thumb:hover {
+    transform: translateY(-4px) !important;
+  }
+  
+  .pg-main-image-area {
+    min-height: 300px;
+    order: -1;
+  }
+}
+
+/* Дополнительные утилиты для секции продукта */
+.pg-product-section {
+  padding: 48px 0;
+  background: #eff2f1;
+}
+
+.pg-details-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(14, 30, 37, 0.04);
+}

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Furni – Product</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/product-gallery.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Furni<span>.</span></a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsFurni">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li><a class="nav-link" href="shop.html">Shop</a></li>
+          <li><a class="nav-link" href="about.html">About</a></li>
+          <li><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-4">
+          <li><a class="nav-link" href="#"><img src="images/user.svg" alt="user"></a></li>
+          <li><a class="nav-link" href="cart.html"><img src="images/cart.svg" alt="cart"></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero small-hero">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="intro-excerpt">
+            <h1>Product</h1>
+            <p class="mb-0">Home / Shop / Nordic Chair</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT CARD -->
+  <div class="pg-product-section">
+    <div class="container">
+      <div class="row g-4">
+
+        <!-- LEFT: Галерея с изолированными классами -->
+        <div class="col-12 col-md-6">
+          <div class="pg-container">
+            <div class="pg-gallery-wrapper" role="region" aria-label="Product gallery">
+              <!-- Колонка миниатюр -->
+              <div class="pg-thumbs-column" id="pgThumbsColumn">
+                <img class="pg-thumb pg-active" 
+                     src="images/product-3.png" 
+                     data-large="images/product-3.png" 
+                     alt="Product view 1" 
+                     tabindex="0" 
+                     loading="lazy">
+                <img class="pg-thumb" 
+                     src="images/product-1.png" 
+                     data-large="images/product-1.png" 
+                     alt="Product view 2" 
+                     tabindex="0" 
+                     loading="lazy">
+                <img class="pg-thumb" 
+                     src="images/product-2.png" 
+                     data-large="images/product-2.png" 
+                     alt="Product view 3" 
+                     tabindex="0" 
+                     loading="lazy">
+              </div>
+
+              <!-- Основное изображение -->
+              <div class="pg-main-image-area">
+                <img id="pgMainImage" 
+                     src="images/product-3.png" 
+                     alt="Main product image" 
+                     class="pg-main-image" 
+                     loading="lazy"
+                     tabindex="0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: детали продукта -->
+        <div class="col-12 col-md-6">
+          <div class="pg-details-card">
+            <h2 class="product-title">Nordic Chair – Deluxe Edition</h2>
+            <p class="product-sku text-muted">SKU: NF-CH-204</p>
+
+            <div class="price-row d-flex align-items-end gap-3 mb-3">
+              <div>
+                <div class="product-price-big">$120.00</div>
+                <div class="product-price-old text-muted"><s>$150.00</s></div>
+              </div>
+              <div class="ms-auto">
+                <div class="rating small text-muted">★★★★☆ <span class="ms-1">(24)</span></div>
+              </div>
+            </div>
+
+            <p class="product-short-desc mb-3">Элегантное кресло в скандинавском стиле, изготовлено из экологичных материалов. Идеально подойдёт для гостиной и спальни.</p>
+
+            <div class="product-actions-block mb-4">
+              <div class="input-group quantity-group mb-3" style="max-width:220px;">
+                <button class="btn btn-outline-secondary qty-decrease" type="button">−</button>
+                <input id="qtyInput" type="number" class="form-control text-center" value="1" min="1" step="1">
+                <button class="btn btn-outline-secondary qty-increase" type="button">+</button>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button id="buyBtn" class="btn btn-primary btn-lg">Buy now</button>
+                <button id="addToCartBtn" class="btn btn-outline-secondary">Add to cart</button>
+              </div>
+            </div>
+
+            <hr>
+
+            <h5>Product description</h5>
+            <p class="small text-muted mb-3">Полное описание: кресло имеет удобную спинку и мягкое сиденье. Поддерживает до 120 кг. Уход: протирать мягкой влажной тряпкой.</p>
+
+            <h5>Specifications</h5>
+            <table class="table table-sm specs-table mb-0">
+              <tbody>
+                <tr><th scope="row">Material</th><td>Oak wood, Fabric</td></tr>
+                <tr><th scope="row">Dimensions</th><td>78 × 64 × 92 cm</td></tr>
+                <tr><th scope="row">Weight</th><td>12 kg</td></tr>
+                <tr><th scope="row">Color</th><td>Natural / Grey</td></tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div> <!-- row -->
+    </div> <!-- container -->
+  </div> <!-- section -->
+
+  <!-- FOOTER -->
+  <footer class="footer-section">
+    <div class="container relative">
+      <!-- <div class="sofa-img"><img src="images/sofa.png" alt="Image" class="img-fluid"></div>
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="subscription-form">
+            <h3 class="d-flex align-items-center"><span class="me-1"><img src="images/envelope-outline.svg" alt="mail" class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
+            <form action="#" class="row g-3">
+              <div class="col-auto"><input type="text" class="form-control" placeholder="Enter your name"></div>
+              <div class="col-auto"><input type="email" class="form-control" placeholder="Enter your email"></div>
+              <div class="col-auto"><button class="btn btn-primary"><span class="fa fa-paper-plane"></span></button></div>
+            </form>
+          </div>
+        </div>
+      </div> -->
+
+      <div class="row g-5 mb-5">
+        <div class="col-lg-4">
+          <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Furni<span>.</span></a></div>
+          <p class="mb-4">Donec facilisis quam ut purus rutrum lobortis...</p>
+          <ul class="list-unstyled custom-social">
+            <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+          </ul>
+        </div>
+        <div class="col-lg-8">
+          <div class="row links-wrap">
+            <div class="col-6 col-sm-6 col-md-3"><ul class="list-unstyled"><li><a href="#">About us</a></li><li><a href="#">Services</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact us</a></li></ul></div>
+            <div class="col-6 col-sm-6 col-md-3"><ul class="list-unstyled"><li><a href="#">Support</a></li><li><a href="#">Knowledge base</a></li><li><a href="#">Live chat</a></li></ul></div>
+            <div class="col-6 col-sm-6 col-md-3"><ul class="list-unstyled"><li><a href="#">Jobs</a></li><li><a href="#">Our team</a></li><li><a href="#">Leadership</a></li><li><a href="#">Privacy Policy</a></li></ul></div>
+            <div class="col-6 col-sm-6 col-md-3"><ul class="list-unstyled"><li><a href="#">Nordic Chair</a></li><li><a href="#">Kruzo Aero</a></li><li><a href="#">Ergonomic Chair</a></li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-top copyright">
+        <div class="row pt-4">
+          <div class="col-lg-6">
+            <p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved.</p>
+          </div>
+          <div class="col-lg-6 text-center text-lg-end">
+            <ul class="list-unstyled d-inline-flex ms-auto"><li class="me-4"><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Privacy Policy</a></li></ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  (function () {
+    // Галерея с новыми классами
+    const mainImg = document.getElementById('pgMainImage');
+    const thumbs = Array.from(document.querySelectorAll('.pg-thumb'));
+
+    if (mainImg && thumbs.length > 0) {
+      // Устанавливаем начальное изображение
+      const first = thumbs.find(t => t.classList.contains('pg-active')) || thumbs[0];
+      if (first) {
+        first.classList.add('pg-active');
+        mainImg.src = first.getAttribute('data-large') || first.src;
+      }
+
+      // Обработка кликов и клавиатуры
+      thumbs.forEach(t => {
+        const activate = () => {
+          thumbs.forEach(x => x.classList.remove('pg-active'));
+          t.classList.add('pg-active');
+          const large = t.getAttribute('data-large') || t.src;
+          mainImg.src = large;
+          mainImg.alt = t.alt || 'Product image';
+        };
+
+        t.addEventListener('click', activate);
+
+        t.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+            ev.preventDefault();
+            activate();
+          }
+          if (ev.key === 'ArrowDown' || ev.key === 'ArrowRight') {
+            ev.preventDefault();
+            const next = t.nextElementSibling || thumbs[0];
+            if (next && typeof next.focus === 'function') next.focus();
+          }
+          if (ev.key === 'ArrowUp' || ev.key === 'ArrowLeft') {
+            ev.preventDefault();
+            const prev = t.previousElementSibling || thumbs[thumbs.length - 1];
+            if (prev && typeof prev.focus === 'function') prev.focus();
+          }
+        });
+      });
+    }
+
+    // Контроль количества
+    const qtyInput = document.getElementById('qtyInput');
+    const incBtn = document.querySelector('.qty-increase');
+    const decBtn = document.querySelector('.qty-decrease');
+
+    if (incBtn && qtyInput) {
+      incBtn.addEventListener('click', () => {
+        qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') + 1);
+      });
+    }
+    if (decBtn && qtyInput) {
+      decBtn.addEventListener('click', () => {
+        qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') - 1);
+      });
+    }
+
+    if (qtyInput) {
+      qtyInput.addEventListener('input', () => {
+        if (qtyInput.value === '') return;
+        let v = parseInt(qtyInput.value || '1');
+        if (isNaN(v) || v < 1) v = 1;
+        qtyInput.value = v;
+      });
+    }
+
+    // Кнопки покупки
+    const buyBtn = document.getElementById('buyBtn');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+
+    if (buyBtn && qtyInput) {
+      buyBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value || '1');
+        alert('Спасибо! Вы купили ' + qty + ' ед. товара.');
+      });
+    }
+
+    if (addToCartBtn && qtyInput) {
+      addToCartBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value || '1');
+        alert('Товар добавлен в корзину: ' + qty + ' шт.');
+      });
+    }
+  })();
+
+
+  // плавное изображение
+  const mainImg = document.getElementById('pgMainImage');
+
+    function changeMainImage(src, alt) {
+    mainImg.style.opacity = 0;
+    setTimeout(() => {
+        mainImg.src = src;
+        mainImg.alt = alt || 'Product image';
+        mainImg.style.opacity = 1;
+    }, 150); // полупериод для плавного перехода
+    }
+
+    thumbs.forEach(t => {
+    const activate = () => {
+        thumbs.forEach(x => x.classList.remove('pg-active'));
+        t.classList.add('pg-active');
+        const large = t.getAttribute('data-large') || t.src;
+        changeMainImage(large, t.alt);
+    };
+
+    t.addEventListener('click', activate);
+    t.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+        ev.preventDefault();
+        activate();
+        }
+        if (ev.key === 'ArrowDown' || ev.key === 'ArrowRight') {
+        ev.preventDefault();
+        const next = t.nextElementSibling || thumbs[0];
+        if (next && typeof next.focus === 'function') next.focus();
+        }
+        if (ev.key === 'ArrowUp' || ev.key === 'ArrowLeft') {
+        ev.preventDefault();
+        const prev = t.previousElementSibling || thumbs[thumbs.length - 1];
+        if (prev && typeof prev.focus === 'function') prev.focus();
+        }
+    });
+    });
+
+  </script>
+
+</body>
+</html>

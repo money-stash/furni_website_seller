@@ -829,7 +829,7 @@ textarea {
   max-width: calc(25% - 1.5rem);
 }
 @media (max-width: 992px) {
-  .product-col { flex: 0 0 calc(33.333% - 1.5rem); max-wi
+  .product-col { flex: 0 0 calc(33.333% - 1.5rem); max-width: calc(33.333% - 1.5rem); }
   }
 
 
