@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+  <!-- Bootstrap CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="css/tiny-slider.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <title>Furni — Shop</title>
+</head>
+
+<body>
+  <!-- Header... (оставил как было) -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Furni<span>.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsFurni">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item "><a class="nav-link" href="index.html">Home</a></li>
+          <li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
+          <li><a class="nav-link" href="about.html">About us</a></li>
+          <li><a class="nav-link" href="services.html">Services</a></li>
+          <li><a class="nav-link" href="blog.html">Blog</a></li>
+          <li><a class="nav-link" href="contact.html">Contact us</a></li>
+        </ul>
+
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+          <li><a class="nav-link" href="#"><img src="images/user.svg"></a></li>
+          <li><a class="nav-link" href="cart.html"><img src="images/cart.svg"></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-lg-5">
+          <div class="intro-excerpt">
+            <h1>Shop</h1>
+          </div>
+        </div>
+        <div class="col-lg-7"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls: category + search + price range + sort -->
+  <div class="untree_co-section product-section before-footer-section">
+    <div class="container">
+      <div class="row mb-4 align-items-center controls-row">
+        <div class="col-12 col-md-3 mb-2 mb-md-0">
+          <select id="categorySelect" class="form-select">
+            <option value="all">All categories</option>
+            <option value="chairs">Chairs</option>
+            <option value="office">Office</option>
+            <option value="ergonomic">Ergonomic</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-4 mb-2 mb-md-0">
+          <input id="searchInput" class="form-control" type="search" placeholder="Search products, e.g. 'Nordic'">
+        </div>
+
+        <div class="col-6 col-md-2 mb-2 mb-md-0">
+          <input id="minPrice" class="form-control" type="number" placeholder="Min $" min="0" step="1">
+        </div>
+
+        <div class="col-6 col-md-2 mb-2 mb-md-0">
+          <input id="maxPrice" class="form-control" type="number" placeholder="Max $" min="0" step="1">
+        </div>
+
+        <div class="col-12 col-md-1 text-md-end mt-2 mt-md-0">
+          <select id="sortSelect" class="form-select" title="Sort by price">
+            <option value="none">Sort</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+        </div>
+
+        <div class="col-12 text-end mt-2">
+          <small class="text-muted" id="resultsCount">Showing all products</small>
+        </div>
+      </div>
+
+      <div class="row" id="productsRow">
+        <!-- Пример товара: -> добавьте data-price (число) и data-category -->
+        <!-- ВАЖНО: для корректной работы JS: у каждого .product-col должен быть .product-price (в формате $N.NN) -->
+        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="50">
+          <a class="product-item" href="#">
+            <img src="images/product-3.png" class="img-fluid product-thumbnail">
+            <h3 class="product-title">Nordic Chair</h3>
+            <strong class="product-price">$50.00</strong>
+            <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="50">
+          <a class="product-item" href="#">
+            <img src="images/product-1.png" class="img-fluid product-thumbnail">
+            <h3 class="product-title">Nordic Chair</h3>
+            <strong class="product-price">$50.00</strong>
+            <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="office" data-price="78">
+          <a class="product-item" href="#">
+            <img src="images/product-2.png" class="img-fluid product-thumbnail">
+            <h3 class="product-title">Kruzo Aero Chair</h3>
+            <strong class="product-price">$78.00</strong>
+            <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="ergonomic" data-price="43">
+          <a class="product-item" href="#">
+            <img src="images/product-3.png" class="img-fluid product-thumbnail">
+            <h3 class="product-title">Ergonomic Chair</h3>
+            <strong class="product-price">$43.00</strong>
+            <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
+          </a>
+        </div>
+
+        <!-- Повторяем примеры (или добавьте свои карточки) -->
+        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="120">
+          <a class="product-item" href="#">
+            <img src="images/product-3.png" class="img-fluid product-thumbnail">
+            <h3 class="product-title">Deluxe Nordic</h3>
+            <strong class="product-price">$120.00</strong>
+            <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
+          </a>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="office" data-price="15">
+          <a class="product-item" href="#">
+            <img src="images/product-1.png" class="img-fluid product-thumbnail">
+            <h3 class="product-title">Simple Stool</h3>
+            <strong class="product-price">$15.00</strong>
+            <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
+          </a>
+        </div>
+
+      </div> <!-- end row -->
+    </div> <!-- end container -->
+  </div> <!-- end section -->
+
+  <!-- Footer (оставил как было) -->
+  <footer class="footer-section">
+    <!-- footer content... -->
+  </footer>
+
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/tiny-slider.js"></script>
+
+  <!-- Фильтрация + поиск + price range + сортировка -->
+  <script>
+    (function () {
+      const select = document.getElementById('categorySelect');
+      const input = document.getElementById('searchInput');
+      const minInput = document.getElementById('minPrice');
+      const maxInput = document.getElementById('maxPrice');
+      const sortSelect = document.getElementById('sortSelect');
+      const productsRow = document.getElementById('productsRow');
+      let productCols = Array.from(document.querySelectorAll('.product-col'));
+      const resultsCount = document.getElementById('resultsCount');
+
+      // helper: normalize text
+      function normalize(s) { return (s || '').toString().toLowerCase().trim(); }
+
+      // helper: read price from data-price attribute (number) or from .product-price text
+      function getPriceFromCol(col) {
+        const dp = col.getAttribute('data-price');
+        if (dp !== null) {
+          const n = parseFloat(dp);
+          return isNaN(n) ? null : n;
+        }
+        const el = col.querySelector('.product-price');
+        if (!el) return null;
+        const txt = el.textContent.replace(/[^\d.,]/g, '').replace(',', '.');
+        const n = parseFloat(txt);
+        return isNaN(n) ? null : n;
+      }
+
+      function updateResultsCount(visible, total) {
+        if (visible === total) {
+          resultsCount.textContent = 'Showing all products';
+        } else {
+          resultsCount.textContent = `Showing ${visible} of ${total}`;
+        }
+      }
+
+      // filter function returns array of visible cols (DOM elements)
+      function filterProducts() {
+        const category = select.value;
+        const q = normalize(input.value);
+        const min = (minInput.value !== '') ? parseFloat(minInput.value) : null;
+        const max = (maxInput.value !== '') ? parseFloat(maxInput.value) : null;
+
+        const visibleCols = [];
+
+        productCols.forEach(col => {
+          const cat = col.getAttribute('data-category') || '';
+          const titleEl = col.querySelector('.product-title');
+          const title = normalize(titleEl ? titleEl.textContent : '');
+          const price = getPriceFromCol(col);
+
+          const matchesCategory = (category === 'all') || (cat === category);
+          const matchesQuery = q === '' || title.indexOf(q) !== -1;
+          const matchesMin = (min === null) || (price !== null && price >= min);
+          const matchesMax = (max === null) || (price !== null && price <= max);
+
+          if (matchesCategory && matchesQuery && matchesMin && matchesMax) {
+            col.style.display = '';
+            visibleCols.push(col);
+          } else {
+            col.style.display = 'none';
+          }
+        });
+
+        // после фильтрации — применим сортировку к видимым карточкам
+        sortAndRender(visibleCols);
+
+        updateResultsCount(visibleCols.length, productCols.length);
+      }
+
+      // сортировка — принимает массив видимых колонок и переставляет их в DOM
+      function sortAndRender(visibleCols) {
+        const sortVal = sortSelect.value;
+        if (sortVal === 'price-asc' || sortVal === 'price-desc') {
+          visibleCols.sort((a, b) => {
+            const pa = getPriceFromCol(a) ?? 0;
+            const pb = getPriceFromCol(b) ?? 0;
+            return sortVal === 'price-asc' ? (pa - pb) : (pb - pa);
+          });
+        } else {
+          // если "none" — оставляем порядок, как в productCols (исходный)
+          visibleCols.sort((a, b) => productCols.indexOf(a) - productCols.indexOf(b));
+        }
+
+        // рендерим: сначала очищаем контейнер, затем добавляем сначала видимые (в отсортированном порядке),
+        // затем оставшиеся скрытые (чтобы не ломать DOM для остального).
+        const hiddenCols = productCols.filter(c => c.style.display === 'none');
+        productsRow.innerHTML = '';
+        visibleCols.forEach(c => productsRow.appendChild(c));
+        hiddenCols.forEach(c => productsRow.appendChild(c));
+      }
+
+      // debounce helper
+      function debounce(fn, ms) {
+        let t;
+        return function () {
+          clearTimeout(t);
+          const args = arguments;
+          t = setTimeout(() => fn.apply(this, args), ms);
+        };
+      }
+
+      // events
+      select.addEventListener('change', filterProducts);
+      input.addEventListener('input', debounce(filterProducts, 200));
+      minInput.addEventListener('input', debounce(filterProducts, 200));
+      maxInput.addEventListener('input', debounce(filterProducts, 200));
+      sortSelect.addEventListener('change', function () {
+        // когда меняется сортировка — пересортируем видимые элементы без переставления фильтров
+        const visible = Array.from(document.querySelectorAll('.product-col')).filter(c => c.style.display !== 'none');
+        sortAndRender(visible);
+      });
+
+      // init: cache initial order of productCols from DOM
+      productCols = Array.from(document.querySelectorAll('.product-col'));
+      filterProducts();
+    })();
+  </script>
+
+  <script src="js/custom.js"></script>
+</body>
+</html>
