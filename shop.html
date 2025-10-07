@@ -9,16 +9,14 @@
   <meta name="description" content="" />
   <meta name="keywords" content="bootstrap, bootstrap4" />
 
-  <!-- Bootstrap CSS -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="css/tiny-slider.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
-  <title>Furni — Shop</title>
+  <title>HOGAR — Магазин</title>
 </head>
 
 <body>
-  <!-- Header... (оставил как было) -->
   <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
     <div class="container">
       <a class="navbar-brand" href="index.html">Furni<span>.</span></a>
@@ -28,12 +26,11 @@
 
       <div class="collapse navbar-collapse" id="navbarsFurni">
         <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item "><a class="nav-link" href="index.html">Home</a></li>
-          <li class="active"><a class="nav-link" href="shop.html">Shop</a></li>
-          <li><a class="nav-link" href="about.html">About us</a></li>
-          <li><a class="nav-link" href="services.html">Services</a></li>
-          <li><a class="nav-link" href="blog.html">Blog</a></li>
-          <li><a class="nav-link" href="contact.html">Contact us</a></li>
+          <li class="nav-item "><a class="nav-link" href="index.html">Головна</a></li>
+          <li class="active"><a class="nav-link" href="shop.html">Магазин</a></li>
+          <li><a class="nav-link" href="about.html">Про нас</a></li>
+          <li><a class="nav-link" href="services.html">Послуги</a></li>
+          <li><a class="nav-link" href="contact.html">Зв'яжіться з нами</a></li>
         </ul>
 
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
@@ -50,7 +47,7 @@
       <div class="row justify-content-between">
         <div class="col-lg-5">
           <div class="intro-excerpt">
-            <h1>Shop</h1>
+            <h1>Магазин</h1>
           </div>
         </div>
         <div class="col-lg-7"></div>
@@ -64,46 +61,46 @@
       <div class="row mb-4 align-items-center controls-row">
         <div class="col-12 col-md-3 mb-2 mb-md-0">
           <select id="categorySelect" class="form-select">
-            <option value="all">All categories</option>
-            <option value="chairs">Chairs</option>
-            <option value="office">Office</option>
-            <option value="ergonomic">Ergonomic</option>
+            <option value="all">Усі категорії</option>
+            <option value="chairs">Стільці</option>
+            <option value="office">Офіс</option>
+            <option value="ergonomic">Ергономічний</option>
           </select>
         </div>
 
         <div class="col-12 col-md-4 mb-2 mb-md-0">
-          <input id="searchInput" class="form-control" type="search" placeholder="Search products, e.g. 'Nordic'">
+          <input id="searchInput" class="form-control" type="search" placeholder="Пошук товарів, наприклад, 'Nordic'">
         </div>
 
         <div class="col-6 col-md-2 mb-2 mb-md-0">
-          <input id="minPrice" class="form-control" type="number" placeholder="Min $" min="0" step="1">
+          <input id="minPrice" class="form-control" type="number" placeholder="Мiн ₴" min="0" step="1">
         </div>
 
         <div class="col-6 col-md-2 mb-2 mb-md-0">
-          <input id="maxPrice" class="form-control" type="number" placeholder="Max $" min="0" step="1">
+          <input id="maxPrice" class="form-control" type="number" placeholder="Макс ₴" min="0" step="1">
         </div>
 
         <div class="col-12 col-md-1 text-md-end mt-2 mt-md-0">
           <select id="sortSelect" class="form-select" title="Sort by price">
-            <option value="none">Sort</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
+            <option value="none">Сортувати</option>
+            <option value="price-asc">Ціна ↑</option>
+            <option value="price-desc">Ціна ↓</option>
           </select>
         </div>
 
         <div class="col-12 text-end mt-2">
-          <small class="text-muted" id="resultsCount">Showing all products</small>
+          <small class="text-muted" id="resultsCount">Показано всі товари</small>
         </div>
       </div>
 
       <div class="row" id="productsRow">
         <!-- Пример товара: -> добавьте data-price (число) и data-category -->
-        <!-- ВАЖНО: для корректной работы JS: у каждого .product-col должен быть .product-price (в формате $N.NN) -->
+        <!-- ВАЖНО: для корректной работы JS: у каждого .product-col должен быть .product-price (в формате ₴N.NN) -->
         <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="50">
           <a class="product-item" href="#">
             <img src="images/product-3.png" class="img-fluid product-thumbnail">
             <h3 class="product-title">Nordic Chair</h3>
-            <strong class="product-price">$50.00</strong>
+            <strong class="product-price">₴50.00</strong>
             <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
           </a>
         </div>
@@ -112,7 +109,7 @@
           <a class="product-item" href="#">
             <img src="images/product-1.png" class="img-fluid product-thumbnail">
             <h3 class="product-title">Nordic Chair</h3>
-            <strong class="product-price">$50.00</strong>
+            <strong class="product-price">₴50.00</strong>
             <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
           </a>
         </div>
@@ -121,7 +118,7 @@
           <a class="product-item" href="#">
             <img src="images/product-2.png" class="img-fluid product-thumbnail">
             <h3 class="product-title">Kruzo Aero Chair</h3>
-            <strong class="product-price">$78.00</strong>
+            <strong class="product-price">₴78.00</strong>
             <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
           </a>
         </div>
@@ -130,7 +127,7 @@
           <a class="product-item" href="#">
             <img src="images/product-3.png" class="img-fluid product-thumbnail">
             <h3 class="product-title">Ergonomic Chair</h3>
-            <strong class="product-price">$43.00</strong>
+            <strong class="product-price">₴43.00</strong>
             <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
           </a>
         </div>
@@ -140,7 +137,7 @@
           <a class="product-item" href="#">
             <img src="images/product-3.png" class="img-fluid product-thumbnail">
             <h3 class="product-title">Deluxe Nordic</h3>
-            <strong class="product-price">$120.00</strong>
+            <strong class="product-price">₴120.00</strong>
             <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
           </a>
         </div>
@@ -149,7 +146,7 @@
           <a class="product-item" href="#">
             <img src="images/product-1.png" class="img-fluid product-thumbnail">
             <h3 class="product-title">Simple Stool</h3>
-            <strong class="product-price">$15.00</strong>
+            <strong class="product-price">₴15.00</strong>
             <span class="icon-cross"><img src="images/cross.svg" class="img-fluid"></span>
           </a>
         </div>
@@ -197,9 +194,9 @@
 
       function updateResultsCount(visible, total) {
         if (visible === total) {
-          resultsCount.textContent = 'Showing all products';
+          resultsCount.textContent = 'Показано всі товари';
         } else {
-          resultsCount.textContent = `Showing ${visible} of ${total}`;
+          resultsCount.textContent = `Показано ${visible} з ${total}`;
         }
       }
 
