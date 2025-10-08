@@ -879,3 +879,126 @@ textarea {
   .additional-filters { gap: 8px; }
   .controls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 }
+
+
+
+
+
+/* ============================= */
+/*   RESPONSIVE FIXES FOR HOGAR  */
+/* ============================= */
+
+/* --- Общие настройки для всех мобильных устройств --- */
+@media (max-width: 992px) {
+  .hero {
+    text-align: center;
+    padding: 4rem 0;
+  }
+  .hero .intro-excerpt {
+    max-width: 100%;
+  }
+  .hero .hero-img-wrap img {
+    max-width: 100%;
+    position: relative;
+    left: 0;
+    top: 0;
+  }
+
+  .why-choose-section .img-wrap img,
+  .we-help-section .imgs-grid img {
+    width: 100%;
+    height: auto;
+  }
+
+  .product-section {
+    padding: 4rem 0;
+  }
+  .product-section .product-item {
+    margin-bottom: 2rem;
+  }
+}
+
+/* --- Планшеты (до 768px) --- */
+@media (max-width: 768px) {
+  .custom-navbar .navbar-brand {
+    font-size: 26px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+  }
+
+  .product-section .section-title {
+    font-size: 22px;
+  }
+
+  .we-help-section .imgs-grid {
+    display: block;
+  }
+
+  .testimonial-section {
+    padding: 2rem 0 5rem 0;
+  }
+
+  .blog-section .post-entry .post-content-entry {
+    text-align: center;
+  }
+
+  .footer-section .sofa-img img {
+    max-width: 220px;
+  }
+}
+
+/* --- Смартфоны (до 576px) --- */
+@media (max-width: 576px) {
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .hero p {
+    font-size: 14px;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .product-section .product-item h3 {
+    font-size: 14px;
+  }
+
+  .product-section .product-item strong {
+    font-size: 16px;
+  }
+
+  .we-help-section,
+  .why-choose-section,
+  .blog-section {
+    padding: 4rem 0;
+  }
+
+  footer .footer-logo-wrap .footer-logo {
+    font-size: 24px;
+  }
+
+  .footer-section .custom-social li a {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+  }
+}
+
+/* --- Очень маленькие экраны (до 400px) --- */
+@media (max-width: 400px) {
+  .hero h1 {
+    font-size: 22px;
+  }
+  .product-section .section-title {
+    font-size: 18px;
+  }
+  .footer-section {
+    padding: 50px 0;
+  }
+}
