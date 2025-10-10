@@ -10,10 +10,10 @@
   <meta name="keywords" content="bootstrap, bootstrap4" />
 
 		<!-- Bootstrap CSS -->
-		<link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-		<link href="css/tiny-slider.css" rel="stylesheet">
-		<link href="css/style.css" rel="stylesheet">
+		<link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet">
+		<link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
 		<title>HOGAR - Послуги </title>
 	</head>
 
@@ -23,7 +23,7 @@
 		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Hogar navigation bar">
 
 			<div class="container">
-				<a class="navbar-brand" href="index.html">Hogar<span>.</span></a>
+				<a class="navbar-brand" href="{{url_for('index')}}">Hogar<span>.</span></a>
 
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsHogar" aria-controls="navbarsHogar" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
@@ -31,16 +31,16 @@
 
 				<div class="collapse navbar-collapse" id="navbarsHogar">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item "><a class="nav-link" href="index.html">Головна</a></li>
-						<li class="active"><a class="nav-link" href="shop2  .html">Магазин</a></li>
-						<li><a class="nav-link" href="about.html">Про нас</a></li>
-						<li><a class="nav-link" href="services.html">Послуги</a></li>
-						<li><a class="nav-link" href="contact.html">Зв'яжіться з нами</a></li>
+						<li class="nav-item "><a class="nav-link" href="{{url_for('index')}}">Головна</a></li>
+						<li class="active"><a class="nav-link" href="{{url_for('shop')}}">Магазин</a></li>
+						<li><a class="nav-link" href="{{url_for('about')}}">Про нас</a></li>
+						<li><a class="nav-link" href="{{url_for('services')}}">Послуги</a></li>
+						<li><a class="nav-link" href="{{url_for('contact')}}">Зв'яжіться з нами</a></li>
 					</ul>
 
 					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href="#"><img src="images/user.svg"></a></li>
-						<li><a class="nav-link" href="cart.html"><img src="images/cart.svg"></a></li>
+						<li><a class="nav-link" href="#"><img src="{{url_for('static', filename='images/user.svg')}}"></a></li>
+						<li><a class="nav-link" href="cart.html"><img src="{{url_for('static', filename='images/cart.svg')}}"></a></li>
 					</ul>
 				</div>
 			</div>
@@ -61,7 +61,7 @@
 						</div>
 						<div class="col-lg-7">
 							<div class="hero-img-wrap">
-								<img src="images/couch.png" class="img-fluid">
+								<img src="{{url_for('static', filename='images/couch.png')}}" class="img-fluid">
 							</div>
 						</div>
 					</div>
@@ -80,7 +80,7 @@
 					<div class="col-6 col-md-6 col-lg-3 mb-4">
 						<div class="feature">
 							<div class="icon">
-								<img src="images/truck.svg" alt="Image" class="imf-fluid">
+								<img src="{{url_for('static', filename='images/truck.svg')}}" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Швидка &amp; та безкоштовна доставка</h3>
 							<p>Ми доставляємо меблі по всій Україні без додаткових витрат. Ваше замовлення приїде швидко та в ідеальному стані.</p>
@@ -90,7 +90,7 @@
 					<div class="col-6 col-md-6 col-lg-3 mb-4">
 						<div class="feature">
 							<div class="icon">
-								<img src="images/bag.svg" alt="Image" class="imf-fluid">
+								<img src="{{url_for('static', filename='images/bag.svg')}}" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Зручні покупки онлайн</h3>
 							<p>Простий інтерфейс і детальні фото допоможуть легко обрати меблі, не виходячи з дому. Купуйте в один клік!</p>
@@ -100,7 +100,7 @@
 					<div class="col-6 col-md-6 col-lg-3 mb-4">
 						<div class="feature">
 							<div class="icon">
-								<img src="images/support.svg" alt="Image" class="imf-fluid">
+								<img src="{{url_for('static', filename='images/support.svg')}}" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Підтримка 24/7</h3>
 							<p>Наша команда завжди на зв’язку — допоможемо з вибором, замовленням чи будь-якими питаннями у будь-який час.</p>
@@ -110,7 +110,7 @@
 					<div class="col-6 col-md-6 col-lg-3 mb-4">
 						<div class="feature">
 							<div class="icon">
-								<img src="images/return.svg" alt="Image" class="imf-fluid">
+								<img src="{{url_for('static', filename='images/return.svg')}}" alt="Image" class="imf-fluid">
 							</div>
 							<h3>Безпроблемне повернення</h3>
 							<p>Якщо товар не підійшов — повернення або обмін без зайвих питань. Ми цінуємо довіру кожного клієнта.</p>
@@ -139,12 +139,12 @@
 					<!-- Start Column 2 -->
 					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
 						<a class="product-item" href="#">
-							<img src="images/product-1.png" class="img-fluid product-thumbnail">
+							<img src="{{url_for('static', filename='images/product-1.png')}}" class="img-fluid product-thumbnail">
 							<h3 class="product-title">Nordic Chair</h3>
 							<strong class="product-price">₴50.00</strong>
 
 							<span class="icon-cross">
-								<img src="images/cross.svg" class="img-fluid">
+								<img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid">
 							</span>
 						</a>
 					</div> 
@@ -153,12 +153,12 @@
 					<!-- Start Column 3 -->
 					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
 						<a class="product-item" href="#">
-							<img src="images/product-2.png" class="img-fluid product-thumbnail">
+							<img src="{{url_for('static', filename='images/product-2.png')}}" class="img-fluid product-thumbnail">
 							<h3 class="product-title">Kruzo Aero Chair</h3>
 							<strong class="product-price">₴78.00</strong>
 
 							<span class="icon-cross">
-								<img src="images/cross.svg" class="img-fluid">
+								<img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid">
 							</span>
 						</a>
 					</div>
@@ -167,12 +167,12 @@
 					<!-- Start Column 4 -->
 					<div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
 						<a class="product-item" href="#">
-							<img src="images/product-3.png" class="img-fluid product-thumbnail">
+							<img src="{{url_for('static', filename='images/product-3.png')}}" class="img-fluid product-thumbnail">
 							<h3 class="product-title">Ergonomic Chair</h3>
 							<strong class="product-price">₴43.00</strong>
 
 							<span class="icon-cross">
-								<img src="images/cross.svg" class="img-fluid">
+								<img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid">
 							</span>
 						</a>
 					</div>
@@ -220,7 +220,7 @@
                         <div class="author-info">
                           <div class="author-pic">
                             <img
-                              src="images/person-1.png"
+                              src="{{url_for('static', filename='images/person-1.png')}}"
                               alt="Maria Jones"
                               class="img-fluid"
                             />
@@ -249,7 +249,7 @@
                         <div class="author-info">
                           <div class="author-pic">
                             <img
-                              src="images/person-1.png"
+                              src="{{url_for('static', filename='images/person-1.png')}}"
                               alt="Maria Jones"
                               class="img-fluid"
                             />
@@ -278,7 +278,7 @@
                         <div class="author-info">
                           <div class="author-pic">
                             <img
-                              src="images/person-1.png"
+                              src="{{url_for('static', filename='images/person-1.png')}}"
                               alt="Maria Jones"
                               class="img-fluid"
                             />
@@ -307,7 +307,7 @@
     <footer class="footer-section">
       <div class="container relative">
         <div class="sofa-img">
-          <img src="images/sofa.png" alt="Image" class="img-fluid" />
+          <img src="{{url_for('static', filename='images/sofa.png')}}" alt="Image" class="img-fluid" />
         </div>
 
         
@@ -385,9 +385,9 @@
     <!-- End Footer Section -->
 
 
-		<script src="js/bootstrap.bundle.min.js"></script>
-		<script src="js/tiny-slider.js"></script>
-		<script src="js/custom.js"></script>
+		<script src="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+		<script src="{{url_for('static', filename='js/tiny-slider.js')}}"></script>
+		<script src="{{url_for('static', filename='js/custom.js')}}"></script>
 	</body>
 
 </html>

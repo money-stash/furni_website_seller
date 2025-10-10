@@ -95,4 +95,4 @@ if __name__ == "__main__":
 
     # Пример 2: Обработка файла
     # Раскомментируйте и укажите свои файлы:
-    convert_html_file("templates/index.html", "output.html")
+    convert_html_file("services.html", "output.html")
