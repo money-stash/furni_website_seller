@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Product Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-panel-styles.css') }}">
+</head>
+<body>
+<div class="admin-container">
+    <h1>Product Management</h1>
+
+    <!-- Категории -->
+    <section class="section">
+        <h2>Categories</h2>
+        <form id="category-form">
+            <input type="text" id="category-name" placeholder="New category name" required>
+            <button type="submit">Add Category</button>
+        </form>
+        <ul id="category-list"></ul>
+    </section>
+
+    <!-- Товары -->
+    <section class="section">
+        <h2>Products</h2>
+        <form id="product-form">
+            <input type="text" id="product-name" placeholder="Product name" required>
+            <select id="product-category" required>
+                <option value="">Select category</option>
+            </select>
+            <textarea id="product-description" placeholder="Description"></textarea>
+            
+            <label>Attributes</label>
+            <div id="attributes-container">
+                <input type="text" name="attribute" placeholder="Attribute (e.g., width: 50cm)">
+            </div>
+            <button type="button" id="add-attribute-btn">Add Attribute</button>
+
+            <label>Preview Image</label>
+            <input type="file" id="product-preview" accept="image/*">
+            <div id="preview-container" class="preview-container"></div>
+
+            <label>Additional Images</label>
+            <input type="file" id="product-images" accept="image/*" multiple>
+            <div id="images-container" class="preview-container"></div>
+
+            <button type="submit">Add Product</button>
+        </form>
+        <ul id="product-list"></ul>
+    </section>
+</div>
+
+<script>
+const categoryForm = document.getElementById('category-form');
+const categoryList = document.getElementById('category-list');
+const productForm = document.getElementById('product-form');
+const productList = document.getElementById('product-list');
+const productCategory = document.getElementById('product-category');
+
+const previewInput = document.getElementById('product-preview');
+const imagesInput = document.getElementById('product-images');
+const previewContainer = document.getElementById('preview-container');
+const imagesContainer = document.getElementById('images-container');
+
+const attributesContainer = document.getElementById('attributes-container');
+const addAttributeBtn = document.getElementById('add-attribute-btn');
+
+let previewFile = null;
+let imagesFiles = [];
+
+// ------------------------ Категории ------------------------
+categoryForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('category-name').value.trim();
+    if (!name) return;
+
+    const li = document.createElement('li');
+    li.textContent = name;
+    categoryList.appendChild(li);
+
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name;
+    productCategory.appendChild(option);
+
+    categoryForm.reset();
+});
+
+// ------------------------ Превью изображения ------------------------
+previewInput.addEventListener('change', e => {
+    previewFile = e.target.files[0];
+    previewContainer.innerHTML = '';
+    if (previewFile) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const img = document.createElement('img');
+            img.src = ev.target.result;
+            img.classList.add('preview-img');
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '×';
+            delBtn.classList.add('delete-btn');
+            delBtn.onclick = () => {
+                previewFile = null;
+                previewInput.value = '';
+                previewContainer.innerHTML = '';
+            };
+
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('img-wrapper');
+            wrapper.appendChild(img);
+            wrapper.appendChild(delBtn);
+            previewContainer.appendChild(wrapper);
+        }
+        reader.readAsDataURL(previewFile);
+    }
+});
+
+// ------------------------ Дополнительные изображения ------------------------
+imagesInput.addEventListener('change', e => {
+    const newFiles = Array.from(e.target.files);
+    imagesFiles = imagesFiles.concat(newFiles);
+    renderImagesPreviews();
+});
+
+function renderImagesPreviews() {
+    imagesContainer.innerHTML = '';
+    imagesFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const img = document.createElement('img');
+            img.src = ev.target.result;
+            img.classList.add('preview-img');
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '×';
+            delBtn.classList.add('delete-btn');
+            delBtn.onclick = () => {
+                imagesFiles.splice(index, 1);
+                renderImagesPreviews();
+            };
+
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('img-wrapper');
+            wrapper.appendChild(img);
+            wrapper.appendChild(delBtn);
+            imagesContainer.appendChild(wrapper);
+        }
+        reader.readAsDataURL(file);
+    });
+}
+
+// ------------------------ Динамические атрибуты ------------------------
+function createAttributeInput() {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('attribute-wrapper');
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'attribute';
+    input.placeholder = 'Attribute (e.g., color: red)';
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.textContent = '×';
+    delBtn.classList.add('delete-btn');
+    delBtn.onclick = () => wrapper.remove();
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(delBtn);
+    return wrapper;
+}
+
+// Изначально одно поле
+attributesContainer.appendChild(createAttributeInput());
+
+addAttributeBtn.addEventListener('click', () => {
+    attributesContainer.appendChild(createAttributeInput());
+});
+
+// ------------------------ Добавление товара ------------------------
+productForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const name = document.getElementById('product-name').value.trim();
+    const category = productCategory.value;
+    const description = document.getElementById('product-description').value.trim();
+
+    if (!name || !category) return;
+
+    // Собираем все атрибуты
+    const attributeInputs = attributesContainer.querySelectorAll('input[name="attribute"]');
+    const attributes = Array.from(attributeInputs)
+                            .map(input => input.value.trim())
+                            .filter(val => val !== '')
+                            .join(', ');
+
+    const li = document.createElement('li');
+
+    let previewHTML = '';
+    if (previewFile) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            previewHTML = `<img class="preview-img" src="${ev.target.result}">`;
+            renderProduct();
+        }
+        reader.readAsDataURL(previewFile);
+    } else {
+        renderProduct();
+    }
+
+    function renderProduct() {
+        li.innerHTML = `
+            <h3>${name} [${category}]</h3>
+            ${previewHTML}
+            <p><strong>Description:</strong> ${description}</p>
+            <p><strong>Attributes:</strong> ${attributes}</p>
+            <div class="images"></div>
+        `;
+
+        const imagesDiv = li.querySelector('.images');
+        imagesFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = document.createElement('img');
+                img.src = ev.target.result;
+                img.classList.add('preview-img');
+                imagesDiv.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+    }
+
+    productList.appendChild(li);
+
+    // Сброс формы и контейнеров
+    productForm.reset();
+    previewContainer.innerHTML = '';
+    imagesContainer.innerHTML = '';
+    previewFile = null;
+    imagesFiles = [];
+
+    // Очистка атрибутов и добавление одного пустого
+    attributesContainer.innerHTML = '';
+    attributesContainer.appendChild(createAttributeInput());
+});
+
+</script>
+</body>
+</html>
