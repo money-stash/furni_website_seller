@@ -1,16 +1,17 @@
 /*
-  Полностью обновлённый JavaScript для admin-panel.html
-  - Управление категориями (загрузка, добавление на сервер)
-  - Превью preview + дополнительные изображения (накопление)
-  - Динамические атрибуты
-  - Отправка формы товара через FormData (fetch)
+  admin-panel.js — обновлённый
+  - показывает кнопку удаления возле каждой категории
+  - при клике — окно подтверждения (window.confirm)
+  - при подтверждении — отправка запроса на бекенд с именем категории
+  - при успехе — удаление из UI (ul + select)
 */
+
 (() => {
   // ---- Элементы DOM ----
   const categoryForm = document.getElementById("category-form");
   const categoryList = document.getElementById("category-list");
   const productForm = document.getElementById("product-form");
-  const productList = document.getElementById("product-list"); // не обязательно, но оставлено
+  const productList = document.getElementById("product-list");
   const productCategory = document.getElementById("product-category");
 
   const previewInput = document.getElementById("product-preview");
@@ -134,7 +135,6 @@
   productForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // валидация минимальная
     const name = (document.getElementById("product-name") || {}).value || "";
     const category = (productCategory || {}).value || "";
     const description =
@@ -149,7 +149,6 @@
     fd.append("product-category", category.trim());
     fd.append("product-description", description.trim());
 
-    // атрибуты
     const attributeInputs = attributesContainer.querySelectorAll(
       'input[name="attribute"]'
     );
@@ -158,12 +157,10 @@
       if (v) fd.append("attribute", v);
     });
 
-    // preview
     if (previewFile) {
       fd.append("product-preview", previewFile, previewFile.name);
     }
 
-    // дополнительные изображения (всё из imagesFiles)
     imagesFiles.forEach((file) => {
       fd.append("product-images", file, file.name);
     });
@@ -172,25 +169,22 @@
       const resp = await fetch(productForm.action, {
         method: "POST",
         body: fd,
-        credentials: "same-origin", // важно для сессии
+        credentials: "same-origin",
       });
 
-      // если сервер сделал редирект и вернул redirect URL
       if (resp.redirected) {
         window.location = resp.url;
         return;
       }
 
-      const text = await resp.text(); // либо JSON, если сервер вернёт JSON
+      const text = await resp.text();
       console.log("add-product server response:", resp.status, text);
 
-      // очистка состояния UI после успешной отправки
       productForm.reset();
       previewContainer.innerHTML = "";
       imagesContainer.innerHTML = "";
       imagesFiles = [];
       previewFile = null;
-      // заново добавляем одно пустое поле атрибута
       attributesContainer.innerHTML = "";
       attributesContainer.appendChild(createAttributeInput());
 
@@ -201,6 +195,119 @@
     }
   });
 
+  // ---- Вспомогательные функции для категорий ----
+
+  // Создаёт <li> с текстом и кнопкой удаления
+  function createCategoryListItem(name) {
+    const li = document.createElement("li");
+    li.classList.add("category-item");
+
+    const textSpan = document.createElement("span");
+    textSpan.classList.add("category-name");
+    textSpan.textContent = name;
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.classList.add("delete-category-btn");
+    delBtn.textContent = "Удалить";
+    delBtn.dataset.categoryName = name;
+
+    // при нажатии — подтверждение и запрос на бэкенд
+    delBtn.addEventListener("click", async (e) => {
+      const catName = e.currentTarget.dataset.categoryName;
+
+      try {
+        // Первая попытка — без cascade
+        const resp = await fetch(window.URLS.delete_category, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ name: catName }),
+        });
+
+        const data = await resp.json().catch(() => null);
+
+        if (!resp.ok) {
+          // Если есть товары — предложить каскадное удаление
+          if (data && data.products_count > 0) {
+            const ok = window.confirm(
+              `В категории "${catName}" есть ${data.products_count} товар(ов).\n\n` +
+                `Удалить категорию вместе со ВСЕМИ товарами?\n` +
+                `Это действие НЕЛЬЗЯ отменить!`
+            );
+
+            if (!ok) return;
+
+            // Повторный запрос с cascade=true
+            const resp2 = await fetch(window.URLS.delete_category, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin",
+              body: JSON.stringify({ name: catName, cascade: true }),
+            });
+
+            const data2 = await resp2.json().catch(() => null);
+
+            if (!resp2.ok) {
+              const msg =
+                (data2 && (data2.error || data2.detail)) ||
+                `Ошибка при удалении (status ${resp2.status})`;
+              alert(msg);
+              return;
+            }
+
+            // Успешное каскадное удаление
+            if (li && li.parentNode) li.parentNode.removeChild(li);
+            for (let i = productCategory.options.length - 1; i >= 0; i--) {
+              if (productCategory.options[i].value === catName) {
+                productCategory.remove(i);
+                break;
+              }
+            }
+            alert(
+              `Категория "${catName}" и ${data2.deleted_products} товар(ов) удалены.`
+            );
+            return;
+          }
+
+          // Другая ошибка
+          const msg =
+            (data && (data.error || data.detail)) ||
+            `Ошибка при удалении (status ${resp.status})`;
+          alert(msg);
+          return;
+        }
+
+        // Успешное удаление (категория была пустая)
+        if (li && li.parentNode) li.parentNode.removeChild(li);
+        for (let i = productCategory.options.length - 1; i >= 0; i--) {
+          if (productCategory.options[i].value === catName) {
+            productCategory.remove(i);
+            break;
+          }
+        }
+        alert(`Категория "${catName}" удалена.`);
+      } catch (err) {
+        console.error("Network/JS error while deleting category:", err);
+        alert("Сетевая ошибка при удалении категории");
+      }
+    });
+
+    li.appendChild(textSpan);
+    li.appendChild(delBtn);
+    return li;
+  }
+
+  // Добавляет опцию в select (если её ещё нет)
+  function addCategoryOptionIfMissing(name) {
+    if (![...productCategory.options].some((opt) => opt.value === name)) {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      productCategory.appendChild(option);
+    }
+  }
+
   // ---- Добавление категории на сервер и обновление UI ----
   categoryForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -209,10 +316,10 @@
     if (!name) return;
 
     try {
-      const resp = await fetch("{{ url_for('add_category') }}", {
+      const resp = await fetch(window.URLS.add_category, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "same-origin", // обязательно, чтобы передать сессионную cookie
+        credentials: "same-origin",
         body: JSON.stringify({ name }),
       });
 
@@ -230,24 +337,21 @@
 
       const addedName = data.name || name;
 
-      // добавляем в список категорий (ul), если нет
+      // добавляем в список категорий (ul)
+      // предотвращаем дубли по точному совпадению value/text
       if (
-        ![...categoryList.children].some((li) => li.textContent === addedName)
+        ![...categoryList.children].some(
+          (li) =>
+            li.querySelector(".category-name") &&
+            li.querySelector(".category-name").textContent === addedName
+        )
       ) {
-        const li = document.createElement("li");
-        li.textContent = addedName;
+        const li = createCategoryListItem(addedName);
         categoryList.appendChild(li);
       }
 
       // добавляем в select, если нет
-      if (
-        ![...productCategory.options].some((opt) => opt.value === addedName)
-      ) {
-        const option = document.createElement("option");
-        option.value = addedName;
-        option.textContent = addedName;
-        productCategory.appendChild(option);
-      }
+      addCategoryOptionIfMissing(addedName);
 
       categoryForm.reset();
     } catch (err) {
@@ -259,7 +363,6 @@
   // ---- Инициализация UI при загрузке страницы: наполняем списки из Jinja-переменной ----
   document.addEventListener("DOMContentLoaded", () => {
     try {
-      // categories передаётся из Flask: в шаблоне должно быть {{ categories|tojson }}
       const initialCategories = window.INITIAL_CATEGORIES || [];
       categoryList.innerHTML = "";
 
@@ -267,16 +370,10 @@
       while (productCategory.options.length > 1) productCategory.remove(1);
 
       initialCategories.forEach((name) => {
-        const li = document.createElement("li");
-        li.textContent = name;
+        const li = createCategoryListItem(name);
         categoryList.appendChild(li);
 
-        if (![...productCategory.options].some((opt) => opt.value === name)) {
-          const option = document.createElement("option");
-          option.value = name;
-          option.textContent = name;
-          productCategory.appendChild(option);
-        }
+        addCategoryOptionIfMissing(name);
       });
     } catch (e) {
       console.warn("Could not populate initial categories:", e);

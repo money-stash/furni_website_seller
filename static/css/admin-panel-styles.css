@@ -130,3 +130,39 @@ ul li {
     height: 25px;
     font-weight: bold;
 }
+
+
+/* --- Категории --- */
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  background: #f7f7f7;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.category-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-category-btn {
+  background: #ff5555;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-left: 10px;
+  transition: background 0.2s;
+}
+
+.delete-category-btn:hover {
+  background: #ff0000;
+}
