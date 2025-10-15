@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Управление товарами — Админка</title>
+
+  <!-- Подключи CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-panel-styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-products.css') }}">
+</head>
+<body>
+  <!-- Навигация (совместима с тем, что ты уже добавил) -->
+  <nav class="admin-nav">
+      <a href="{{ url_for('admin_panel') }}" class="nav-btn">Главное управление</a>
+      <a href="{{ url_for('admin_products') }}" class="nav-btn active">Управление товарами</a>
+      <a href="{{ url_for('admin_settings') }}" class="nav-btn">Настройки сайта</a>
+  </nav>
+
+  <div class="admin-container">
+    <h1>Управление товарами</h1>
+
+    <div class="controls-row">
+      <div class="search-wrap">
+        <input id="product-search" type="search" placeholder="Поиск товара по имени..." />
+        <button id="clear-search" title="Сбросить поиск">×</button>
+      </div>
+
+      <div class="filter-wrap">
+        <label for="category-filter">Категория:</label>
+        <select id="category-filter">
+          <option value="">Все категории</option>
+          {% for cat in categories %}
+            <option value="{{ cat.id }}">{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div id="products-info" class="products-info">
+      Показано: <span id="shown-count">0</span> / <span id="total-count">0</span>
+    </div>
+
+    <div id="products-grid" class="products-grid">
+      {% for p in products %}
+      <div class="product-card" data-id="{{ p.id }}" data-name="{{ p.name|lower }}" data-category-id="{{ p.category.id if p.category else '' }}">
+        <div class="card-media">
+          {% if p.preview %}
+            {% set preview_path = p.preview %}
+            {% if preview_path[0:7] == 'static/' %}
+              <img src="{{ url_for('static', filename=preview_path[7:]) }}" alt="{{ p.name }}">
+            {% else %}
+              <img src="{{ preview_path }}" alt="{{ p.name }}">
+            {% endif %}
+          {% elif p.image_url %}
+            <img src="{{ p.image_url }}" alt="{{ p.name }}">
+          {% else %}
+            <div class="no-image">Нет изображения</div>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <h3 class="product-name">{{ p.name }}</h3>
+          <div class="product-meta">
+            <span class="product-category">{{ p.category.name if p.category else 'Без категории' }}</span>
+            <span class="product-price">{{ p.price }}</span>
+          </div>
+          <div class="card-actions">
+            {% if p.id %}
+            <a class="btn small" href="{{ url_for('update_product', product_id=p.id) }}">Редактировать</a>
+            {% else %}
+            <span class="disabled">ID отсутствует</span>
+            {% endif %}
+            <form method="post" action="{{ url_for('delete_product', product_id=p.id) }}" onsubmit="return confirm('Удалить товар?');" style="display:inline;">
+              <button class="btn small danger" type="submit">Удалить</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div id="no-results" class="no-results" style="display:none;">
+      По вашему запросу товаров не найдено.
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const searchInput = document.getElementById('product-search');
+      const clearBtn = document.getElementById('clear-search');
+      const categorySelect = document.getElementById('category-filter');
+      const cardsContainer = document.getElementById('products-grid');
+      const cards = Array.from(cardsContainer.querySelectorAll('.product-card'));
+      const shownCount = document.getElementById('shown-count');
+      const totalCount = document.getElementById('total-count');
+      const noResults = document.getElementById('no-results');
+
+      function normalize(s){ return (s||'').toString().trim().toLowerCase(); }
+
+      function filter(){
+        const q = normalize(searchInput.value);
+        const cat = categorySelect.value;
+        let visible = 0;
+        cards.forEach(card => {
+          const name = card.dataset.name || '';
+          const categoryId = card.dataset.categoryId || '';
+          const matchName = q === '' || name.indexOf(q) !== -1;
+          const matchCat = cat === '' || categoryId === cat;
+          if (matchName && matchCat){
+            card.style.display = '';
+            visible++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        shownCount.textContent = visible;
+        totalCount.textContent = cards.length;
+        noResults.style.display = visible === 0 ? '' : 'none';
+      }
+
+      // события
+      searchInput.addEventListener('input', filter);
+      categorySelect.addEventListener('change', filter);
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        categorySelect.value = '';
+        filter();
+        searchInput.focus();
+      });
+
+      // инициализация
+      window.addEventListener('load', () => {
+        totalCount.textContent = cards.length;
+        filter();
+      });
+    })();
+  </script>
+</body>
+</html>

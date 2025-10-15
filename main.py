@@ -11,12 +11,14 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 
-from initdb import SessionLocal, init_db, engine
+from database.db import get_all_categories
+from initdb import SessionLocal, init_db
 from models.models import (
     Category,
     Product,
     ProductImage,
-)  # models.py должен содержать класс Category
+)
+from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
 app.secret_key = "Lql8aLsBzUVWvY6Ood1egDyanmTwN2GV"  # обязательно для сессий
@@ -28,12 +30,11 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # например 16MB лимит на запрос
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB лимит на запрос
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "1234"
 
-# Инициализируем БД (создаст таблицы при старте, если ещё нет)
 init_db()
 
 
@@ -45,6 +46,128 @@ def index():
 @app.route("/shop")
 def shop():
     return render_template("shop.html")
+
+
+@app.route("/admin_dashboard")
+def admin_dashboard():
+    return render_template("admin_dashboard.html")
+
+
+@app.route("/admin_products")
+def admin_products():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+
+    categories = get_all_categories()
+    db = SessionLocal()
+    try:
+        products = (
+            db.query(Product)
+            .options(joinedload(Product.category))
+            .order_by(Product.id.desc())
+            .all()
+        )
+
+        # DEBUG: проверка
+        for p in products:
+            if p.id is None:
+                print(f"WARNING: Product without ID: {p.name}")
+
+        return render_template(
+            "admin-products.html",
+            products=products,
+            categories=categories,
+        )
+    finally:
+        db.close()
+
+
+@app.route("/edit_product/<int:product_id>", methods=["GET", "POST"])
+def update_product(product_id):
+    db = SessionLocal()
+    try:
+        product = (
+            db.query(Product)
+            .options(joinedload(Product.images), joinedload(Product.category))
+            .get(product_id)
+        )
+        categories = db.query(Category).order_by(Category.name).all()
+        if request.method == "GET":
+            # Передаем список атрибутов (если есть)
+            attributes = []  # можно хранить в Product, пока пустой список
+            return render_template(
+                "edit_product.html",
+                product=product,
+                categories=categories,
+                attributes=attributes,
+            )
+
+        # POST: обработка формы
+        name = request.form.get("product-name", "").strip()
+        description = request.form.get("product-description", "").strip()
+        price = float(request.form.get("product-price", 0) or 0)
+        discount_percent = float(request.form.get("discount_percent", 0) or 0)
+        category_id = request.form.get("product-category")
+        delete_preview = request.form.get("delete_preview") == "1"
+
+        # обновляем поля
+        product.name = name
+        product.description = description
+        product.price = price
+        product.discount_percent = discount_percent
+        product.category_id = int(category_id) if category_id else None
+
+        # Обработка превью
+        preview_file = request.files.get("product-preview")
+        if delete_preview and product.preview:
+            try:
+                full_path = os.path.join(BASE_DIR, product.preview)
+                if os.path.exists(full_path):
+                    os.remove(full_path)
+            except Exception as e:
+                print("Cannot delete preview:", e)
+            product.preview = None
+        if preview_file and preview_file.filename != "":
+            filename = secure_filename(preview_file.filename)
+            save_name = f"preview_{filename}"
+            save_path = os.path.join(UPLOAD_FOLDER, save_name)
+            preview_file.save(save_path)
+            product.preview = os.path.relpath(save_path, BASE_DIR)
+
+        # Обработка дополнительных изображений
+        new_images = request.files.getlist("product-images")
+        for f in new_images:
+            if f and f.filename != "":
+                filename = secure_filename(f.filename)
+                save_name = f"img_{filename}"
+                save_path = os.path.join(UPLOAD_FOLDER, save_name)
+                f.save(save_path)
+                img = ProductImage(
+                    product_id=product.id, path=os.path.relpath(save_path, BASE_DIR)
+                )
+                db.add(img)
+
+        db.commit()
+        flash("Товар обновлен", "success")
+        return redirect(url_for("admin_products"))
+
+    except Exception as e:
+        db.rollback()
+        print("Update product error:", e)
+        flash("Ошибка при обновлении товара", "error")
+        return redirect(url_for("admin_products"))
+    finally:
+        db.close()
+
+
+@app.route("/delete_product/<int:product_id>")
+def delete_product(product_id):
+    return render_template("delete_product.html", product_id=product_id)
+
+
+@app.route("/admin_settings")
+def admin_settings():
+    return render_template("admin_settings.html")
 
 
 @app.route("/about")

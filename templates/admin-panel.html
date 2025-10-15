@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-panel-styles.css') }}">
 </head>
 <body>
+<nav class="admin-nav">
+    <a href="{{ url_for('admin_panel') }}" class="nav-btn">Главное управление</a>
+    <a href="{{ url_for('admin_products') }}" class="nav-btn">Управление товарами</a>
+    <a href="{{ url_for('admin_settings') }}" class="nav-btn">Настройки сайта</a>
+</nav>
 <div class="admin-container">
     <h1>Product Management</h1>
 

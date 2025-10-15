@@ -166,3 +166,41 @@ ul li {
 .delete-category-btn:hover {
   background: #ff0000;
 }
+
+
+/* --- Навигационное меню --- */
+.admin-nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    background-color: #007bff;
+    padding: 15px 0;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.admin-nav .nav-btn {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.admin-nav .nav-btn:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.admin-nav .nav-btn:active {
+    background-color: #003f88;
+    transform: translateY(0);
+}
+
+/* Для активной страницы */
+.admin-nav .nav-btn.active {
+    background-color: white;
+    color: #007bff;
+}
