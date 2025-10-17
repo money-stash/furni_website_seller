@@ -94,7 +94,13 @@ def update_product(product_id):
         categories = db.query(Category).order_by(Category.name).all()
         if request.method == "GET":
             # Передаем список атрибутов (если есть)
-            attributes = []  # можно хранить в Product, пока пустой список
+            attributes = []
+            if product and getattr(product, "attributes", None):
+                try:
+                    attributes = [a for a in product.attributes.split(";") if a]
+                except Exception:
+                    attributes = []
+
             return render_template(
                 "edit_product.html",
                 product=product,
@@ -146,6 +152,11 @@ def update_product(product_id):
                     product_id=product.id, path=os.path.relpath(save_path, BASE_DIR)
                 )
                 db.add(img)
+
+        # Сохраняем атрибуты как строку, разделённую ';'
+        form_attributes = request.form.getlist("attribute")
+        form_attributes = [a.strip() for a in form_attributes if a.strip()]
+        product.attributes = ";".join(form_attributes) if form_attributes else None
 
         db.commit()
         flash("Товар обновлен", "success")
@@ -244,6 +255,8 @@ def add_product():
     # Атрибуты — может быть несколько input с name="attribute"
     attributes = request.form.getlist("attribute")
     attributes = [a.strip() for a in attributes if a.strip()]
+    attributes_str = ";".join(attributes) if attributes else None
+    print("Received attributes:", attributes)
 
     # ------------------ Сохранение файлов на диск ------------------
     preview = request.files.get("product-preview")
@@ -293,6 +306,7 @@ def add_product():
             discount_percent=discount_percent,
             preview=preview_saved_path,
             category=category,  # SQLAlchemy автоматически выставит category_id
+            attributes=attributes_str,
         )
         db.add(product)
         db.commit()

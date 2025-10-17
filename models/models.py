@@ -38,6 +38,7 @@ class Product(Base):
     discount_percent = Column(Float, default=0.0, nullable=False)
     preview = Column(String(512), nullable=True)  # путь к превью/файлу
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
+    attributes = Column(Text, default="")
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
