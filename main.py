@@ -82,7 +82,7 @@ def admin_products():
         db.close()
 
 
-@app.route("/edit_product/<int:product_id>", methods=["GET", "POST"])
+@app.route("/update_product/<int:product_id>", methods=["GET", "POST"])
 def update_product(product_id):
     db = SessionLocal()
     try:
@@ -140,7 +140,31 @@ def update_product(product_id):
             preview_file.save(save_path)
             product.preview = os.path.relpath(save_path, BASE_DIR)
 
-        # Обработка дополнительных изображений
+        # На фронте для оставшихся изображений приходят hidden inputs name="existing_images".
+        # Соберём список тех путей, которые остались, и удалим все ProductImage, которые есть в БД, но которых нет в этом списке.
+        keep_images = request.form.getlist(
+            "existing_images"
+        )  # список путей (точно такие же строки, что в img.path)
+        # Нормализация: уберём пустые значения
+        keep_images = [p for p in keep_images if p]
+        # Создаём копию списка product.images, т.к. будем удалять элементы
+        for img in list(product.images):
+            # img.path должен совпадать со значением в hidden input; при необходимости нормализуй формат сравнения
+            if img.path not in keep_images:
+                # удаляем файл с диска (если существует)
+                try:
+                    full_path = os.path.join(BASE_DIR, img.path)
+                    if os.path.exists(full_path):
+                        os.remove(full_path)
+                except Exception as e:
+                    print("Cannot delete product image file:", e)
+                # удаляем запись из сессии/БД
+                try:
+                    db.delete(img)
+                except Exception as e:
+                    print("Cannot delete ProductImage record:", e)
+
+        # Обработка дополнительных изображений (новые файлы)
         new_images = request.files.getlist("product-images")
         for f in new_images:
             if f and f.filename != "":
@@ -153,9 +177,19 @@ def update_product(product_id):
                 )
                 db.add(img)
 
-        # Сохраняем атрибуты как строку, разделённую ';'
-        form_attributes = request.form.getlist("attribute")
-        form_attributes = [a.strip() for a in form_attributes if a.strip()]
+        # Сохраняем атрибуты — поддерживаем два формата:
+        # 1) одна строка 'attributes' (например "size;color;material") — форму собирает JS
+        # 2) несколько полей 'attribute' (обычная HTML-форма)
+        attributes_field = request.form.get("attributes")
+        if attributes_field:
+            form_attributes = [
+                a.strip() for a in attributes_field.split(";") if a.strip()
+            ]
+        else:
+            form_attributes = [
+                a.strip() for a in request.form.getlist("attribute") if a.strip()
+            ]
+
         product.attributes = ";".join(form_attributes) if form_attributes else None
 
         db.commit()
