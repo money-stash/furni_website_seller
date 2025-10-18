@@ -5,33 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>HOGAR – Product</title>
 
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
-  <link href="css/product-gallery.css" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/product-gallery.css')}}" rel="stylesheet">
 </head>
 <body>
 
   <!-- NAVBAR -->
-  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Hogar navigation bar">
     <div class="container">
-      <a class="navbar-brand" href="index.html">Furni<span>.</span></a>
+      <a class="navbar-brand" href="index.html">Hogar<span>.</span></a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsHogar" aria-controls="navbarsHogar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarsFurni">
+      <div class="collapse navbar-collapse" id="navbarsHogar">
         <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item "><a class="nav-link" href="index.html">Головна</a></li>
-          <li class="active"><a class="nav-link" href="shop2  .html">Магазин</a></li>
-          <li><a class="nav-link" href="about.html">Про нас</a></li>
-          <li><a class="nav-link" href="services.html">Послуги</a></li>
-          <li><a class="nav-link" href="contact.html">Зв'яжіться з нами</a></li>
+						<li class="nav-item "><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+						<li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+						<li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+						<li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+						<li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
         </ul>
 
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-4">
-          <li><a class="nav-link" href="#"><img src="images/user.svg" alt="user"></a></li>
-          <li><a class="nav-link" href="cart.html"><img src="images/cart.svg" alt="cart"></a></li>
+          <li><a class="nav-link" href="#"><img src="{{url_for('static', filename='images/user.svg')}}" alt="user"></a></li>
+          <li><a class="nav-link" href="cart.html"><img src="{{url_for('static', filename='images/cart.svg')}}" alt="cart"></a></li>
         </ul>
       </div>
     </div>
@@ -44,7 +44,7 @@
         <div class="col">
           <div class="intro-excerpt">
             <h1>Product</h1>
-            <p class="mb-0">Home / Shop / Nordic Chair</p>
+            <p class="mb-0">Home / Shop / {{ product.name }}</p>
           </div>
         </div>
       </div>
@@ -62,34 +62,24 @@
             <div class="pg-gallery-wrapper" role="region" aria-label="Product gallery">
               <!-- Колонка миниатюр -->
               <div class="pg-thumbs-column" id="pgThumbsColumn">
-                <img class="pg-thumb pg-active" 
-                     src="images/product-3.png" 
-                     data-large="images/product-3.png" 
-                     alt="Product view 1" 
-                     tabindex="0" 
-                     loading="lazy">
-                <img class="pg-thumb" 
-                     src="images/product-1.png" 
-                     data-large="images/product-1.png" 
-                     alt="Product view 2" 
-                     tabindex="0" 
-                     loading="lazy">
-                <img class="pg-thumb" 
-                     src="images/product-2.png" 
-                     data-large="images/product-2.png" 
-                     alt="Product view 3" 
-                     tabindex="0" 
-                     loading="lazy">
+                {% for image in product.images %}
+                  <img class="pg-thumb {% if loop.first %}pg-active{% endif %}" 
+                      src="{{ url_for('static', filename=image.path[7:] if image.path.startswith('static/') else image.path) }}" 
+                      data-large="{{ url_for('static', filename=image.path[7:] if image.path.startswith('static/') else image.path) }}" 
+                      alt="Product view {{ loop.index }}" 
+                      tabindex="0" 
+                      loading="lazy">
+                {% endfor %}
               </div>
 
               <!-- Основное изображение -->
               <div class="pg-main-image-area">
                 <img id="pgMainImage" 
-                     src="images/product-3.png" 
-                     alt="Main product image" 
-                     class="pg-main-image" 
-                     loading="lazy"
-                     tabindex="0">
+                src="{{ url_for('static', filename=product.images[0].path[7:] if product.images|length > 0 and product.images[0].path.startswith('static/') else product.images[0].path) }}" 
+                alt="Main product image" 
+                class="pg-main-image" 
+                loading="lazy"
+                tabindex="0">
               </div>
             </div>
           </div>
@@ -98,20 +88,24 @@
         <!-- RIGHT: детали продукта -->
         <div class="col-12 col-md-6">
           <div class="pg-details-card">
-            <h2 class="product-title">Nordic Chair – Deluxe Edition</h2>
-            <p class="product-sku text-muted">SKU: NF-CH-204</p>
+            <h2 class="product-title">{{ product.name }}</h2>
+            <p class="product-sku text-muted">SKU: {{ product.id }}</p>
 
             <div class="price-row d-flex align-items-end gap-3 mb-3">
               <div>
-                <div class="product-price-big">₴120.00</div>
-                <div class="product-price-old text-muted"><s>₴150.00</s></div>
+                {% if product.discount_percent %}
+                  <div class="product-price-big text-success">₴{{ '%.2f' % (product.price * (1 - product.discount_percent / 100)) }}</div>
+                  <div class="product-price-old text-muted text-danger"><s>₴{{ '%.2f' % product.price }}</s></div>
+                {% else %}
+                  <div class="product-price-big">₴{{ '%.2f' % product.price }}</div>
+                {% endif %}
               </div>
               <div class="ms-auto">
-                <div class="rating small text-muted">★★★★☆ <span class="ms-1">(24)</span></div>
+                <div class="rating small text-muted">★★★★☆ <span class="ms-1">({{ product.reviews_count if product.reviews_count is defined else 0 }})</span></div>
               </div>
             </div>
 
-            <p class="product-short-desc mb-3">Елегантне крісло у скандинавському стилі, виготовлене із екологічних матеріалів. Ідеально підійде для вітальні та спальні.</p>
+            <p class="product-short-desc mb-3">{{ product.description }}</p>
 
             <div class="product-actions-block mb-4">
               <div class="input-group quantity-group mb-3" style="max-width:220px;">
@@ -129,15 +123,17 @@
             <hr>
 
             <h5>Опис продукту</h5>
-            <p class="small text-muted mb-3">Повний опис: крісло має зручну спинку та м'яке сидіння. Підтримує до 120 кг. Догляд: протирати м'якою вологою ганчіркою.</p>
+            <p class="small text-muted mb-3">{{ product.description if product.description else '' }}</p>
 
             <h5>Специфікації</h5>
             <table class="table table-sm specs-table mb-0">
               <tbody>
-                <tr><th scope="row">Матеріал</th><td>Дуб, тканина</td></tr>
-                <tr><th scope="row">Розміри</th><td>78 × 64 × 92 cm</td></tr>
-                <tr><th scope="row">Вага</th><td>12 kg</td></tr>
-                <tr><th scope="row">Колір</th><td>Natural / Grey</td></tr>
+                {% for attr in product.attributes.split(';') %}
+                  {% set parts = attr.split(':', 1) %}
+                  {% if parts|length == 2 %}
+                  <tr><th scope="row">{{ parts[0].strip() }}</th><td>{{ parts[1].strip() }}</td></tr>
+                  {% endif %}
+                {% endfor %}
               </tbody>
             </table>
 
@@ -167,7 +163,7 @@
 
       <div class="row g-5 mb-5">
         <div class="col-lg-4">
-          <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Furni<span>.</span></a></div>
+          <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Hogar<span>.</span></a></div>
           <p class="mb-4">Donec facilisis quam ut purus rutrum lobortis...</p>
           <ul class="list-unstyled custom-social">
             <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>

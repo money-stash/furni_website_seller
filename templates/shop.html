@@ -62,9 +62,9 @@
         <div class="col-12 col-md-3 mb-2 mb-md-0">
           <select id="categorySelect" class="form-select">
             <option value="all">Усі категорії</option>
-            <option value="chairs">Стільці</option>
-            <option value="office">Офіс</option>
-            <option value="ergonomic">Ергономічний</option>
+            {% for cat in categories %}
+            <option value="{{ cat.name|lower }}">{{ cat.name }}</option>
+            {% endfor %}
           </select>
         </div>
 
@@ -94,62 +94,36 @@
       </div>
 
       <div class="row" id="productsRow">
-        <!-- Пример товара: -> добавьте data-price (число) и data-category -->
-        <!-- ВАЖНО: для корректной работы JS: у каждого .product-col должен быть .product-price (в формате ₴N.NN) -->
-        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="50">
-          <a class="product-item" href="#">
-            <img src="{{url_for('static', filename='images/product-3.png')}}" class="img-fluid product-thumbnail">
-            <h3 class="product-title">Nordic Chair</h3>
-            <strong class="product-price">₴50.00</strong>
-            <span class="icon-cross"><img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid"></span>
-          </a>
-        </div>
+        {% if products and products|length > 0 %}
+          {% for p in products %}
+            {% set img_src = p.preview %}
+            {% if (not img_src) and p.images and p.images|length > 0 %}
+              {% set img_src = p.images[0].path %}
+            {% endif %}
+            {% set discount = p.discount_percent or 0 %}
+            {% set price_with_discount = (p.price * (1 - (discount / 100.0))) if discount else p.price %}
 
-        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="50">
-          <a class="product-item" href="#">
-            <img src="{{url_for('static', filename='images/product-1.png')}}" class="img-fluid product-thumbnail">
-            <h3 class="product-title">Nordic Chair</h3>
-            <strong class="product-price">₴50.00</strong>
-            <span class="icon-cross"><img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid"></span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="office" data-price="78">
-          <a class="product-item" href="#">
-            <img src="{{url_for('static', filename='images/product-2.png')}}" class="img-fluid product-thumbnail">
-            <h3 class="product-title">Kruzo Aero Chair</h3>
-            <strong class="product-price">₴78.00</strong>
-            <span class="icon-cross"><img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid"></span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="ergonomic" data-price="43">
-          <a class="product-item" href="#">
-            <img src="{{url_for('static', filename='images/product-3.png')}}" class="img-fluid product-thumbnail">
-            <h3 class="product-title">Ergonomic Chair</h3>
-            <strong class="product-price">₴43.00</strong>
-            <span class="icon-cross"><img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid"></span>
-          </a>
-        </div>
-
-        <!-- Повторяем примеры (или добавьте свои карточки) -->
-        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="chairs" data-price="120">
-          <a class="product-item" href="#">
-            <img src="{{url_for('static', filename='images/product-3.png')}}" class="img-fluid product-thumbnail">
-            <h3 class="product-title">Deluxe Nordic</h3>
-            <strong class="product-price">₴120.00</strong>
-            <span class="icon-cross"><img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid"></span>
-          </a>
-        </div>
-
-        <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="office" data-price="15">
-          <a class="product-item" href="#">
-            <img src="{{url_for('static', filename='images/product-1.png')}}" class="img-fluid product-thumbnail">
-            <h3 class="product-title">Simple Stool</h3>
-            <strong class="product-price">₴15.00</strong>
-            <span class="icon-cross"><img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid"></span>
-          </a>
-        </div>
+            <div class="col-12 col-md-4 col-lg-3 mb-5 product-col" data-category="{{ (p.category.name if p.category else '')|lower }}" data-price="{{ '%.2f' % price_with_discount }}">
+              <a class="product-item" href="{{ url_for('product_info', product_id=p.id) }}">
+                {% if img_src %}
+                  <img src="{{ url_for('static', filename=img_src[7:] if img_src.startswith('static/') else img_src) }}" class="img-fluid product-thumbnail" alt="{{ p.name }}">
+                {% endif %}
+                <h3 class="product-title">{{ p.name }}</h3>
+                {% if discount and discount|float > 0 %}
+                  <strong class="product-price" style="color:red; text-decoration:line-through;">₴{{ '%.2f' % p.price }}</strong>
+                  <div class="product-discount"> → <strong style="color:green;">₴{{ '%.2f' % price_with_discount }}</strong> <small class="text-muted">({{ discount }}% off)</small></div>
+                {% else %}
+                  <strong class="product-price" style="color:black;">₴{{ '%.2f' % p.price }}</strong>
+                {% endif %}
+                <span class="icon-cross"><img src="{{ url_for('static', filename='images/cross.svg') }}" class="img-fluid"></span>
+              </a>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="col-12">
+            <p class="text-center">Товари не знайдені.</p>
+          </div>
+        {% endif %}
 
       </div> <!-- end row -->
     </div> <!-- end container -->

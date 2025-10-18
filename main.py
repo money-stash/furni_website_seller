@@ -45,7 +45,30 @@ def index():
 
 @app.route("/shop")
 def shop():
-    return render_template("shop.html")
+    """
+    Передаём в шаблон все продукты (связанные category и images),
+    чтобы можно было вывести их на странице shop.
+    """
+    db = SessionLocal()
+    try:
+        # загружаем продукты с предзагрузкой связей чтобы избежать N+1
+        products = (
+            db.query(Product)
+            .options(joinedload(Product.images), joinedload(Product.category))
+            .order_by(Product.id.desc())
+            .all()
+        )
+
+        # категории (если нужно показывать фильтры/список категорий на странице)
+        categories = get_all_categories()
+
+        return render_template(
+            "shop.html",
+            products=products,
+            categories=categories,
+        )
+    finally:
+        db.close()
 
 
 @app.route("/admin_dashboard")
@@ -208,6 +231,25 @@ def update_product(product_id):
 @app.route("/delete_product/<int:product_id>")
 def delete_product(product_id):
     return render_template("delete_product.html", product_id=product_id)
+
+
+@app.route("/product/<int:product_id>")
+def product_info(product_id):
+    db = SessionLocal()
+    try:
+        # загружаем товар с изображениями и категорией
+        product = (
+            db.query(Product)
+            .options(joinedload(Product.images), joinedload(Product.category))
+            .get(product_id)
+        )
+        if not product:
+            flash("Товар не знайдено", "error")
+            return redirect(url_for("shop"))
+
+        return render_template("product_info.html", product=product)
+    finally:
+        db.close()
 
 
 @app.route("/admin_settings")
