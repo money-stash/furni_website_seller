@@ -1,0 +1,91 @@
+/* Login page overrides — matches UntreeStore style */
+.login-hero {
+  padding: 4.5rem 0;
+  background: linear-gradient(180deg, rgba(139,94,60,0.95) 0%, rgba(139,94,60,0.95) 100%);
+}
+
+/* Card for form */
+.login-card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+/* Make card body a bit roomy */
+.login-card .card-body {
+  padding: 2rem;
+}
+
+/* Match headings and text */
+.login-card .card-title {
+  color: #2f2f2f;
+  font-weight: 700;
+}
+
+/* Buttons consistent with site */
+.btn-primary {
+  background: #8B5E3C;
+  border-color: #8B5E3C;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 10px;
+}
+.btn-primary:hover {
+  background: #704832;
+  border-color: #704832;
+}
+
+/* White-outline variant for hero CTA (re-using btn-white-outline but ensure visibility on hero) */
+.btn-white-outline {
+  color: #ffffff;
+  border-width: 2px;
+  border-color: rgba(255,255,255,0.3);
+  background: transparent;
+}
+.btn-white-outline:hover {
+  border-color: rgba(255,255,255,0.85);
+  color: #ffffff;
+}
+
+/* Form elements */
+.login-card .form-control {
+  border-radius: 8px;
+  height: 48px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: none;
+}
+
+/* Small helpers */
+.login-card .form-label {
+  font-weight: 600;
+  color: #2f2f2f;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .login-hero .intro-excerpt { margin-bottom: 1.5rem; }
+  .login-card { margin-top: 10px; }
+}
+
+/* Focus states */
+.login-card .form-control:focus {
+  border-color: #8B5E3C;
+  box-shadow: 0 6px 18px rgba(59,93,80,0.06);
+  outline: none;
+}
+
+/* Subtle link style in card */
+.login-card a {
+  color: #8B5E3C;
+  text-decoration: none;
+  font-weight: 600;
+}
+.login-card a:hover { text-decoration: underline; }
+
+/* If you want the card to slightly lift on hover */
+.login-card:hover {
+  transform: translateY(-3px);
+  transition: transform .18s ease;
+}

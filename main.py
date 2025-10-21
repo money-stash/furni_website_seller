@@ -571,6 +571,21 @@ def delete_category():
         db.close()
 
 
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+
+@app.route("/register")
+def register():
+    return render_template("register.html")
+
+
+@app.route("/forgot-password")
+def forgot_password():
+    return render_template("forgot_password.html")
+
+
 # Добавьте этот роут для передачи URL в JS
 @app.context_processor
 def inject_urls():

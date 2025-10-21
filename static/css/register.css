@@ -1,0 +1,79 @@
+/* Register page overrides: consistent with UntreeStore theme */
+
+.register-hero {
+  padding: 4.5rem 0;
+  background: linear-gradient(180deg, rgba(139,94,60,0.95) 0%, rgba(139,94,60,0.95) 100%);
+}
+
+/* Card */
+.register-card {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+/* card body */
+.register-card .card-body {
+  padding: 2rem;
+}
+
+/* title */
+.register-card .card-title {
+  color: #2f2f2f;
+  font-weight: 700;
+}
+
+/* form controls */
+.register-card .form-control {
+  border-radius: 8px;
+  height: 48px;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: none;
+}
+
+/* labels */
+.register-card .form-label {
+  font-weight: 600;
+  color: #2f2f2f;
+}
+
+/* primary button */
+.btn-primary {
+  background: #8B5E3C;
+  border-color: #8B5E3C;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 10px;
+}
+.btn-primary:hover {
+  background: #704832;
+  border-color: #704832;
+}
+
+/* small link style */
+.register-card a { color: #8B5E3C; font-weight: 600; }
+.register-card a:hover { text-decoration: underline; }
+
+/* checkbox label */
+.form-check-label { color: #6a6a6a; }
+
+/* focus */
+.register-card .form-control:focus {
+  border-color: #8B5E3C;
+  box-shadow: 0 6px 18px rgba(59,93,80,0.06);
+  outline: none;
+}
+
+/* lift effect */
+.register-card:hover {
+  transform: translateY(-3px);
+  transition: transform .18s ease;
+}
+
+/* responsive */
+@media (max-width: 768px) {
+  .register-hero .intro-excerpt { margin-bottom: 1.25rem; text-align: center; }
+  .register-card { margin-top: 12px; }
+}
