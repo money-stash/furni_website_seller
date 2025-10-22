@@ -18,10 +18,15 @@ from models.models import (
     Product,
     ProductImage,
 )
+from routers.user_routes import user_reg
+from routers.admin_routes import admin_pan
 from sqlalchemy.orm import joinedload
 
 app = Flask(__name__)
 app.secret_key = "Lql8aLsBzUVWvY6Ood1egDyanmTwN2GV"  # обязательно для сессий
+
+app.register_blueprint(user_reg.reg_bp)
+app.register_blueprint(admin_pan.admin_bp)
 
 # ---- upload settings (без изменений) ----
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -64,40 +69,6 @@ def shop():
 
         return render_template(
             "shop.html",
-            products=products,
-            categories=categories,
-        )
-    finally:
-        db.close()
-
-
-@app.route("/admin_dashboard")
-def admin_dashboard():
-    return render_template("admin_dashboard.html")
-
-
-@app.route("/admin_products")
-def admin_products():
-    if not session.get("admin_logged_in"):
-        return redirect(url_for("admin_login"))
-
-    categories = get_all_categories()
-    db = SessionLocal()
-    try:
-        products = (
-            db.query(Product)
-            .options(joinedload(Product.category))
-            .order_by(Product.id.desc())
-            .all()
-        )
-
-        # DEBUG: проверка
-        for p in products:
-            if p.id is None:
-                print(f"WARNING: Product without ID: {p.name}")
-
-        return render_template(
-            "admin-products.html",
             products=products,
             categories=categories,
         )
@@ -217,13 +188,13 @@ def update_product(product_id):
 
         db.commit()
         flash("Товар обновлен", "success")
-        return redirect(url_for("admin_products"))
+        return redirect(url_for("admin.admin_products"))
 
     except Exception as e:
         db.rollback()
         print("Update product error:", e)
         flash("Ошибка при обновлении товара", "error")
-        return redirect(url_for("admin_products"))
+        return redirect(url_for("admin.admin_products"))
     finally:
         db.close()
 
@@ -252,11 +223,6 @@ def product_info(product_id):
         db.close()
 
 
-@app.route("/admin_settings")
-def admin_settings():
-    return render_template("admin_settings.html")
-
-
 @app.route("/about")
 def about():
     return render_template("about.html")
@@ -270,38 +236,6 @@ def services():
 @app.route("/contact")
 def contact():
     return render_template("contact.html")
-
-
-@app.route("/admin-login", methods=["GET", "POST"])
-def admin_login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            session["admin_logged_in"] = True
-            return redirect(url_for("admin_panel"))
-        else:
-            flash("Неправильный логин или пароль", "error")
-            return redirect(url_for("admin_login"))
-
-    return render_template("admin-login.html")
-
-
-@app.route("/admin-panel")
-def admin_panel():
-    if not session.get("admin_logged_in"):
-        return redirect(url_for("admin_login"))
-
-    # получаем категории из БД и передаём в шаблон
-    db = SessionLocal()
-    try:
-        categories = db.query(Category).order_by(Category.name).all()
-        category_names = [c.name for c in categories]
-    finally:
-        db.close()
-
-    return render_template("admin-panel.html", categories=category_names)
 
 
 def allowed_file(filename):
@@ -574,11 +508,6 @@ def delete_category():
 @app.route("/login")
 def login():
     return render_template("login.html")
-
-
-@app.route("/register")
-def register():
-    return render_template("register.html")
 
 
 @app.route("/forgot-password")

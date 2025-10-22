@@ -12,9 +12,9 @@
 <body>
   <!-- Навигация (совместима с тем, что ты уже добавил) -->
   <nav class="admin-nav">
-      <a href="{{ url_for('admin_panel') }}" class="nav-btn">Главное управление</a>
-      <a href="{{ url_for('admin_products') }}" class="nav-btn active">Управление товарами</a>
-      <a href="{{ url_for('admin_settings') }}" class="nav-btn">Настройки сайта</a>
+      <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Главное управление</a>
+      <a href="{{ url_for('admin.admin_products') }}" class="nav-btn active">Управление товарами</a>
+      <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Настройки сайта</a>
   </nav>
 
   <div class="admin-container">

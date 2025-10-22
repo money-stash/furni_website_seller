@@ -71,20 +71,20 @@
                   <div class="alert alert-success" role="alert">{{ success }}</div>
                 {% endif %}
 
-                <form method="post" action="{{ url_for('register') }}">
+                <form method="post" action="{{ url_for('reg.register_data') }}">
                   <div class="mb-3">
                     <label for="full_name" class="form-label">Повне ім'я</label>
                     <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Іван Іванов" required />
                   </div>
 
                   <div class="mb-3">
-                    <label for="email" class="form-label">Електронна пошта</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required />
+                    <label for="email" class="form-label">Електронна пошта (опціонально)</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" />
                   </div>
 
                   <div class="mb-3">
-                    <label for="phone" class="form-label">Телефон (опціонально)</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="+38 (0XX) XXX-XX-XX" />
+                    <label for="phone" class="form-label">Телефон</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="+38 (0XX) XXX-XX-XX" required />
                   </div>
 
                   <div class="mb-3">
@@ -176,5 +176,7 @@
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tiny-slider.js') }}"></script>
     <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}">
+    </script>
   </body>
 </html>
