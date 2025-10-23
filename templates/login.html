@@ -64,10 +64,10 @@
                   <div class="alert alert-danger" role="alert">{{ error }}</div>
                 {% endif %}
 
-                <form method="post" action="{{ url_for('login') }}">
+                <form method="post" action="{{ url_for('auth.login') }}">
                   <div class="mb-3">
-                    <label for="email" class="form-label">Електронна пошта</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required />
+                    <label for="identifier" class="form-label">Електронна пошта або телефон</label>
+                    <input type="text" class="form-control" id="identifier" name="identifier" placeholder="you@example.com або +380XXXXXXXXX" required />
                   </div>
 
                   <div class="mb-3">
@@ -75,21 +75,14 @@
                     <input type="password" class="form-control" id="password" name="password" placeholder="Ваш пароль" required />
                   </div>
 
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember" />
-                      <label class="form-check-label" for="remember">Запам’ятати мене</label>
-                    </div>
-                    <div>
-                      <a href="{{ url_for('forgot_password') }}" class="small">Забули пароль?</a>
-                    </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember" />
+                    <label class="form-check-label" for="remember">Запам’ятати мене</label>
                   </div>
 
                   <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-primary btn-block">Увійти</button>
                   </div>
-
-                  <p class="text-center small mb-0">Немає акаунту? <a href="{{ url_for('reg.register') }}">Зареєструватися</a></p>
                 </form>
               </div>
             </div>

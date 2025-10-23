@@ -29,7 +29,7 @@
     <section class="section">
         <h2>Products</h2>
         <!-- Важно: enctype для загрузки файлов и action на новый маршрут -->
-        <form id="product-form" action="{{ url_for('add_product') }}" method="post" enctype="multipart/form-data">
+        <form id="product-form" action="{{ url_for('products.add_product') }}" method="post" enctype="multipart/form-data">
             <input type="text" id="product-name" name="product-name" placeholder="Product name" required>
             <select id="product-category" name="product-category" required>
                 <option value="">Select category</option>

@@ -59,14 +59,14 @@ def admin_login():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        if username == "admin" and password == 1234:
+        if username == "admin" and password == "1234":
             session["admin_logged_in"] = True
-            return redirect(url_for("admin_panel"))
+            return redirect(url_for("admin.admin_panel"))
         else:
             flash("Неправильный логин или пароль", "error")
             return redirect(url_for("admin.admin_login"))
 
-    return render_template("admin.admin-login.html")
+    return render_template("admin-login.html")
 
 
 @admin_bp.route("/admin-panel")

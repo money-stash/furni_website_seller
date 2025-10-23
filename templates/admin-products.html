@@ -66,11 +66,11 @@
           </div>
           <div class="card-actions">
             {% if p.id %}
-            <a class="btn small" href="{{ url_for('update_product', product_id=p.id) }}">Редактировать</a>
+            <a class="btn small" href="{{ url_for('products.update_product', product_id=p.id) }}">Редактировать</a>
             {% else %}
             <span class="disabled">ID отсутствует</span>
             {% endif %}
-            <form method="post" action="{{ url_for('delete_product', product_id=p.id) }}" onsubmit="return confirm('Удалить товар?');" style="display:inline;">
+            <form method="post" action="{{ url_for('products.delete_product', product_id=p.id) }}" onsubmit="return confirm('Удалить товар?');" style="display:inline;">
               <button class="btn small danger" type="submit">Удалить</button>
             </form>
           </div>

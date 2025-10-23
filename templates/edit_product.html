@@ -32,15 +32,15 @@
 </head>
 <body>
 <nav class="admin-nav">
-    <a href="{{ url_for('admin_panel') }}" class="nav-btn">Главное управление</a>
-    <a href="{{ url_for('admin_products') }}" class="nav-btn active">Управление товарами</a>
-    <a href="{{ url_for('admin_settings') }}" class="nav-btn">Настройки сайта</a>
+    <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Главное управление</a>
+    <a href="{{ url_for('admin.admin_products') }}" class="nav-btn active">Управление товарами</a>
+    <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Настройки сайта</a>
 </nav>
 
 <div class="admin-container">
     <h1>Редактирование товара</h1>
 
-    <form id="edit-product-form" method="POST" action="{{ url_for('update_product', product_id=product.id) }}" enctype="multipart/form-data">
+    <form id="edit-product-form" method="POST" action="{{ url_for('products.update_product', product_id=product.id) }}" enctype="multipart/form-data">
         <div class="form-group">
             <label for="product-name">Название товара</label>
             <input type="text" name="product-name" id="product-name" value="{{ product.name }}">

@@ -1,25 +1,22 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import IntegrityError
-from models.models import User
-from initdb import SessionLocal  # Импортируйте вашу функцию получения сессии БД
 import re
+
+from models.models import User
+from initdb import SessionLocal
+from sqlalchemy.exc import IntegrityError
+from werkzeug.security import generate_password_hash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 
 reg_bp = Blueprint("reg", __name__, template_folder="../templates")
 
 
 def validate_phone(phone):
-    """Валидация номера телефона"""
-    # Удаляем все нецифровые символы
-
     digits_only = re.sub(r"\D", "", phone)
-    # Проверяем, что осталось минимум 10 цифр
     return len(digits_only) >= 10
 
 
 def validate_email(email):
     """Валидация email"""
-    if not email:  # email опциональный
+    if not email:
         return True
     pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return re.match(pattern, email) is not None
@@ -47,7 +44,6 @@ def register():
 def register_data():
     """Обработка данных регистрации"""
 
-    # Получаем данные из формы
     full_name = request.form.get("full_name", "").strip()
     email = request.form.get("email", "").strip()
     phone = request.form.get("phone", "").strip()
@@ -55,24 +51,19 @@ def register_data():
     password2 = request.form.get("password2", "")
     terms = request.form.get("terms")
 
-    # Валидация на стороне сервера
     errors = []
 
-    # Проверка полного имени
     if not full_name or len(full_name) < 2:
         errors.append("Повне ім'я повинно містити мінімум 2 символи")
 
-    # Проверка email (если указан)
     if email and not validate_email(email):
         errors.append("Некоректна електронна адреса")
 
-    # Проверка телефона
     if not phone:
         errors.append("Телефон обов'язковий")
     elif not validate_phone(phone):
         errors.append("Некоректний номер телефону")
 
-    # Проверка пароля
     if not password:
         errors.append("Пароль обов'язковий")
     else:
@@ -80,24 +71,19 @@ def register_data():
         if not is_valid:
             errors.append(error_msg)
 
-    # Проверка совпадения паролей
     if password != password2:
         errors.append("Паролі не співпадають")
 
-    # Проверка согласия с условиями
     if not terms:
         errors.append("Ви повинні погодитись з умовами")
 
-    # Если есть ошибки - возвращаем с сообщением
     if errors:
         print("Registration validation failed:", errors, flush=True)
         return render_template("register.html", error="; ".join(errors))
 
-    # Работа с базой данных
     session = SessionLocal()
 
     try:
-        # Проверяем, существует ли пользователь с таким телефоном
         existing_user = (
             session.query(User)
             .filter((User.phone == phone) | (User.username == full_name))
@@ -113,7 +99,6 @@ def register_data():
             print(f"Registration failed: {error_msg}", flush=True)
             return render_template("register.html", error=error_msg)
 
-        # Если email указан, проверяем его уникальность
         if email:
             existing_email = session.query(User).filter(User.email == email).first()
             if existing_email:
@@ -123,7 +108,6 @@ def register_data():
                     error="Користувач з такою електронною адресою вже існує",
                 )
 
-        # Создаем нового пользователя
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
 
         new_user = User(
@@ -138,11 +122,9 @@ def register_data():
 
         print(f"New user registered successfully: {full_name} ({phone})", flush=True)
 
-        # Устанавливаем flash-сообщение об успехе
         flash("Реєстрація успішна! Тепер ви можете увійти.", "success")
 
-        # Перенаправляем на страницу входа или главную
-        return redirect(url_for("login"))  # или url_for("index")
+        return redirect(url_for("atuh.login"))
 
     except IntegrityError as e:
         session.rollback()
