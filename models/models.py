@@ -93,10 +93,64 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String(150), unique=True, nullable=False)
-    email = Column(String(255), unique=True, nullable=True)  # Добавлено поле email
+    email = Column(String(255), unique=True, nullable=True)
     phone = Column(String(255), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    cart = relationship("Cart", back_populates="user", uselist=False, cascade="all, delete-orphan")
+
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username!r}, phone={self.phone!r})>"
+
+
+class Cart(Base):
+    __tablename__ = "carts"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User", back_populates="cart")
+    items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
+
+    def total_price(self) -> float:
+        """Возвращает общую сумму всех товаров в корзине."""
+        return round(sum(item.subtotal() for item in self.items), 2)
+
+    def total_items(self) -> int:
+        """Возвращает общее количество товаров в корзине."""
+        return sum(item.quantity for item in self.items)
+
+    def __repr__(self):
+        return f"<Cart(id={self.id}, user_id={self.user_id}, items={len(self.items)})>"
+
+
+class CartItem(Base):
+    __tablename__ = "cart_items"
+
+    id = Column(Integer, primary_key=True)
+    cart_id = Column(Integer, ForeignKey("carts.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    quantity = Column(Integer, default=1, nullable=False)
+    added_at = Column(DateTime, default=datetime.utcnow)
+
+    cart = relationship("Cart", back_populates="items")
+    product = relationship("Product")
+
+    def subtotal(self) -> float:
+        """Возвращает стоимость данной позиции (цена со скидкой * количество)."""
+        return round(self.product.price_after_discount() * self.quantity, 2)
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "product": self.product.as_dict(),
+            "quantity": self.quantity,
+            "subtotal": self.subtotal(),
+            "added_at": self.added_at.isoformat() if self.added_at else None,
+        }
+
+    def __repr__(self):
+        return f"<CartItem(id={self.id}, product_id={self.product_id}, quantity={self.quantity})>"

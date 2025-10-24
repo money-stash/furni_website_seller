@@ -334,5 +334,143 @@
   </script>
 
   <script src="{{url_for('static', filename='js/custom.js')}}"></script>
+
+  <!-- В конце файла, перед закрывающим тегом </body>, добавьте этот скрипт -->
+<script>
+  // Обработка добавления в корзину
+  (function () {
+    const productItems = document.querySelectorAll('.product-item');
+    
+    productItems.forEach(item => {
+      const crossIcon = item.querySelector('.icon-cross');
+      if (crossIcon) {
+        crossIcon.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Получаем ID продукта из href родительского элемента
+          const href = item.getAttribute('href');
+          const productId = href.split('/').pop();
+          
+          addToCart(productId);
+        });
+      }
+    });
+    
+    function addToCart(productId) {
+      fetch('/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: parseInt(productId),
+          quantity: 1
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showNotification('Товар додано до кошику', 'success');
+          updateCartBadge(data.cart.total_items);
+        } else {
+          showNotification(data.message || 'Помилка при додаванні товару', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showNotification('Помилка з\'єднання', 'error');
+      });
+    }
+    
+    function showNotification(message, type) {
+      // Создаём уведомление
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#28a745' : '#dc3545'};
+        color: white;
+        border-radius: 5px;
+        z-index: 9999;
+        animation: slideIn 0.3s ease-out;
+      `;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    
+    function updateCartBadge(count) {
+      // Обновляем счётчик на иконке корзины (если есть)
+      let badge = document.querySelector('.cart-badge');
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'cart-badge';
+        badge.style.cssText = `
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #dc3545;
+          color: white;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+          font-weight: bold;
+        `;
+        const cartLink = document.querySelector('a[href*="cart"]');
+        if (cartLink) {
+          cartLink.style.position = 'relative';
+          cartLink.appendChild(badge);
+        }
+      }
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'flex' : 'none';
+    }
+  })();
+</script>
+
+<style>
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+  
+  .icon-cross {
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .icon-cross:hover {
+    transform: scale(1.1);
+  }
+</style>
 </body>
 </html>

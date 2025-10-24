@@ -1,4 +1,5 @@
 import os
+from types import SimpleNamespace
 from flask import (
     Flask,
     render_template,
@@ -9,11 +10,11 @@ from flask import (
 )
 from sqlalchemy.orm import joinedload
 
-from models.models import Product, User
+from models.models import Cart, CartItem, Product, User
 from initdb import SessionLocal, init_db
 from database.db import get_all_categories
 
-from routers.user_routes import user_reg, auth
+from routers.user_routes import user_reg, auth, cart_routes
 from routers.admin_routes import admin_pan, products, categories
 
 from middlewares.login import login_required
@@ -29,6 +30,7 @@ app.register_blueprint(auth.auth)
 app.register_blueprint(admin_pan.admin_bp)
 app.register_blueprint(products.products_bp)
 app.register_blueprint(categories.categories_bp)
+app.register_blueprint(cart_routes.cart_bp)
 
 # ---- upload settings (без изменений) ----
 
@@ -119,8 +121,50 @@ def profile():
 
 
 @app.route("/cart")
+@login_required
 def cart():
-    return render_template("cart.html")
+    db = SessionLocal()
+    try:
+        user_id = session["user_id"]
+
+        # получаем корзину пользователя с товарами
+        cart_obj = (
+            db.query(Cart)
+            .options(
+                joinedload(Cart.items)
+                .joinedload(CartItem.product)
+                .joinedload(Product.images)
+            )
+            .filter(Cart.user_id == user_id)
+            .first()
+        )
+
+        # если корзины нет - создаём пустую структуру
+        if not cart_obj:
+            # Используем SimpleNamespace, чтобы в шаблонах dot-notation работала как ожидается
+            cart_data = SimpleNamespace(items=[], total_price=0.0, total_items=0)
+        else:
+            # Преобразуем relationship в список
+            items_list = list(cart_obj.items)
+            # Убедимся, что total_price возвращается числом (float)
+            try:
+                total_price = float(cart_obj.total_price())
+            except Exception:
+                total_price = 0.0
+            try:
+                total_items = int(cart_obj.total_items())
+            except Exception:
+                total_items = len(items_list)
+
+            cart_data = SimpleNamespace(
+                items=items_list,
+                total_price=total_price,
+                total_items=total_items,
+            )
+
+        return render_template("cart.html", cart=cart_data)
+    finally:
+        db.close()
 
 
 @app.route("/forgot-password")

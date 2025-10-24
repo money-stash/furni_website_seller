@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+  <!-- Bootstrap CSS -->
+  <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
+  <title>HOGAR — Кошик</title>
+</head>
+
+<body>
+  <!-- Start Header/Navigation -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="{{ url_for('index') }}">Furni<span>.</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsFurni">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+          <li><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+          <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+          <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+          <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+        </ul>
+
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+          <li><a class="nav-link" href="{{ url_for('profile') }}"><img src="{{url_for('static', filename='images/user.svg')}}"></a></li>
+          <li class="active"><a class="nav-link" href="{{ url_for('cart') }}"><img src="{{url_for('static', filename='images/cart.svg')}}"></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- End Header/Navigation -->
+
+  <!-- Start Hero Section -->
+  <div class="hero">
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-lg-5">
+          <div class="intro-excerpt">
+            <h1>Кошик</h1>
+          </div>
+        </div>
+        <div class="col-lg-7"></div>
+      </div>
+    </div>
+  </div>
+  <!-- End Hero Section -->
+
+  <div class="untree_co-section before-footer-section">
+    <div class="container">
+      {% if cart.items and cart.items|length > 0 %}
+      <div class="row mb-5">
+        <div class="col-md-12">
+          <div class="site-blocks-table">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="product-thumbnail">Зображення</th>
+                  <th class="product-name">Товар</th>
+                  <th class="product-price">Ціна</th>
+                  <th class="product-quantity">Кількість</th>
+                  <th class="product-total">Сума</th>
+                  <th class="product-remove">Видалити</th>
+                </tr>
+              </thead>
+              <tbody id="cartTableBody">
+                {% for item in cart.items %}
+                {% set product = item.product %}
+                {% set img_src = product.preview %}
+                {% if (not img_src) and product.images and product.images|length > 0 %}
+                  {% set img_src = product.images[0].path %}
+                {% endif %}
+                {% set price_after_discount = product.price_after_discount() %}
+                
+                <tr data-cart-item-id="{{ item.id }}">
+                  <td class="product-thumbnail">
+                    {% if img_src %}
+                    <img src="{{ url_for('static', filename=img_src[7:] if img_src.startswith('static/') else img_src) }}" alt="{{ product.name }}" class="img-fluid" style="max-width: 100px;">
+                    {% else %}
+                    <img src="{{url_for('static', filename='images/product-1.png')}}" alt="{{ product.name }}" class="img-fluid" style="max-width: 100px;">
+                    {% endif %}
+                  </td>
+                  <td class="product-name">
+                    <h2 class="h5 text-black">{{ product.name }}</h2>
+                    {% if product.discount_percent and product.discount_percent > 0 %}
+                    <small class="text-muted">Знижка: {{ product.discount_percent }}%</small>
+                    {% endif %}
+                  </td>
+                  <td class="product-price" data-price="{{ price_after_discount }}">
+                    {% if product.discount_percent and product.discount_percent > 0 %}
+                    <span style="text-decoration: line-through; color: #999;">₴{{ '%.2f' % product.price }}</span><br>
+                    <strong style="color: green;">₴{{ '%.2f' % price_after_discount }}</strong>
+                    {% else %}
+                    ₴{{ '%.2f' % price_after_discount }}
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
+                      <div class="input-group-prepend">
+                        <button class="btn btn-outline-black decrease" type="button">&minus;</button>
+                      </div>
+                      <input type="text" class="form-control text-center quantity-amount" value="{{ item.quantity }}" readonly>
+                      <div class="input-group-append">
+                        <button class="btn btn-outline-black increase" type="button">&plus;</button>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="product-subtotal">₴{{ '%.2f' % item.subtotal() }}</td>
+                  <td>
+                    <button class="btn btn-black btn-sm remove-item">X</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="row mb-5">
+            <div class="col-md-6">
+              <a href="{{ url_for('shop') }}" class="btn btn-outline-black btn-sm btn-block">Продовжити покупки</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 pl-5">
+          <div class="row justify-content-end">
+            <div class="col-md-7">
+              <div class="row">
+                <div class="col-md-12 text-right border-bottom mb-5">
+                  <h3 class="text-black h4 text-uppercase">Разом</h3>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <span class="text-black">Проміжний підсумок</span>
+                </div>
+                <div class="col-md-6 text-right">
+                  <strong class="text-black" id="cartSubtotal">₴{{ '%.2f' % cart.total_price }}</strong>
+                </div>
+              </div>
+              <div class="row mb-5">
+                <div class="col-md-6">
+                  <span class="text-black">Всього</span>
+                </div>
+                <div class="col-md-6 text-right">
+                  <strong class="text-black" id="cartTotal">₴{{ '%.2f' % cart.total_price }}</strong>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <button class="btn btn-black btn-lg py-3 btn-block" onclick="proceedToCheckout()">Оформити замовлення</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <!-- Пуста корзина -->
+      <div class="row">
+        <div class="col-md-12 text-center py-5">
+          <h3 class="text-black mb-4">Ваш кошик порожній</h3>
+          <p class="mb-4">Додайте товари до кошика, щоб продовжити покупки</p>
+          <a href="{{ url_for('shop') }}" class="btn btn-black btn-lg">Перейти до магазину</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Start Footer Section -->
+  <footer class="footer-section">
+    <div class="container relative">
+      <div class="sofa-img">
+        <img src="{{url_for('static', filename='images/sofa.png')}}" alt="Image" class="img-fluid" />
+      </div>
+
+      <div class="row g-5 mb-5">
+        <div class="col-lg-4">
+          <div class="mb-4 footer-logo-wrap">
+            <a href="#" class="footer-logo">Hogar<span>.</span></a>
+          </div>
+          <p class="mb-4">
+            Hogar — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
+          </p>
+
+          <ul class="list-unstyled custom-social">
+            <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="row links-wrap">
+            <div class="col-6 col-sm-6 col-md-3">
+              <ul class="list-unstyled">
+                <li><a href="#">Про нас</a></li>
+                <li><a href="#">Послуги</a></li>
+                <li><a href="#">Зв'яжіться з нами</a></li>
+              </ul>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-3">
+              <ul class="list-unstyled">
+                <li><a href="#">Підтримка</a></li>
+              </ul>
+            </div>
+
+            <div class="col-6 col-sm-6 col-md-3">
+              <ul class="list-unstyled">
+                <li><a href="#">Наша команда</a></li>
+                <li><a href="#">Політика конфіденційності</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-top copyright">
+        <div class="row pt-4">
+          <div class="col-lg-6">
+            <p class="mb-2 text-center text-lg-start">
+              Copyright &copy;
+              <script>document.write(new Date().getFullYear());</script>
+              . All Rights Reserved. &mdash; Designed with love by
+              <a href="https://t.me/makson8567">tg: makson8567</a>
+            </p>
+          </div>
+
+          <div class="col-lg-6 text-center text-lg-end">
+            <ul class="list-unstyled d-inline-flex ms-auto">
+              <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
+              <li><a href="#">Політика конфіденційності</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- End Footer Section -->
+
+  <script>
+(function() {
+  const tableBody = document.getElementById('cartTableBody');
+  if (!tableBody) return;
+
+  // Набор текущих операций по cart_item_id — предотвращает двойные запросы
+  const processingIds = new Set();
+
+  // Делегируем клик по tbody — ищем ближайшую кнопку с нужным классом
+  tableBody.addEventListener('click', function(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+
+    // increase / decrease / remove-item
+    if (btn.classList.contains('increase')) {
+      handleQuantityChange(btn, 1);
+    } else if (btn.classList.contains('decrease')) {
+      handleQuantityChange(btn, -1);
+    } else if (btn.classList.contains('remove-item')) {
+      handleRemove(btn);
+    }
+  });
+
+  function handleQuantityChange(button, delta) {
+    const row = button.closest('tr');
+    if (!row) return;
+    const cartItemId = row.getAttribute('data-cart-item-id');
+    if (!cartItemId) return;
+
+    if (processingIds.has(cartItemId)) return; // уже в процессе
+    processingIds.add(cartItemId);
+    button.disabled = true;
+
+    const input = row.querySelector('.quantity-amount');
+    let currentQty = parseInt(input.value) || 0;
+    const newQty = currentQty + delta;
+
+    if (newQty < 1) {
+      // Если хотим удалять при уменьшении с 1 -> 0
+      if (confirm('Видалити товар з кошика?')) {
+        // используем removeItem (он тоже защищён processingIds)
+        removeItem(cartItemId, row).finally(() => {
+          processingIds.delete(cartItemId);
+          button.disabled = false;
+        });
+      } else {
+        processingIds.delete(cartItemId);
+        button.disabled = false;
+      }
+      return;
+    }
+
+    // Выполняем обновление количества
+    updateQuantity(cartItemId, newQty, row)
+      .catch(() => {
+        // ошибки уже логируются в updateQuantity
+      })
+      .finally(() => {
+        processingIds.delete(cartItemId);
+        button.disabled = false;
+      });
+  }
+
+  function handleRemove(button) {
+    const row = button.closest('tr');
+    if (!row) return;
+    const cartItemId = row.getAttribute('data-cart-item-id');
+    if (!cartItemId) return;
+
+    if (processingIds.has(cartItemId)) return;
+    if (!confirm('Видалити товар з кошика?')) return;
+
+    processingIds.add(cartItemId);
+    button.disabled = true;
+
+    removeItem(cartItemId, row)
+      .catch(() => {
+        // ошибки логируются в removeItem
+      })
+      .finally(() => {
+        processingIds.delete(cartItemId);
+        button.disabled = false;
+      });
+  }
+
+  async function updateQuantity(cartItemId, quantity, row) {
+    try {
+      const resp = await fetch('/api/cart/update', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ cart_item_id: parseInt(cartItemId), quantity: quantity })
+      });
+      const data = await resp.json();
+
+      if (data && data.success) {
+        const input = row.querySelector('.quantity-amount');
+        input.value = quantity;
+
+        const price = parseFloat(row.querySelector('.product-price').getAttribute('data-price')) || 0;
+        const subtotal = (price * quantity).toFixed(2);
+        const subtotalCell = row.querySelector('.product-subtotal');
+        if (subtotalCell) subtotalCell.textContent = '₴' + subtotal;
+
+        if (data.cart && typeof data.cart.total_price !== 'undefined') {
+          updateTotals(data.cart.total_price);
+        }
+        showNotification('Кількість оновлено', 'success');
+      } else {
+        showNotification((data && data.message) || 'Помилка при оновленні', 'error');
+      }
+      return data;
+    } catch (err) {
+      console.error('updateQuantity error:', err);
+      showNotification('Помилка з\'єднання', 'error');
+      throw err;
+    }
+  }
+
+  async function removeItem(cartItemId, row) {
+    try {
+      const resp = await fetch('/api/cart/remove', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ cart_item_id: parseInt(cartItemId) })
+      });
+      const data = await resp.json();
+
+      if (data && data.success) {
+        // плавно скрываем строку и удаляем
+        row.style.transition = 'opacity 0.25s, height 0.25s, margin 0.25s, padding 0.25s';
+        row.style.opacity = '0';
+        row.style.height = '0';
+        row.style.margin = '0';
+        row.style.padding = '0';
+
+        setTimeout(() => {
+          row.remove();
+          if (data.cart && typeof data.cart.total_price !== 'undefined') {
+            updateTotals(data.cart.total_price);
+          }
+          showNotification('Товар видалено з кошика', 'success');
+
+          if (data.cart && typeof data.cart.total_items !== 'undefined' && data.cart.total_items === 0) {
+            // если корзина пуста — перезагрузим страницу (маленькая задержка чтобы увидеть уведомление)
+            setTimeout(() => window.location.reload(), 650);
+          }
+        }, 300);
+      } else {
+        showNotification((data && data.message) || 'Помилка при видаленні', 'error');
+      }
+      return data;
+    } catch (err) {
+      console.error('removeItem error:', err);
+      showNotification('Помилка з\'єднання', 'error');
+      throw err;
+    }
+  }
+
+  function updateTotals(totalPrice) {
+    const formatted = '₴' + (parseFloat(totalPrice) || 0).toFixed(2);
+    const subEl = document.getElementById('cartSubtotal');
+    const totEl = document.getElementById('cartTotal');
+    if (subEl) subEl.textContent = formatted;
+    if (totEl) totEl.textContent = formatted;
+  }
+
+  function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: ${type === 'success' ? '#28a745' : '#dc3545'};
+      color: white;
+      border-radius: 6px;
+      z-index: 9999;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      font-family: Arial, sans-serif;
+    `;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 300);
+    }, 2500);
+  }
+})();
+</script>
+
+
+
+
+
+	<style>
+	@keyframes slideIn {
+		from {
+		transform: translateX(100%);
+		opacity: 0;
+		}
+		to {
+		transform: translateX(0);
+		opacity: 1;
+		}
+	}
+
+	@keyframes slideOut {
+		from {
+		transform: translateX(0);
+		opacity: 1;
+		}
+		to {
+		transform: translateX(100%);
+		opacity: 0;
+		}
+	}
+
+	.quantity-container button {
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+
+	.quantity-container button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.remove-item {
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+
+	.remove-item:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	</style>
+</body>
+</html>
