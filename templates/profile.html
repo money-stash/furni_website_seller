@@ -1,20 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>User Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-    <header>
-        <h1>User Profile</h1>
-    </header>
-    <main>
-        profile
-    </main>
-    <footer>
-        <p>&copy; 2023 Your Company</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="author" content="Untree.co" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
+
+    <meta name="description" content="" />
+    <meta name="keywords" content="bootstrap, bootstrap4" />
+
+    <!-- Bootstrap CSS -->
+    <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet" />
+    <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet" />
+    <title>Профиль — {{ user.name or 'Пользователь' }}</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/profile.css')}}" />
+  </head>
+
+  <body>
+    <!-- Header/Navigation (точно такой же как на главной) -->
+    <nav
+      class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark"
+      arial-label="Furni navigation bar"
+    >
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Hogar<span>.</span></a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarsFurni"
+          aria-controls="navbarsFurni"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+          <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item "><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+            <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+            <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+          </ul>
+
+          <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+            <li>
+              <a class="nav-link" href="{{ url_for('profile') }}"><img src="{{url_for('static', filename='images/user.svg')}}" /></a>
+            </li>
+            <li>
+              <a class="nav-link" href="{{ url_for('cart') }}"
+                ><img src="{{url_for('static', filename='images/cart.svg')}}" />
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Header/Navigation -->
+
+    <!-- Profile hero (в стиле hero, но компактный) -->
+    <div class="hero">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-7">
+            <div class="intro-excerpt">
+              <h1>Профіль користувача</h1>
+              <p class="mb-0">Тут відображені основні дані клієнта — контактна інформація, адреса та коротка біографія.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Content -->
+    <section class="site-section">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="profile-card p-4 d-flex flex-column flex-md-row gap-4">
+              <!-- Левый блок: аватар и быстрые действия -->
+              <div class="col-md-4 text-center profile-left">
+                <div class="mb-3">
+                  {% if user.avatar %}
+                    <img src="{{ url_for('static', filename=user.avatar) }}" alt="Аватар" class="img-fluid profile-avatar rounded-circle" />
+                  {% else %}
+                    <div class="avatar-placeholder">
+                      {{ (user.name or 'U')[0] }}
+                    </div>
+                  {% endif %}
+                </div>
+
+                <h3 class="mb-1">{{ user.username or "Пользователь" }}</h3>
+                <p class="text-muted mb-3">{{ user.role or "Клієнт" }}</p>
+
+                <div class="profile-actions d-flex justify-content-center gap-2">
+                  <a href="{{ url_for('profile') }}" class="btn btn-secondary">Редагувати</a>
+                  <a href="{{ url_for('services') }}" class="btn btn-white-outline">Мої замовлення</a>
+                </div>
+              </div>
+
+              <!-- Правый блок: детали -->
+              <div class="col-md-8 profile-meta">
+                <h4 class="mb-3">Контактна інформація</h4>
+
+                <div class="row">
+                  <div class="col-sm-6 meta-row">
+                    <strong>Email</strong>
+                    <p class="mb-0">{{ user.email or "-" }}</p>
+                  </div>
+                  <div class="col-sm-6 meta-row">
+                    <strong>Телефон</strong>
+                    <p class="mb-0">{{ user.phone or "-" }}</p>
+                  </div>
+                </div>
+
+
+                <hr />
+
+                <h5 class="mb-2">Останні замовлення</h5>
+                <div class="row g-3">
+                  {% if orders %}
+                    {% for o in orders[:3] %}
+                      <div class="col-12 col-md-6">
+                        <div class="p-3" style="background:#f9f9f9;border-radius:8px;">
+                          <div class="d-flex justify-content-between">
+                            <div>
+                              <strong>Замовлення #{{ o.id }}</strong>
+                              <div class="text-muted small">Статус: {{ o.status }}</div>
+                            </div>
+                            <div class="text-end">
+                              <div class="product-price">₴{{ '%.2f'|format(o.total) }}</div>
+                              <a href="{{ url_for('order_view', order_id=o.id) }}" class="small">Деталі</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {% if orders|length > 3 %}
+                      <div class="col-12">
+                        <a href="{{ url_for('services') }}" class="more">Показати всі замовлення</a>
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <div class="col-12">
+                      <p class="text-muted">Замовлення відсутні.</p>
+                    </div>
+                  {% endif %}
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer (точно такий же як на головній) -->
+    <footer class="footer-section">
+      <div class="container relative">
+
+        <div class="row g-5 mb-5">
+          <div class="col-lg-4">
+            <div class="mb-4 footer-logo-wrap">
+              <a href="#" class="footer-logo">Hogar<span>.</span></a>
+            </div>
+            <p class="mb-4">
+              Hogar — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
+            </p>
+
+            <ul class="list-unstyled custom-social">
+              <li>
+                <a href="#"><span class="fa fa-brands fa-facebook-f"></span></a>
+              </li>
+              <li>
+                <a href="#"><span class="fa fa-brands fa-instagram"></span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="row links-wrap">
+              <div class="col-6 col-sm-6 col-md-3">
+                <ul class="list-unstyled">
+                  <li><a href="#">Про нас</a></li>
+                  <li><a href="#">Послуги</a></li>
+                  <li><a href="#">Зв'яжіться з нами</a></li>
+                </ul>
+              </div>
+
+              <div class="col-6 col-sm-6 col-md-3">
+                <ul class="list-unstyled">
+                  <li><a href="#">Підтримка</a></li>
+                </ul>
+              </div>
+
+              <div class="col-6 col-sm-6 col-md-3">
+                <ul class="list-unstyled">
+                  <li><a href="#">Наша команда</a></li>
+                  <li><a href="#">Політика конфіденційності</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top copyright">
+          <div class="row pt-4">
+            <div class="col-lg-6">
+              <p class="mb-2 text-center text-lg-start">
+                Copyright &copy;
+                <script>document.write(new Date().getFullYear());</script>
+                . All Rights Reserved. &mdash; Designed with love by
+                <a href="https://t.me/makson8567">tg: makson8567</a> Distributed By
+                <a href="https://t.me/makson8567">tg: makson8567</a>
+              </p>
+            </div>
+
+            <div class="col-lg-6 text-center text-lg-end">
+              <ul class="list-unstyled d-inline-flex ms-auto">
+                <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
+                <li><a href="#">Політика конфіденційності</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </footer>
-</body>
+
+    <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/tiny-slider.js')}}"></script>
+    <script src="{{url_for('static', filename='js/custom.js')}}"></script>
+  </body>
 </html>

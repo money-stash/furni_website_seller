@@ -65,8 +65,8 @@
 <script>
   // Передаём URLs для всех операций в JS
   window.URLS = {
-    delete_category: "{{ url_for('delete_category') }}",
-    add_category: "{{ url_for('add_category') }}"
+    delete_category: "{{ url_for('categories.delete_category') }}",
+    add_category: "{{ url_for('categories.add_category') }}"
   };
   window.INITIAL_CATEGORIES = {{ categories | tojson }};
 </script>
