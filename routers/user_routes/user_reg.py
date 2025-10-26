@@ -124,7 +124,7 @@ def register_data():
 
         flash("Реєстрація успішна! Тепер ви можете увійти.", "success")
 
-        return redirect(url_for("atuh.login"))
+        return redirect(url_for("auth.login"))
 
     except IntegrityError as e:
         session.rollback()
