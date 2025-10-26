@@ -1,0 +1,50 @@
+/* === Мобильная оптимизация для товаров и фильтров === */
+@media (max-width: 768px) {
+  /* Два товара в ряд */
+  #productsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .product-col {
+    flex: 0 0 calc(50% - 5px);
+    max-width: calc(50% - 5px);
+    margin: 0;
+  }
+
+  /* Фильтры и поиск */
+  .controls-row .form-select,
+  .controls-row .form-control {
+    font-size: 14px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .controls-row .col-12.text-end {
+    text-align: center !important;
+    margin-top: 10px;
+  }
+
+  /* Карточки товара */
+  .product-item {
+    padding: 10px;
+  }
+
+  .product-title {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  .product-price, .product-discount {
+    font-size: 13px;
+  }
+
+  /* Иконки крестика */
+  .icon-cross {
+    width: 20px;
+    height: 20px;
+  }
+}
