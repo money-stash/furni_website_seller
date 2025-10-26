@@ -5,6 +5,10 @@
 * License: https://creativecommons.org/licenses/by/3.0/
 */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
 body {
   overflow-x: hidden;
   position: relative; }
@@ -829,8 +833,21 @@ textarea {
   max-width: calc(25% - 1.5rem);
 }
 @media (max-width: 992px) {
-  .product-col { flex: 0 0 calc(33.333% - 1.5rem); max-width: calc(33.333% - 1.5rem); }
+  .custom-navbar-cta {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex !important;
+    flex-direction: row;
+    gap: 1rem;
   }
+
+  .custom-navbar .navbar-toggler {
+    margin-left: 3rem; /* чтобы кнопка гамбургера не перекрывала иконки */
+  }
+}
+
 
 
 /* Additional filters block */
@@ -919,10 +936,16 @@ textarea {
 }
 
 /* --- Планшеты (до 768px) --- */
+/* Мобильная версия: по центру сверху */
 @media (max-width: 768px) {
-  .custom-navbar .navbar-brand {
-    font-size: 26px;
+  .profile-cart-icons {
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
   }
+}
 
   .hero h1 {
     font-size: 32px;
@@ -1000,5 +1023,35 @@ textarea {
   }
   .footer-section {
     padding: 50px 0;
+  }
+}
+
+/* Сбросим абсолютное позиционирование для десктопа */
+.profile-cart-icons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.we-help-section {
+  padding: 7rem 0;
+}
+
+.we-help-section .carousel-inner img {
+  max-height: 500px;
+  object-fit: cover;
+}
+
+.we-help-section .carousel-control-prev,
+.we-help-section .carousel-control-next {
+  width: 5%;
+}
+
+@media (max-width: 768px) {
+  .we-help-section {
+    padding: 4rem 0;
+  }
+  .we-help-section .carousel-inner img {
+    max-height: 300px;
   }
 }

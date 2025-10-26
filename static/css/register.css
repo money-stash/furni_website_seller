@@ -1,5 +1,8 @@
 /* Register page overrides: consistent with UntreeStore theme */
-
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+}
 .register-hero {
   padding: 4.5rem 0;
   background: linear-gradient(180deg, rgba(139,94,60,0.95) 0%, rgba(139,94,60,0.95) 100%);

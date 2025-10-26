@@ -13,35 +13,45 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet">
   <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
-  <title>HOGAR — Кошик</title>
+  <title>Lotos — Кошик</title>
 </head>
 
 <body>
   <!-- Start Header/Navigation -->
-  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
-    <div class="container">
-      <a class="navbar-brand" href="{{ url_for('index') }}">Furni<span>.</span></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+      <div class="container position-relative d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
 
-      <div class="collapse navbar-collapse" id="navbarsFurni">
-        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
-          <li><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
-          <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
-          <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
-          <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+        <!-- Иконки профиля и корзины всегда сверху -->
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="{{ url_for('profile') }}">
+              <img src="{{url_for('static', filename='images/user.svg')}}" />
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('cart') }}">
+              <img src="{{url_for('static', filename='images/cart.svg')}}" />
+            </a>
+          </li>
         </ul>
 
-        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-          <li><a class="nav-link" href="{{ url_for('profile') }}"><img src="{{url_for('static', filename='images/user.svg')}}"></a></li>
-          <li class="active"><a class="nav-link" href="{{ url_for('cart') }}"><img src="{{url_for('static', filename='images/cart.svg')}}"></a></li>
-        </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+          <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+            <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+            <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
-  <!-- End Header/Navigation -->
+    </nav>
+    <!-- End Header/Navigation -->
 
   <!-- Start Hero Section -->
   <div class="hero">
@@ -194,15 +204,14 @@
       <div class="row g-5 mb-5">
         <div class="col-lg-4">
           <div class="mb-4 footer-logo-wrap">
-            <a href="#" class="footer-logo">Hogar<span>.</span></a>
+            <a href="#" class="footer-logo">Lotos<span>.</span></a>
           </div>
           <p class="mb-4">
-            Hogar — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
+            Lotos — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
           </p>
 
           <ul class="list-unstyled custom-social">
-            <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
-            <li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+            <li><a href="https://www.instagram.com/lotos_mebel_ua"><span class="fa fa-brands fa-instagram"></span></a></li>
           </ul>
         </div>
 

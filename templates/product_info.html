@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HOGAR – Product</title>
+  <title>Lotos – Product</title>
 
   <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
   <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
@@ -11,31 +11,41 @@
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Hogar navigation bar">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">Hogar<span>.</span></a>
+  <!-- Start Header/Navigation -->
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+      <div class="container position-relative d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsHogar" aria-controls="navbarsHogar" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsHogar">
-        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item "><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
-						<li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
-						<li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
-						<li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
-						<li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+        <!-- Иконки профиля и корзины всегда сверху -->
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="{{ url_for('profile') }}">
+              <img src="{{url_for('static', filename='images/user.svg')}}" />
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('cart') }}">
+              <img src="{{url_for('static', filename='images/cart.svg')}}" />
+            </a>
+          </li>
         </ul>
 
-        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-4">
-          <li><a class="nav-link" href="{{ url_for('profile') }}"><img src="{{url_for('static', filename='images/user.svg')}}" alt="user"></a></li>
-          <li><a class="nav-link" href="{{ url_for('cart') }}"><img src="{{url_for('static', filename='images/cart.svg')}}" alt="cart"></a></li>
-        </ul>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+          <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+            <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+            <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+          </ul>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+    <!-- End Header/Navigation -->
 
   <!-- HERO -->
   <div class="hero small-hero">
@@ -163,13 +173,10 @@
 
       <div class="row g-5 mb-5">
         <div class="col-lg-4">
-          <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Hogar<span>.</span></a></div>
+          <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Lotos<span>.</span></a></div>
           <p class="mb-4">Donec facilisis quam ut purus rutrum lobortis...</p>
           <ul class="list-unstyled custom-social">
-            <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
-            <li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
-            <li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
-            <li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+            <li><a href="https://www.instagram.com/lotos_mebel_ua"><span class="fa fa-brands fa-instagram"></span></a></li>
           </ul>
         </div>
         <div class="col-lg-8">
@@ -267,24 +274,6 @@
         qtyInput.value = v;
       });
     }
-
-    // Кнопки покупки
-    const buyBtn = document.getElementById('buyBtn');
-    const addToCartBtn = document.getElementById('addToCartBtn');
-
-    if (buyBtn && qtyInput) {
-      buyBtn.addEventListener('click', () => {
-        const qty = parseInt(qtyInput.value || '1');
-        alert('Спасибо! Вы купили ' + qty + ' ед. товара.');
-      });
-    }
-
-    if (addToCartBtn && qtyInput) {
-      addToCartBtn.addEventListener('click', () => {
-        const qty = parseInt(qtyInput.value || '1');
-        alert('Товар добавлен в корзину: ' + qty + ' шт.');
-      });
-    }
   })();
 
 
@@ -328,6 +317,78 @@
     });
 
   </script>
+  <script>
+(function () {
+  const qtyInput = document.getElementById('qtyInput');
+  const incBtn = document.querySelector('.qty-increase');
+  const decBtn = document.querySelector('.qty-decrease');
+
+  if (incBtn && qtyInput) {
+    incBtn.addEventListener('click', () => {
+      qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') + 1);
+    });
+  }
+  if (decBtn && qtyInput) {
+    decBtn.addEventListener('click', () => {
+      qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') - 1);
+    });
+  }
+  if (qtyInput) {
+    qtyInput.addEventListener('input', () => {
+      if (qtyInput.value === '') return;
+      let v = parseInt(qtyInput.value || '1');
+      if (isNaN(v) || v < 1) v = 1;
+      qtyInput.value = v;
+    });
+  }
+
+  const addToCartBtn = document.getElementById('addToCartBtn');
+  const buyBtn = document.getElementById('buyBtn');
+
+  // получаем product_id из шаблона Flask
+  const productId = {{ product.id }};
+
+  async function addToCart(quantity = 1, redirectToCheckout = false) {
+    try {
+      const response = await fetch('/api/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ product_id: productId, quantity })
+      });
+      const result = await response.json();
+
+      if (result.success) {
+        alert(result.message); // можно заменить на красивое уведомление
+        if (redirectToCheckout) {
+          window.location.href = '/cart'; // редирект на страницу корзины
+        }
+      } else {
+        alert(result.message || 'Ошибка при добавлении в корзину');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Сервер недоступен, попробуйте позже.');
+    }
+  }
+
+  if (addToCartBtn) {
+    addToCartBtn.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value || '1');
+      addToCart(qty, false);
+    });
+  }
+
+  if (buyBtn) {
+    buyBtn.addEventListener('click', () => {
+      const qty = parseInt(qtyInput.value || '1');
+      addToCart(qty, true); // после добавления редирект на корзину
+    });
+  }
+})();
+</script>
+
 
 </body>
 </html>

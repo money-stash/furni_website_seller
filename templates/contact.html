@@ -20,34 +20,40 @@
 	<body>
 
 		<!-- Start Header/Navigation -->
-		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+      <div class="container position-relative d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
 
-			<div class="container">
-				<a class="navbar-brand" href="{{url_for('index')}}">Hogar<span>.</span></a>
+        <!-- Иконки профиля и корзины всегда сверху -->
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="{{ url_for('profile') }}">
+              <img src="{{url_for('static', filename='images/user.svg')}}" />
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('cart') }}">
+              <img src="{{url_for('static', filename='images/cart.svg')}}" />
+            </a>
+          </li>
+        </ul>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-				<div class="collapse navbar-collapse" id="navbarsFurni">
-					<div class="collapse navbar-collapse" id="navbarsFurni">
-					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item "><a class="nav-link" href="{{url_for('index')}}">Головна</a></li>
-						<li class="active"><a class="nav-link" href="{{url_for('shop')}}">Магазин</a></li>
-						<li><a class="nav-link" href="{{url_for('about')}}">Про нас</a></li>
-						<li><a class="nav-link" href="{{url_for('services')}}">Послуги</a></li>
-						<li><a class="nav-link" href="{{url_for('contact')}}">Зв'яжіться з нами</a></li>
-					</ul>
-
-					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href="{{ url_for('profile') }}"><img src="{{url_for('static', filename='images/user.svg')}}"></a></li>
-						<li><a class="nav-link" href="{{ url_for('cart') }}"><img src="{{url_for('static', filename='images/cart.svg')}}"></a></li>
-					</ul>
-				</div>
-			</div>
-				
-		</nav>
-		<!-- End Header/Navigation -->
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+          <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+            <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+            <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Header/Navigation -->
 
 		<!-- Start Hero Section -->
 			<div class="hero">
@@ -56,8 +62,8 @@
 						<div class="col-lg-5">
 							<div class="intro-excerpt">
 								<h1>Зв’язатися з нами</h1>
-								<p class="mb-4">Ми завжди раді спілкуванню з вами! Команда <b>Hogar</b> готова відповісти на будь-які запитання, допомогти з вибором меблів або оформленням замовлення.</p>
-								<p><a href="" class="btn btn-secondary me-2">Зробити покупку</a><a href="#" class="btn btn-white-outline">Пошук</a></p>
+								<p class="mb-4">Ми завжди раді спілкуванню з вами! Команда <b>Lotos</b> готова відповісти на будь-які запитання, допомогти з вибором меблів або оформленням замовлення.</p>
+								<p><a href="{{url_for('shop')}}" class="btn btn-secondary me-2">Зробити покупку</a><a href="{{url_for('shop')}}" class="btn btn-white-outline">Пошук</a></p>
 							</div>
 						</div>
 						<div class="col-lg-7">
@@ -179,18 +185,15 @@
         <div class="row g-5 mb-5">
           <div class="col-lg-4">
             <div class="mb-4 footer-logo-wrap">
-              <a href="#" class="footer-logo">Hogar<span>.</span></a>
+              <a href="#" class="footer-logo">Lotos<span>.</span></a>
             </div>
             <p class="mb-4">
-              Hogar — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
+              Lotos — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
             </p>
 
             <ul class="list-unstyled custom-social">
               <li>
-                <a href="#"><span class="fa fa-brands fa-facebook-f"></span></a>
-              </li>
-              <li>
-                <a href="#"><span class="fa fa-brands fa-instagram"></span></a>
+                <a href="https://www.instagram.com/lotos_mebel_ua"><span class="fa fa-brands fa-instagram"></span></a>
               </li>
             </ul>
           </div>

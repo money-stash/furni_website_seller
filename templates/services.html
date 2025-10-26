@@ -14,39 +14,46 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 		<link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet">
 		<link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
-		<title>HOGAR - Послуги </title>
+		<title>Lotos - Послуги </title>
 	</head>
 
 	<body>
 
 		<!-- Start Header/Navigation -->
-		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Hogar navigation bar">
+    <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+      <div class="container position-relative d-flex justify-content-between align-items-center">
+        <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
 
-			<div class="container">
-				<a class="navbar-brand" href="{{url_for('index')}}">Hogar<span>.</span></a>
+        <!-- Иконки профиля и корзины всегда сверху -->
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="{{ url_for('profile') }}">
+              <img src="{{url_for('static', filename='images/user.svg')}}" />
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('cart') }}">
+              <img src="{{url_for('static', filename='images/cart.svg')}}" />
+            </a>
+          </li>
+        </ul>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsHogar" aria-controls="navbarsHogar" aria-expanded="false" aria-label="Toggle navigation">
-					<span class="navbar-toggler-icon"></span>
-				</button>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-				<div class="collapse navbar-collapse" id="navbarsHogar">
-					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item "><a class="nav-link" href="{{url_for('index')}}">Головна</a></li>
-						<li class="active"><a class="nav-link" href="{{url_for('shop')}}">Магазин</a></li>
-						<li><a class="nav-link" href="{{url_for('about')}}">Про нас</a></li>
-						<li><a class="nav-link" href="{{url_for('services')}}">Послуги</a></li>
-						<li><a class="nav-link" href="{{url_for('contact')}}">Зв'яжіться з нами</a></li>
-					</ul>
-
-					<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-						<li><a class="nav-link" href="{{ url_for('profile') }}"><img src="{{url_for('static', filename='images/user.svg')}}"></a></li>
-						<li><a class="nav-link" href="{{ url_for('cart') }}"><img src="{{url_for('static', filename='images/cart.svg')}}"></a></li>
-					</ul>
-				</div>
-			</div>
-				
-		</nav>
-		<!-- End Header/Navigation -->
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+          <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+            <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+            <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- End Header/Navigation -->
 
 		<!-- Start Hero Section -->
 			<div class="hero">
@@ -56,7 +63,7 @@
 							<div class="intro-excerpt">
 								<h1>Послуги</h1>
 								<p class="mb-4">Ми дбаємо не лише про якість меблів, а й про комфорт кожного клієнта. Тому пропонуємо повний комплекс послуг — від вибору до встановлення.</p>
-								<p><a href="" class="btn btn-secondary me-2">Купуйте зараз</a><a href="#" class="btn btn-white-outline">Пошук</a></p>
+								<p><a href="{{url_for('shop')}}" class="btn btn-secondary me-2">Купуйте зараз</a><a href="{{url_for('shop')}}" class="btn btn-white-outline">Пошук</a></p>
 							</div>
 						</div>
 						<div class="col-lg-7">
@@ -132,7 +139,7 @@
 					<div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
 						<h2 class="mb-4 section-title">Виготовлено з чудового матеріалу.</h2>
 						<p class="mb-4">Кожен виріб створений із любов’ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.</p>
-						<p><a href="#" class="btn">Пошук</a></p>
+						<p><a href="{{url_for('shop')}}" class="btn">Пошук</a></p>
 					</div> 
 					<!-- End Column 1 -->
 
@@ -213,14 +220,14 @@
                       <div class="testimonial-block text-center">
                         <blockquote class="mb-5">
                           <p>
-                            &ldquo;Замовляла диван у Hogar — доставка прийшла навіть швидше, ніж очікувала! Якість на висоті, тканина приємна на дотик, усе виглядає дорого. Дуже сподобався сервіс — менеджер допоміг підібрати колір під мій інтер’єр. Тепер планую купити ще стіл у цій компанії.&rdquo;
+                            &ldquo;Замовляла диван у Lotos — доставка прийшла навіть швидше, ніж очікувала! Якість на висоті, тканина приємна на дотик, усе виглядає дорого. Дуже сподобався сервіс — менеджер допоміг підібрати колір під мій інтер’єр. Тепер планую купити ще стіл у цій компанії.&rdquo;
                           </p>
                         </blockquote>
 
                         <div class="author-info">
                           <div class="author-pic">
                             <img
-                              src="{{url_for('static', filename='images/person-1.png')}}"
+                              src="{{url_for('static', filename='images/0.jpeg')}}"
                               alt="Maria Jones"
                               class="img-fluid"
                             />
@@ -242,14 +249,14 @@
                       <div class="testimonial-block text-center">
                         <blockquote class="mb-5">
                           <p>
-                            &ldquo;Меблі супер! Брав спальню «під ключ» — доставка, збірка, усе зробили швидко й акуратно. Видно, що Hogar дбає про клієнтів. Найприємніше, що фото на сайті повністю відповідають реальності. Рекомендую друзям!&rdquo;
+                            &ldquo;Меблі супер! Брав спальню «під ключ» — доставка, збірка, усе зробили швидко й акуратно. Видно, що Lotos дбає про клієнтів. Найприємніше, що фото на сайті повністю відповідають реальності. Рекомендую друзям!&rdquo;
                           </p>
                         </blockquote>
 
                         <div class="author-info">
                           <div class="author-pic">
                             <img
-                              src="{{url_for('static', filename='images/person-1.png')}}"
+                              src="{{url_for('static', filename='images/secpers.jpeg')}}"
                               alt="Maria Jones"
                               class="img-fluid"
                             />
@@ -271,14 +278,14 @@
                       <div class="testimonial-block text-center">
                         <blockquote class="mb-5">
                           <p>
-                            &ldquo;Дуже задоволена покупкою! Замовляла шафу-купе. Матеріали якісні, фурнітура міцна, виглядає стильно. Особливо сподобалось, що в Hogar можна зробити замовлення під індивідуальні розміри — і все виконали точно. Дякую за професійний підхід ❤️&rdquo;
+                            &ldquo;Дуже задоволена покупкою! Замовляла шафу-купе. Матеріали якісні, фурнітура міцна, виглядає стильно. Особливо сподобалось, що в Lotos можна зробити замовлення під індивідуальні розміри — і все виконали точно. Дякую за професійний підхід ❤️&rdquo;
                           </p>
                         </blockquote>
 
                         <div class="author-info">
                           <div class="author-pic">
                             <img
-                              src="{{url_for('static', filename='images/person-1.png')}}"
+                              src="{{url_for('static', filename='images/katya4.jpg')}}"
                               alt="Maria Jones"
                               class="img-fluid"
                             />
@@ -301,6 +308,7 @@
     </div>
     <!-- End Testimonial Slider -->
 
+
 		
 
 		<!-- Start Footer Section -->
@@ -315,18 +323,15 @@
         <div class="row g-5 mb-5">
           <div class="col-lg-4">
             <div class="mb-4 footer-logo-wrap">
-              <a href="#" class="footer-logo">Hogar<span>.</span></a>
+              <a href="#" class="footer-logo">Lotos<span>.</span></a>
             </div>
             <p class="mb-4">
-              Hogar — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
+              Lotos — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
             </p>
 
             <ul class="list-unstyled custom-social">
               <li>
-                <a href="#"><span class="fa fa-brands fa-facebook-f"></span></a>
-              </li>
-              <li>
-                <a href="#"><span class="fa fa-brands fa-instagram"></span></a>
+                <a href="https://www.instagram.com/lotos_mebel_ua"><span class="fa fa-brands fa-instagram"></span></a>
               </li>
             </ul>
           </div>

@@ -9,8 +9,8 @@
     <meta name="author" content="Untree.co" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" />
 
-    <meta name="description" content="Hogar — Вхід до акаунту" />
-    <meta name="keywords" content="hogar, login, account" />
+    <meta name="description" content="Lotos — Вхід до акаунту" />
+    <meta name="keywords" content="Lotos, login, account" />
 
     <!-- Bootstrap CSS -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet" />
@@ -20,14 +20,14 @@
     <!-- Login page overrides -->
     <link href="{{ url_for('static', filename='css/login.css') }}" rel="stylesheet" />
 
-    <title>Вхід — Hogar</title>
+    <title>Вхід — Lotos</title>
   </head>
 
   <body>
     <!-- Simple top navbar (same as main site) -->
     <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
       <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Hogar<span>.</span></a>
+        <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -84,6 +84,11 @@
                     <button type="submit" class="btn btn-primary btn-block">Увійти</button>
                   </div>
                 </form>
+
+                <div class="d-grid mb-3">
+                  <a href="{{ url_for('reg.register') }}" class="btn btn-outline-secondary btn-block">Зареєструватися</a>
+                </div>
+
               </div>
             </div>
             <!-- /.login-card -->
@@ -98,10 +103,10 @@
         <div class="row g-5 mb-5">
           <div class="col-lg-4">
             <div class="mb-4 footer-logo-wrap">
-              <a href="{{ url_for('index') }}" class="footer-logo">Hogar<span>.</span></a>
+              <a href="{{ url_for('index') }}" class="footer-logo">Lotos<span>.</span></a>
             </div>
             <p class="mb-4">
-              Hogar — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити.
+              Lotos — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити.
             </p>
           </div>
 
