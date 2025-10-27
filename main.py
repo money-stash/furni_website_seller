@@ -105,6 +105,11 @@ def contact():
     return render_template("contact.html")
 
 
+@app.route("/terms")
+def terms():
+    return render_template("user_agreement.html")
+
+
 @app.route("/profile")
 @login_required
 def profile():
