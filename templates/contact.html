@@ -45,7 +45,7 @@
         <div class="collapse navbar-collapse" id="navbarsFurni">
           <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
-            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('categories_view') }}">Магазин</a></li>
             <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
             <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
             <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
@@ -63,7 +63,7 @@
 							<div class="intro-excerpt">
 								<h1>Зв’язатися з нами</h1>
 								<p class="mb-4">Ми завжди раді спілкуванню з вами! Команда <b>Lotos</b> готова відповісти на будь-які запитання, допомогти з вибором меблів або оформленням замовлення.</p>
-								<p><a href="{{url_for('shop')}}" class="btn btn-secondary me-2">Зробити покупку</a><a href="{{url_for('shop')}}" class="btn btn-white-outline">Пошук</a></p>
+								<p><a href="{{url_for('categories_view')}}" class="btn btn-secondary me-2">Зробити покупку</a><a href="{{url_for('categories_view')}}" class="btn btn-white-outline">Пошук</a></p>
 							</div>
 						</div>
 						<div class="col-lg-7">
@@ -240,7 +240,6 @@
 
             <div class="col-lg-6 text-center text-lg-end">
               <ul class="list-unstyled d-inline-flex ms-auto">
-                <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
                 <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
               </ul>
             </div>

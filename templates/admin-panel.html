@@ -1,72 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Product Management</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-panel-styles.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Product Management</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-panel-styles.css') }}">
+  <style>
+    .category-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      border-bottom: 1px solid #eaeaea;
+    }
+    .category-thumb {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 6px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+    }
+    .no-thumb {
+      width: 56px;
+      height: 56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:6px;
+      background:#fafafa;
+      border:1px dashed #ccc;
+      color:#666;
+      font-size:12px;
+      text-align:center;
+      padding:4px;
+    }
+    .category-name { flex: 1; font-weight:500; }
+    .category-actions { display:flex; align-items:center; gap:8px; }
+    .upload-label {
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:4px;
+      background:#2f72d6;
+      color:white;
+      cursor:pointer;
+      font-size:14px;
+      text-decoration:none;
+    }
+    .delete-btn {
+      padding:6px 10px;
+      border-radius:4px;
+      background:#e04646;
+      color:white;
+      cursor:pointer;
+      border: none;
+      font-size:14px;
+    }
+    .upload-input { display:none; }
+    .upload-status { font-size:13px; color:#666; min-width:84px; text-align:right; }
+  </style>
 </head>
 <body>
 <nav class="admin-nav">
-    <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Главное управление</a>
-    <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управление товарами</a>
-    <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Настройки сайта</a>
+  <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Главное управление</a>
+  <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управление товарами</a>
+  <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Настройки сайта</a>
 </nav>
+
 <div class="admin-container">
-    <h1>Product Management</h1>
+  <h1>Product Management</h1>
 
-    <!-- Категории -->
-    <section class="section">
-        <h2>Categories</h2>
-        <form id="category-form">
-            <input type="text" id="category-name" placeholder="New category name" required>
-            <button type="submit">Add Category</button>
-        </form>
-        <ul id="category-list"></ul>
-    </section>
+  <!-- Категории -->
+  <section class="section">
+    <h2>Categories</h2>
+    <form id="category-form">
+      <input type="text" id="category-name" placeholder="New category name" required>
+      <button type="submit">Add Category</button>
+    </form>
+    <div id="category-list" aria-live="polite"></div>
+  </section>
 
-    <!-- Товары -->
-    <section class="section">
-        <h2>Products</h2>
-        <!-- Важно: enctype для загрузки файлов и action на новый маршрут -->
-        <form id="product-form" action="{{ url_for('products.add_product') }}" method="post" enctype="multipart/form-data">
-            <input type="text" id="product-name" name="product-name" placeholder="Product name" required>
-            <select id="product-category" name="product-category" required>
-                <option value="">Select category</option>
-            </select>
-            <textarea id="product-description" name="product-description" placeholder="Description"></textarea>
-            
-            <label>Attributes</label>
-            <div id="attributes-container">
-                <!-- name="attribute" — их несколько, Flask получит список -->
-                <div class="attribute-wrapper">
-                  <input type="text" name="attribute" placeholder="Attribute (e.g., width: 50cm)">
-                  <button type="button" class="delete-btn" onclick="this.parentElement.remove()">×</button>
-                </div>
-            </div>
-            <button type="button" id="add-attribute-btn">Add Attribute</button>
+  <!-- Товары -->
+  <section class="section">
+    <h2>Products</h2>
+    <form id="product-form" action="{{ url_for('products.add_product') }}" method="post" enctype="multipart/form-data">
+      <input type="text" id="product-name" name="product-name" placeholder="Product name" required>
+      <select id="product-category" name="product-category" required>
+        <option value="">Select category</option>
+      </select>
+      <textarea id="product-description" name="product-description" placeholder="Description"></textarea>
 
-            <label>Preview Image</label>
-            <input type="file" id="product-preview" name="product-preview" accept="image/*">
-            <div id="preview-container" class="preview-container"></div>
+      <label>Attributes</label>
+      <div id="attributes-container">
+        <div class="attribute-wrapper">
+          <input type="text" name="attribute" placeholder="Attribute (e.g., width: 50cm)">
+          <button type="button" class="delete-btn" onclick="this.parentElement.remove()">×</button>
+        </div>
+      </div>
+      <button type="button" id="add-attribute-btn">Add Attribute</button>
 
-            <label>Additional Images</label>
-            <input type="file" id="product-images" name="product-images" accept="image/*" multiple>
-            <div id="images-container" class="preview-container"></div>
+      <label>Preview Image</label>
+      <input type="file" id="product-preview" name="product-preview" accept="image/*">
+      <div id="preview-container" class="preview-container"></div>
 
-            <button type="submit">Add Product (Upload)</button>
-        </form>
+      <label>Additional Images</label>
+      <input type="file" id="product-images" name="product-images" accept="image/*" multiple>
+      <div id="images-container" class="preview-container"></div>
 
-        <!-- Локальный список (по желанию) -->
-        <ul id="product-list"></ul>
-    </section>
+      <button type="submit">Add Product (Upload)</button>
+    </form>
+
+    <ul id="product-list"></ul>
+  </section>
 </div>
 
 <script>
-  // Передаём URLs для всех операций в JS
   window.URLS = {
     delete_category: "{{ url_for('categories.delete_category') }}",
-    add_category: "{{ url_for('categories.add_category') }}"
+    add_category: "{{ url_for('categories.add_category') }}",
+    upload_category_image: "{{ url_for('categories.upload_category_image') }}"
   };
   window.INITIAL_CATEGORIES = {{ categories | tojson }};
 </script>

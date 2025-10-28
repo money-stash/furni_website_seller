@@ -6,10 +6,10 @@ from flask import (
     session,
 )
 
-from database.db import get_all_categories
 from initdb import SessionLocal
-from models.models import Category, Product
 from sqlalchemy.orm import joinedload
+from models.models import Category, Product
+from database.db import get_all_categories
 
 admin_bp = Blueprint("admin", __name__, template_folder="../templates")
 
@@ -74,12 +74,14 @@ def admin_panel():
     if not session.get("admin_logged_in"):
         return redirect(url_for("admin.admin_login"))
 
-    # получаем категории из БД и передаём в шаблон
     db = SessionLocal()
     try:
         categories = db.query(Category).order_by(Category.name).all()
-        category_names = [c.name for c in categories]
+        # Передаём и имя, и путь к изображению
+        category_data = [
+            {"name": c.name, "image_path": c.image_path} for c in categories
+        ]
     finally:
         db.close()
 
-    return render_template("admin-panel.html", categories=category_names)
+    return render_template("admin-panel.html", categories=category_data)

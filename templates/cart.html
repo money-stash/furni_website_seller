@@ -43,7 +43,7 @@
         <div class="collapse navbar-collapse" id="navbarsFurni">
           <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
-            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('categories_view') }}">Магазин</a></li>
             <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
             <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
             <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
@@ -143,7 +143,7 @@
         <div class="col-md-6">
           <div class="row mb-5">
             <div class="col-md-6">
-              <a href="{{ url_for('shop') }}" class="btn btn-outline-black btn-sm btn-block">Продовжити покупки</a>
+              <a href="{{ url_for('categories_view') }}" class="btn btn-outline-black btn-sm btn-block">Продовжити покупки</a>
             </div>
           </div>
         </div>
@@ -187,7 +187,7 @@
         <div class="col-md-12 text-center py-5">
           <h3 class="text-black mb-4">Ваш кошик порожній</h3>
           <p class="mb-4">Додайте товари до кошика, щоб продовжити покупки</p>
-          <a href="{{ url_for('shop') }}" class="btn btn-black btn-lg">Перейти до магазину</a>
+          <a href="{{ url_for('categories_view') }}" class="btn btn-black btn-lg">Перейти до магазину</a>
         </div>
       </div>
       {% endif %}
@@ -253,7 +253,6 @@
 
           <div class="col-lg-6 text-center text-lg-end">
             <ul class="list-unstyled d-inline-flex ms-auto">
-              <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
               <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
             </ul>
           </div>

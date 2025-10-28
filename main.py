@@ -4,13 +4,14 @@ from flask import (
     Flask,
     render_template,
     redirect,
+    request,
     url_for,
     session,
     flash,
 )
 from sqlalchemy.orm import joinedload
 
-from models.models import Cart, CartItem, Product, User
+from models.models import Cart, CartItem, Product, User, Category
 from initdb import SessionLocal, init_db
 from database.db import get_all_categories
 
@@ -47,10 +48,43 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/categories")
+def categories_view():
+    db = SessionLocal()
+    try:
+        cats = db.query(Category).order_by(Category.name).all()
+        out = []
+        for c in cats:
+            img = None
+            if c.image_path:
+                p = c.image_path.strip()
+                if p.startswith("http://") or p.startswith("https://"):
+                    img = p
+                else:
+                    img = url_for("static", filename=p)
+            else:
+                img = None
+
+            out.append(
+                {
+                    "id": c.id,
+                    "name": c.name,
+                    "image_url": img,
+                }
+            )
+
+        return render_template("categories.html", categories=out)
+    finally:
+        db.close()
+
+
 @app.route("/shop")
 def shop():
     db = SessionLocal()
     try:
+        # Получаем категорию из query параметра
+        selected_category = request.args.get("category", "all")
+
         # загружаем продукты с предзагрузкой связей чтобы избежать N+1
         products = (
             db.query(Product)
@@ -66,6 +100,7 @@ def shop():
             "shop.html",
             products=products,
             categories=categories,
+            selected_category=selected_category,  # Передаём в шаблон
         )
     finally:
         db.close()

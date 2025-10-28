@@ -380,3 +380,229 @@
     }
   });
 })();
+
+// admin-panel.js
+document.addEventListener("DOMContentLoaded", () => {
+  const categories = window.INITIAL_CATEGORIES || [];
+  const list = document.getElementById("category-list");
+  const productCategorySelect = document.getElementById("product-category");
+
+  function buildImageNode(cat) {
+    if (cat.image_path) {
+      const img = document.createElement("img");
+      img.className = "category-thumb";
+      // если путь в БД уже относительный к static — используем url_for-like
+      img.src =
+        cat.image_url ||
+        (cat.image_path.startsWith("/")
+          ? cat.image_path
+          : `/static/${cat.image_path}`);
+      img.alt = cat.name;
+      img.onerror = () => {
+        img.replaceWith(makeNoThumb());
+      };
+      return img;
+    } else {
+      return makeNoThumb();
+    }
+  }
+
+  function makeNoThumb() {
+    const div = document.createElement("div");
+    div.className = "no-thumb";
+    div.textContent = "Нет фото";
+    return div;
+  }
+
+  function makeCategoryRow(cat) {
+    const row = document.createElement("div");
+    row.className = "category-row";
+    row.dataset.name = cat.name;
+
+    const imgNode = buildImageNode(cat);
+    const name = document.createElement("div");
+    name.className = "category-name";
+    name.textContent = cat.name;
+
+    const actions = document.createElement("div");
+    actions.className = "category-actions";
+
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.className = "upload-input";
+
+    const label = document.createElement("label");
+    label.className = "upload-label";
+    label.textContent = "Upload";
+    label.title = "Загрузить новое изображение";
+    label.style.cursor = "pointer";
+    label.appendChild(input);
+
+    const status = document.createElement("div");
+    status.className = "upload-status";
+    status.textContent = "";
+
+    // кнопка удалить категорию
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-btn";
+    delBtn.textContent = "Delete";
+    delBtn.title = "Удалить категорию";
+
+    input.addEventListener("change", async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      status.textContent = "Uploading...";
+      label.disabled = true;
+      try {
+        const fd = new FormData();
+        fd.append("category_name", cat.name);
+        fd.append("image", file);
+
+        const resp = await fetch(window.URLS.upload_category_image, {
+          method: "POST",
+          body: fd,
+          credentials: "same-origin",
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`Server error: ${resp.status} ${text}`);
+        }
+
+        const data = await resp.json();
+        const newUrl =
+          data.image_url ||
+          (data.image_path ? `/static/${data.image_path}` : null);
+        if (newUrl) {
+          // заменяем картинку или блок "Нет фото"
+          const newImg = document.createElement("img");
+          newImg.className = "category-thumb";
+          newImg.src = newUrl + `?v=${Date.now()}`;
+          newImg.alt = cat.name;
+          newImg.onerror = () => {
+            newImg.replaceWith(makeNoThumb());
+          };
+
+          if (imgNode.parentElement) {
+            imgNode.replaceWith(newImg);
+          } else {
+            // fallback
+            row.insertBefore(newImg, name);
+          }
+          // обновим ссылку/данные
+          cat.image_path = data.image_path || cat.image_path;
+          cat.image_url = newUrl;
+          status.textContent = "Updated";
+        } else {
+          status.textContent = "Uploaded (no URL)";
+        }
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Upload failed";
+        alert("Не удалось загрузить изображение: " + err.message);
+      } finally {
+        input.value = "";
+        setTimeout(() => {
+          status.textContent = "";
+        }, 2500);
+      }
+    });
+
+    delBtn.addEventListener("click", async () => {
+      if (
+        !confirm(
+          `Удалить категорию "${cat.name}"? Это действие нельзя будет отменить.`
+        )
+      )
+        return;
+      try {
+        const resp = await fetch(window.URLS.delete_category, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: cat.name }),
+          credentials: "same-origin",
+        });
+        if (!resp.ok) {
+          const text = await resp.text();
+          throw new Error(`Server error: ${resp.status} ${text}`);
+        }
+        const data = await resp.json();
+        if (data.success) {
+          // удалить из локального массива
+          const idx = categories.findIndex((c) => c.name === cat.name);
+          if (idx !== -1) categories.splice(idx, 1);
+          // удалить DOM
+          row.remove();
+          // удалить опцию из select
+          const opt = Array.from(productCategorySelect.options).find(
+            (o) => o.value === cat.name
+          );
+          if (opt) opt.remove();
+        } else {
+          throw new Error(data.error || "Unknown");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Ошибка при удалении: " + err.message);
+      }
+    });
+
+    actions.appendChild(label);
+    actions.appendChild(status);
+    actions.appendChild(delBtn);
+
+    row.appendChild(imgNode);
+    row.appendChild(name);
+    row.appendChild(actions);
+
+    return row;
+  }
+
+  function renderCategories() {
+    list.innerHTML = "";
+    // очистим select (кроме первой опции)
+    while (productCategorySelect.options.length > 1)
+      productCategorySelect.remove(1);
+
+    categories.forEach((cat) => {
+      const row = makeCategoryRow(cat);
+      list.appendChild(row);
+
+      const opt = document.createElement("option");
+      opt.value = cat.name;
+      opt.textContent = cat.name;
+      productCategorySelect.appendChild(opt);
+    });
+  }
+
+  // Добавление категории (через add_category)
+  const catForm = document.getElementById("category-form");
+  catForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = document.getElementById("category-name");
+    const name = input.value.trim();
+    if (!name) return;
+    try {
+      const resp = await fetch(window.URLS.add_category, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+        credentials: "same-origin",
+      });
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(text || "Add failed");
+      }
+      const newCat = await resp.json(); // ожидаем { name, image_path? }
+      categories.push(newCat);
+      renderCategories();
+      input.value = "";
+    } catch (err) {
+      console.error(err);
+      alert("Не удалось добавить категорию: " + err.message);
+    }
+  });
+
+  renderCategories();
+});

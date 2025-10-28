@@ -37,7 +37,7 @@
         <div class="collapse navbar-collapse" id="navbarsFurni">
           <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
-            <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li class="active"><a class="nav-link" href="{{ url_for('categories_view') }}">Магазин</a></li>
             <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
             <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
             <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
@@ -53,14 +53,40 @@
       <div class="row">
         <div class="col">
           <div class="intro-excerpt">
-            <h1>Product</h1>
-            <p class="mb-0">Home / Shop / {{ product.name }}</p>
+            <!-- Кнопка "Назад" сверху -->
+            <div class="mb-3">
+              <button onclick="history.back()" class="btn btn-outline-light btn-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                Повернутися назад
+              </button>
+            </div>
+            
+            <h1>{{ product.name }}</h1>
+            
+            <!-- Breadcrumb навігація -->
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('index') }}">Додому</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('categories_view') }}">Категорії</a>
+                </li>
+                {% if product.category %}
+                <li class="breadcrumb-item">
+                  <a href="{{ url_for('shop', category=product.category.name|lower) }}">{{ product.category.name }}</a>
+                </li>
+                {% endif %}
+                <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+              </ol>
+            </nav>
           </div>
         </div>
       </div>
     </div>
   </div>
-
   <!-- PRODUCT CARD -->
   <div class="pg-product-section">
     <div class="container">
@@ -115,8 +141,6 @@
               </div>
             </div>
 
-            <p class="product-short-desc mb-3">{{ product.description }}</p>
-
             <div class="product-actions-block mb-4">
               <div class="input-group quantity-group mb-3" style="max-width:220px;">
                 <button class="btn btn-outline-secondary qty-decrease" type="button">−</button>
@@ -133,17 +157,26 @@
             <hr>
 
             <h5>Опис продукту</h5>
-            <p class="small text-muted mb-3">{{ product.description if product.description else '' }}</p>
+            <p class="small text-muted mb-3" style="white-space: pre-wrap;">{{ product.description if product.description else '' }}</p>
 
             <h5>Специфікації</h5>
             <table class="table table-sm specs-table mb-0">
               <tbody>
-                {% for attr in product.attributes.split(';') %}
-                  {% set parts = attr.split(':', 1) %}
-                  {% if parts|length == 2 %}
-                  <tr><th scope="row">{{ parts[0].strip() }}</th><td>{{ parts[1].strip() }}</td></tr>
-                  {% endif %}
-                {% endfor %}
+                {% if product.attributes and product.attributes.strip() %}
+                  {% for attr in product.attributes.split(';') %}
+                    {% if attr.strip() %}
+                      <tr>
+                        <td>{{ attr.strip() }}</td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td class="text-muted text-center">
+                      <em>Специфікації відсутні</em>
+                    </td>
+                  </tr>
+                {% endif %}
               </tbody>
             </table>
 
@@ -213,7 +246,6 @@
 
             <div class="col-lg-6 text-center text-lg-end">
               <ul class="list-unstyled d-inline-flex ms-auto">
-                <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
                 <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
               </ul>
             </div>

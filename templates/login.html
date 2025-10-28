@@ -36,7 +36,7 @@
         <div class="collapse navbar-collapse" id="navbarsFurni">
           <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
-            <li><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+            <li><a class="nav-link" href="{{ url_for('categories_view') }}">Магазин</a></li>
             <li><a class="nav-link" href="{{ url_for('contact') }}">Контакти</a></li>
           </ul>
         </div>
@@ -51,7 +51,7 @@
             <div class="intro-excerpt text-white text-center">
               <h1 class="mb-3">Ласкаво просимо назад</h1>
               <p class="mb-4">Увійдіть до свого акаунту, щоб переглянути замовлення, зберегти обране та швидко оформити покупку.</p>
-              <a href="{{ url_for('shop') }}" class="btn btn-white-outline">Продовжити як гість</a>
+              <a href="{{ url_for('categories_view') }}" class="btn btn-white-outline">Продовжити як гість</a>
             </div>
           </div>
 
@@ -146,7 +146,6 @@
 
             <div class="col-lg-6 text-center text-lg-end">
               <ul class="list-unstyled d-inline-flex ms-auto">
-                <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
                 <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
               </ul>
             </div>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+  <!-- Bootstrap CSS -->
+  <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet">
+  <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
+  <!-- Доп. стили для карточек категорий -->
+  <link href="{{url_for('static', filename='css/categories.css')}}" rel="stylesheet">
+  <title>Категорії — Lotos</title>
+</head>
+
+<body>
+  <!-- === здесь вставляется твой существующий header/nav (как в примере) === -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+    <div class="container position-relative d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
+
+      <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
+        <li class="nav-item me-3">
+          <a class="nav-link" href="{{ url_for('profile') }}">
+            <img src="{{url_for('static', filename='images/user.svg')}}" />
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('cart') }}">
+            <img src="{{url_for('static', filename='images/cart.svg')}}" />
+          </a>
+        </li>
+      </ul>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsFurni">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Головна</a></li>
+          <li class="active"><a class="nav-link" href="{{ url_for('shop') }}">Магазин</a></li>
+          <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+          <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+          <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- =================== Categories Grid =================== -->
+  <div class="untree_co-section py-5">
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col-12 text-center">
+          <h2 class="mb-2">Категорії</h2>
+          <p class="text-muted">Оберіть категорію щоб перейти в магазин</p>
+        </div>
+      </div>
+
+      <!-- Сетка категорий -->
+<div class="row g-3">
+  {% for cat in categories %}
+  <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+    <a href="{{ url_for('shop', category=cat.name|lower) }}" class="text-decoration-none">
+      <div class="category-card card h-100 shadow-sm">
+        <div class="category-image">
+          {% if cat.image_url %}
+            <img src="{{ cat.image_url }}" alt="{{ cat.name }}" loading="lazy" />
+          {% else %}
+            <div class="no-image">Немає фото</div>
+          {% endif %}
+        </div>
+        <div class="card-body d-flex align-items-center justify-content-center">
+          <h5 class="category-title text-center mb-0">{{ cat.name }}</h5>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+      <!-- Если нет категорий -->
+      {% if categories|length == 0 %}
+      <div class="row mt-4">
+        <div class="col-12 text-center text-muted">Категорій поки що немає.</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <!-- ================= end categories ====================== -->
+
+  <!-- Start Footer Section -->
+    <footer class="footer-section">
+      <div class="container relative">       
+        <div class="row g-5 mb-5">
+          <div class="col-lg-4">
+            <div class="mb-4 footer-logo-wrap">
+              <a href="#" class="footer-logo">Lotos<span>.</span></a>
+            </div>
+            <p class="mb-4">
+              Lotos — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
+            </p>
+
+            <ul class="list-unstyled custom-social">
+              <li>
+                <a href="https://www.instagram.com/lotos_mebel_ua"><span class="fa fa-brands fa-instagram"></span></a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="row links-wrap">
+              <div class="col-6 col-sm-6 col-md-3">
+                <ul class="list-unstyled">
+                  <li><a href="#">Про нас</a></li>
+                  <li><a href="#">Послуги</a></li>
+                  <li><a href="#">Зв'яжіться з нами</a></li>
+                </ul>
+              </div>
+
+              <div class="col-6 col-sm-6 col-md-3">
+                <ul class="list-unstyled">
+                  <li><a href="#">Підтримка</a></li>
+                </ul>
+              </div>
+
+              <div class="col-6 col-sm-6 col-md-3">
+                <ul class="list-unstyled">
+                  <li><a href="#">Наша команда</a></li>
+                  <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top copyright">
+          <div class="row pt-4">
+            <div class="col-lg-6">
+              <p class="mb-2 text-center text-lg-start">
+                Copyright &copy;
+                <script>
+                  document.write(new Date().getFullYear());
+                </script>
+                . All Rights Reserved. &mdash; Designed with love
+              </p>
+            </div>
+
+            <div class="col-lg-6 text-center text-lg-end">
+              <ul class="list-unstyled d-inline-flex ms-auto">
+                <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- End Footer Section -->
+
+  <script src="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+  <script src="{{url_for('static', filename='js/tiny-slider.js')}}"></script>
+  <script src="{{url_for('static', filename='js/custom.js')}}"></script>
+</body>
+</html>

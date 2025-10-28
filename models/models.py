@@ -19,6 +19,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
+    image_path = Column(String(512), nullable=True)
 
     products = relationship(
         "Product", back_populates="category", cascade="all, delete-orphan"
@@ -98,7 +99,9 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    cart = relationship("Cart", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    cart = relationship(
+        "Cart", back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username!r}, phone={self.phone!r})>"
@@ -113,7 +116,9 @@ class Cart(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     user = relationship("User", back_populates="cart")
-    items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
+    items = relationship(
+        "CartItem", back_populates="cart", cascade="all, delete-orphan"
+    )
 
     def total_price(self) -> float:
         """Возвращает общую сумму всех товаров в корзине."""
