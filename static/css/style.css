@@ -35,7 +35,7 @@ a {
     font-weight: 600; }
 
 .custom-navbar {
-  background: #8B5E3C !important;
+  background: #75584a !important;
   padding-top: 20px;
   padding-bottom: 20px; }
   .custom-navbar .navbar-brand {
@@ -100,7 +100,7 @@ a {
         margin-right: 20px; }
 
 .hero {
-  background: #8B5E3C;
+  background: #75584a;
   padding: calc(4rem - 30px) 0 0rem 0; }
   @media (min-width: 768px) {
     .hero {
@@ -178,8 +178,8 @@ a {
     -webkit-box-shadow: none;
     box-shadow: none; }
   .btn.btn-primary {
-    background: #8B5E3C;
-    border-color: #8B5E3C; }
+    background: #75584a;
+    border-color: #75584a; }
     .btn.btn-primary:hover {
       background: #704832;
       border-color: #704832; }
@@ -378,7 +378,7 @@ a {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      border: 2px solid #8B5E3C;
+      border: 2px solid #75584a;
       position: absolute;
       left: 0;
       top: 8px; }
@@ -466,7 +466,7 @@ a {
       -o-transition: .3s all ease;
       transition: .3s all ease; }
       .testimonial-slider-wrap #testimonial-nav > span:hover {
-        background: #8B5E3C;
+        background: #75584a;
         color: #ffffff; }
     .testimonial-slider-wrap #testimonial-nav .prev {
       left: -10px; }
@@ -506,7 +506,7 @@ a {
         transition: .3s all ease;
         background-color: #d6d6d6; }
       .testimonial-slider-wrap .tns-nav button:hover:before, .testimonial-slider-wrap .tns-nav button.tns-nav-active:before {
-        background-color: #8B5E3C; }
+        background-color: #75584a; }
 
 .before-footer-section {
   padding: 7rem 0 12rem 0 !important; }
@@ -563,7 +563,7 @@ a {
     .footer-section .subscription-form h3 {
       font-size: 18px;
       font-weight: 500;
-      color: #8B5E3C; }
+      color: #75584a; }
     .footer-section .subscription-form .form-control {
       height: 50px;
       border-radius: 10px;
@@ -572,7 +572,7 @@ a {
         outline: none;
         -webkit-box-shadow: none;
         box-shadow: none;
-        border-color: #8B5E3C;
+        border-color: #75584a;
         -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
         box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2); }
       .footer-section .subscription-form .form-control::-webkit-input-placeholder {
@@ -603,7 +603,7 @@ a {
     font-size: 32px;
     font-weight: 500;
     text-decoration: none;
-    color: #8B5E3C; }
+    color: #75584a; }
   .footer-section .custom-social li {
     margin: 2px;
     display: inline-block; }
@@ -614,10 +614,10 @@ a {
       line-height: 40px;
       display: inline-block;
       background: #f2e8df;
-      color: #8B5E3C;
+      color: #75584a;
       border-radius: 50%; }
       .footer-section .custom-social li a:hover {
-        background: #8B5E3C;
+        background: #75584a;
         color: #ffffff; }
   .footer-section .border-top {
     border-color: #f2e8df; }
@@ -635,7 +635,7 @@ a {
     outline: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    border-color: #8B5E3C;
+    border-color: #75584a;
     -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
     box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2); }
   .form-control::-webkit-input-placeholder {
@@ -657,7 +657,7 @@ a {
     height: 50px;
     line-height: 50px;
     text-align: center;
-    background: #8B5E3C;
+    background: #75584a;
     margin-right: 20px;
     color: #ffffff; }
 
@@ -683,7 +683,7 @@ textarea {
     vertical-align: middle;
     color: rgba(0, 0, 0, 0.8); }
   .site-blocks-table tbody tr:first-child td {
-    border-top: 1px solid #8B5E3C !important; }
+    border-top: 1px solid #75584a !important; }
   .site-blocks-table .btn {
     background: none !important;
     color: #000000;
@@ -701,11 +701,11 @@ textarea {
   border-radius: 10px !important; }
 
 .text-primary {
-  color: #8B5E3C !important; }
+  color: #75584a !important; }
 
 .thankyou-icon {
   position: relative;
-  color: #8B5E3C; }
+  color: #75584a; }
   .thankyou-icon:before {
     position: absolute;
     content: "";
@@ -735,7 +735,7 @@ textarea {
 
 .controls-row .form-select:focus,
 .controls-row .form-control:focus {
-  border-color: #8B5E3C;
+  border-color: #75584a;
   box-shadow: 0 4px 16px rgba(59,93,80,0.06);
   outline: none;
 }
@@ -1054,4 +1054,9 @@ textarea {
   .we-help-section .carousel-inner img {
     max-height: 300px;
   }
+}
+
+
+.krovat {
+  max-height: 450px;
 }

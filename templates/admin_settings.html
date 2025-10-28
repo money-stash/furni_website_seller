@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Site Settings</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-panel-styles.css') }}">
+  <style>
+    .admin-container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h1 { text-align: center; margin-bottom: 30px; }
+    .section { margin-bottom: 40px; }
+    .section h2 { margin-bottom: 15px; }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    .select-row { display:flex; align-items:center; gap:12px; }
+    .select-row label { min-width:120px; font-weight:500; }
+    select { padding:8px 10px; border:1px solid #ccc; border-radius:4px; min-width:350px; }
+    .save-btn { padding:10px; background-color:#007bff; color:white; border:none; border-radius:4px; cursor:pointer; width:160px; align-self:flex-start; }
+    .save-btn:hover { background-color:#0056b3; }
+    .message { padding:10px 12px; background:#e6ffed; border:1px solid #b6f0c7; color:#1a7b36; border-radius:6px; display:inline-block; margin-bottom:12px; }
+  </style>
+</head>
+<body>
+  <nav class="admin-nav">
+    <a class="nav-btn" href="{{ url_for('admin.admin_panel') }}">Главное управление</a>
+    <a class="nav-btn" href="{{ url_for('admin.admin_products') }}">Управление товарами</a>
+    <a class="nav-btn active" href="{{ url_for('admin.admin_settings') }}">Настройки сайта</a>
+  </nav>
+
+  <div class="admin-container">
+    <h1>Настройки сайта</h1>
+
+    {% if saved %}
+      <div class="message">Настройки успешно сохранены.</div>
+    {% endif %}
+
+    <section class="section">
+      <form method="post" action="{{ url_for('admin.admin_settings') }}">
+        <div class="select-row">
+          <label for="product_1">Товар 1</label>
+          <select name="product_1" id="product_1">
+            <option value="">-- не выбрано --</option>
+            {% for p in products %}
+              <option value="{{ p.id }}" {% if selected and selected[0]==p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="select-row">
+          <label for="product_2">Товар 2</label>
+          <select name="product_2" id="product_2">
+            <option value="">-- не выбрано --</option>
+            {% for p in products %}
+              <option value="{{ p.id }}" {% if selected and selected[1]==p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="select-row">
+          <label for="product_3">Товар 3</label>
+          <select name="product_3" id="product_3">
+            <option value="">-- не выбрано --</option>
+            {% for p in products %}
+              <option value="{{ p.id }}" {% if selected and selected[2]==p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <button type="submit" class="save-btn">Сохранить</button>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

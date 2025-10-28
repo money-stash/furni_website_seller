@@ -73,7 +73,7 @@
           </div>
           <div class="col-lg-7">
             <div class="hero-img-wrap">
-              <img src="{{url_for('static', filename='images/couch.png')}}" class="img-fluid" />
+              <img class="krovat" src="{{url_for('static', filename='images/krovat-Photoroom.png')}}" class="img-fluid" />
             </div>
           </div>
         </div>
@@ -82,73 +82,46 @@
     <!-- End Hero Section -->
 
     <!-- Start Product Section -->
-    <div class="product-section">
-      <div class="container">
-        <div class="row">
-          <!-- Start Column 1 -->
-          <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-            <h2 class="mb-4 section-title">Виготовлено з чудового матеріалу.</h2>
-            <p class="mb-4">
-              Кожен виріб створений із любов’ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.
-            </p>
-            <p><a href="{{ url_for('categories_view') }}" class="btn">Пошук</a></p>
-          </div>
-          <!-- End Column 1 -->
-
-          <!-- Start Column 2 -->
-          <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-            <a class="product-item" href="{{ url_for('cart') }}">
-              <img
-                src="{{url_for('static', filename='images/product-1.png')}}"
-                class="img-fluid product-thumbnail"
-              />
-              <h3 class="product-title">Nordic Chair</h3>
-              <strong class="product-price">₴50.00</strong>
-
-              <span class="icon-cross">
-                <img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid" />
-              </span>
-            </a>
-          </div>
-          <!-- End Column 2 -->
-
-          <!-- Start Column 3 -->
-          <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-            <a class="product-item" href="{{ url_for('cart') }}">
-              <img
-                src="{{url_for('static', filename='images/product-2.png')}}"
-                class="img-fluid product-thumbnail"
-              />
-              <h3 class="product-title">Kruzo Aero Chair</h3>
-              <strong class="product-price">₴78.00</strong>
-
-              <span class="icon-cross">
-                <img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid" />
-              </span>
-            </a>
-          </div>
-          <!-- End Column 3 -->
-
-          <!-- Start Column 4 -->
-          <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-            <a class="product-item" href="{{ url_for('cart') }}">
-              <img
-                src="{{url_for('static', filename='images/product-3.png')}}"
-                class="img-fluid product-thumbnail"
-              />
-              <h3 class="product-title">Ergonomic Chair</h3>
-              <strong class="product-price">₴43.00</strong>
-
-              <span class="icon-cross">
-                <img src="{{url_for('static', filename='images/cross.svg')}}" class="img-fluid" />
-              </span>
-            </a>
-          </div>
-          <!-- End Column 4 -->
+  <div class="product-section">
+    <div class="container">
+      <div class="row">
+        <!-- Start Column 1: Информационный блок -->
+        <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+          <h2 class="mb-4 section-title">Виготовлено з чудового матеріалу.</h2>
+          <p class="mb-4">
+            Кожен виріб створений із любов’ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.
+          </p>
+          <p><a href="{{ url_for('categories_view') }}" class="btn">Пошук</a></p>
         </div>
+        <!-- End Column 1 -->
+
+        <!-- Start динамических товаров -->
+        {% for product in selected_products %}
+        <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+          <a class="product-item" href="{{ url_for('product_info', product_id=product.id) }}">
+            {% set img_src = product.preview %}
+            {% if not img_src and product.images and product.images|length > 0 %}
+              {% set img_src = product.images[0].path %}
+            {% endif %}
+            {% if not img_src %}
+              {% set img_src = url_for('static', filename='images/placeholder.png') %}
+            {% endif %}
+            <img src="{{ img_src }}" class="img-fluid product-thumbnail" />
+            <h3 class="product-title">{{ product.name }}</h3>
+            <strong class="product-price">₴{{ '%.2f'|format(product.price) }}</strong>
+
+            <span class="icon-cross">
+              <img src="{{ url_for('static', filename='images/cross.svg') }}" class="img-fluid" />
+            </span>
+          </a>
+        </div>
+        {% endfor %}
+        <!-- End динамических товаров -->
       </div>
     </div>
-    <!-- End Product Section -->
+  </div>
+  <!-- End Product Section -->
+
 
     <!-- Start Why Choose Us Section -->
     <div class="why-choose-section">
@@ -277,7 +250,7 @@
             <li>Розробка концепції дизайну під будь-який стиль</li>
             <li>Професійна установка та сервісна підтримка</li>
           </ul>
-          <p><a href="#" class="btn btn-primary">Пошук</a></p>
+          <p><a href="{{ url_for('categories_view') }}" class="btn btn-primary">Пошук</a></p>
         </div>
       </div>
     </div>

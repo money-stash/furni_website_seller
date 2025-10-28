@@ -1,3 +1,4 @@
+import json
 import os
 from types import SimpleNamespace
 from flask import (
@@ -45,7 +46,30 @@ init_db()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    db = SessionLocal()
+    try:
+        data_path = os.path.join(os.getcwd(), "data.json")
+        selected_ids = []
+        if os.path.exists(data_path):
+            try:
+                with open(data_path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                    selected_ids = [x for x in d.get("selected_products", []) if x]
+            except:
+                selected_ids = []
+
+        selected_products = []
+        if selected_ids:
+            selected_products = (
+                db.query(Product)
+                .options(joinedload(Product.images), joinedload(Product.category))
+                .filter(Product.id.in_(selected_ids))
+                .all()
+            )
+
+        return render_template("index.html", selected_products=selected_products)
+    finally:
+        db.close()
 
 
 @app.route("/categories")
@@ -82,7 +106,6 @@ def categories_view():
 def shop():
     db = SessionLocal()
     try:
-        # Получаем категорию из query параметра
         selected_category = request.args.get("category", "all")
 
         # загружаем продукты с предзагрузкой связей чтобы избежать N+1
@@ -93,14 +116,13 @@ def shop():
             .all()
         )
 
-        # категории (если нужно показывать фильтры/список категорий на странице)
         categories = get_all_categories()
 
         return render_template(
             "shop.html",
             products=products,
             categories=categories,
-            selected_category=selected_category,  # Передаём в шаблон
+            selected_category=selected_category,
         )
     finally:
         db.close()
@@ -110,7 +132,6 @@ def shop():
 def product_info(product_id):
     db = SessionLocal()
     try:
-        # загружаем товар с изображениями и категорией
         product = (
             db.query(Product)
             .options(joinedload(Product.images), joinedload(Product.category))

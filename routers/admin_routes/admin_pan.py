@@ -1,3 +1,5 @@
+import json
+import os
 from flask import Blueprint, app, flash, render_template, request, redirect, url_for
 from flask import (
     render_template,
@@ -48,11 +50,6 @@ def admin_products():
         db.close()
 
 
-@admin_bp.route("/admin_settings")
-def admin_settings():
-    return render_template("admin_settings.html")
-
-
 @admin_bp.route("/admin-login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
@@ -85,3 +82,41 @@ def admin_panel():
         db.close()
 
     return render_template("admin-panel.html", categories=category_data)
+
+
+@admin_bp.route("/admin_settings", methods=["GET", "POST"])
+def admin_settings():
+    db = SessionLocal()
+    try:
+        products = db.query(Product).order_by(Product.id.desc()).all()
+
+        saved_selected = None
+        data_path = os.path.join(os.getcwd(), "data.json")
+        if os.path.exists(data_path):
+            try:
+                with open(data_path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                    saved_selected = d.get("selected_products")
+            except:
+                saved_selected = None
+
+        if request.method == "POST":
+            p1 = request.form.get("product_1") or None
+            p2 = request.form.get("product_2") or None
+            p3 = request.form.get("product_3") or None
+            selected = [p1, p2, p3]
+            data = {"selected_products": [int(x) if x else None for x in selected]}
+            with open(data_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return redirect(url_for("admin.admin_settings", saved=1))
+
+        saved = request.args.get("saved") is not None
+        print(products)
+        return render_template(
+            "admin_settings.html",
+            products=products,
+            saved=saved,
+            selected=saved_selected,
+        )
+    finally:
+        db.close()
