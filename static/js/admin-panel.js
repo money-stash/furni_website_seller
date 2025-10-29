@@ -1,11 +1,3 @@
-/*
-  admin-panel.js — обновлённый
-  - показывает кнопку удаления возле каждой категории
-  - при клике — окно подтверждения (window.confirm)
-  - при подтверждении — отправка запроса на бекенд с именем категории
-  - при успехе — удаление из UI (ul + select)
-*/
-
 (() => {
   // ---- Элементы DOM ----
   const categoryForm = document.getElementById("category-form");
@@ -24,7 +16,11 @@
 
   // ---- Состояние файлов ----
   let previewFile = null;
-  let imagesFiles = []; // массив File для дополнительных изображений
+  let imagesFiles = [];
+  let categories = window.INITIAL_CATEGORIES || [];
+
+  // ---- Drag & Drop переменные ----
+  let draggedElement = null;
 
   // ---- Утилиты ----
   function createAttributeInput(value = "") {
@@ -89,12 +85,8 @@
     const newFiles = Array.from(e.target.files || []);
     if (newFiles.length === 0) return;
 
-    // добавляем новые файлы в массив (не перезаписываем)
     imagesFiles = imagesFiles.concat(newFiles);
-
-    // очищаем input, чтобы пользователь мог открывать диалог снова
     imagesInput.value = "";
-
     renderImagesPreviews();
   });
 
@@ -195,203 +187,11 @@
     }
   });
 
-  // ---- Вспомогательные функции для категорий ----
-
-  // Создаёт <li> с текстом и кнопкой удаления
-  function createCategoryListItem(name) {
-    const li = document.createElement("li");
-    li.classList.add("category-item");
-
-    const textSpan = document.createElement("span");
-    textSpan.classList.add("category-name");
-    textSpan.textContent = name;
-
-    const delBtn = document.createElement("button");
-    delBtn.type = "button";
-    delBtn.classList.add("delete-category-btn");
-    delBtn.textContent = "Удалить";
-    delBtn.dataset.categoryName = name;
-
-    // при нажатии — подтверждение и запрос на бэкенд
-    delBtn.addEventListener("click", async (e) => {
-      const catName = e.currentTarget.dataset.categoryName;
-
-      try {
-        // Первая попытка — без cascade
-        const resp = await fetch(window.URLS.delete_category, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({ name: catName }),
-        });
-
-        const data = await resp.json().catch(() => null);
-
-        if (!resp.ok) {
-          // Если есть товары — предложить каскадное удаление
-          if (data && data.products_count > 0) {
-            const ok = window.confirm(
-              `В категории "${catName}" есть ${data.products_count} товар(ов).\n\n` +
-                `Удалить категорию вместе со ВСЕМИ товарами?\n` +
-                `Это действие НЕЛЬЗЯ отменить!`
-            );
-
-            if (!ok) return;
-
-            // Повторный запрос с cascade=true
-            const resp2 = await fetch(window.URLS.delete_category, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              credentials: "same-origin",
-              body: JSON.stringify({ name: catName, cascade: true }),
-            });
-
-            const data2 = await resp2.json().catch(() => null);
-
-            if (!resp2.ok) {
-              const msg =
-                (data2 && (data2.error || data2.detail)) ||
-                `Ошибка при удалении (status ${resp2.status})`;
-              alert(msg);
-              return;
-            }
-
-            // Успешное каскадное удаление
-            if (li && li.parentNode) li.parentNode.removeChild(li);
-            for (let i = productCategory.options.length - 1; i >= 0; i--) {
-              if (productCategory.options[i].value === catName) {
-                productCategory.remove(i);
-                break;
-              }
-            }
-            alert(
-              `Категория "${catName}" и ${data2.deleted_products} товар(ов) удалены.`
-            );
-            return;
-          }
-
-          // Другая ошибка
-          const msg =
-            (data && (data.error || data.detail)) ||
-            `Ошибка при удалении (status ${resp.status})`;
-          alert(msg);
-          return;
-        }
-
-        // Успешное удаление (категория была пустая)
-        if (li && li.parentNode) li.parentNode.removeChild(li);
-        for (let i = productCategory.options.length - 1; i >= 0; i--) {
-          if (productCategory.options[i].value === catName) {
-            productCategory.remove(i);
-            break;
-          }
-        }
-        alert(`Категория "${catName}" удалена.`);
-      } catch (err) {
-        console.error("Network/JS error while deleting category:", err);
-        alert("Сетевая ошибка при удалении категории");
-      }
-    });
-
-    li.appendChild(textSpan);
-    li.appendChild(delBtn);
-    return li;
-  }
-
-  // Добавляет опцию в select (если её ещё нет)
-  function addCategoryOptionIfMissing(name) {
-    if (![...productCategory.options].some((opt) => opt.value === name)) {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      productCategory.appendChild(option);
-    }
-  }
-
-  // ---- Добавление категории на сервер и обновление UI ----
-  categoryForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const nameInput = document.getElementById("category-name");
-    const name = ((nameInput && nameInput.value) || "").trim();
-    if (!name) return;
-
-    try {
-      const resp = await fetch(window.URLS.add_category, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ name }),
-      });
-
-      console.log("add-category status", resp.status);
-      const data = await resp.json().catch(() => null);
-      console.log("add-category body", data);
-
-      if (!resp.ok) {
-        const msg =
-          (data && (data.error || data.detail)) ||
-          "Ошибка при добавлении категории";
-        alert(msg);
-        return;
-      }
-
-      const addedName = data.name || name;
-
-      // добавляем в список категорий (ul)
-      // предотвращаем дубли по точному совпадению value/text
-      if (
-        ![...categoryList.children].some(
-          (li) =>
-            li.querySelector(".category-name") &&
-            li.querySelector(".category-name").textContent === addedName
-        )
-      ) {
-        const li = createCategoryListItem(addedName);
-        categoryList.appendChild(li);
-      }
-
-      // добавляем в select, если нет
-      addCategoryOptionIfMissing(addedName);
-
-      categoryForm.reset();
-    } catch (err) {
-      console.error("Network/JS error while adding category:", err);
-      alert("Network error while adding category");
-    }
-  });
-
-  // ---- Инициализация UI при загрузке страницы: наполняем списки из Jinja-переменной ----
-  document.addEventListener("DOMContentLoaded", () => {
-    try {
-      const initialCategories = window.INITIAL_CATEGORIES || [];
-      categoryList.innerHTML = "";
-
-      // Оставляем первый option (Select category) и удаляем остальные
-      while (productCategory.options.length > 1) productCategory.remove(1);
-
-      initialCategories.forEach((name) => {
-        const li = createCategoryListItem(name);
-        categoryList.appendChild(li);
-
-        addCategoryOptionIfMissing(name);
-      });
-    } catch (e) {
-      console.warn("Could not populate initial categories:", e);
-    }
-  });
-})();
-
-// admin-panel.js
-document.addEventListener("DOMContentLoaded", () => {
-  const categories = window.INITIAL_CATEGORIES || [];
-  const list = document.getElementById("category-list");
-  const productCategorySelect = document.getElementById("product-category");
-
+  // ---- Функции для категорий ----
   function buildImageNode(cat) {
     if (cat.image_path) {
       const img = document.createElement("img");
       img.className = "category-thumb";
-      // если путь в БД уже относительный к static — используем url_for-like
       img.src =
         cat.image_url ||
         (cat.image_path.startsWith("/")
@@ -418,11 +218,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const row = document.createElement("div");
     row.className = "category-row";
     row.dataset.name = cat.name;
+    row.draggable = true;
+
+    // Drag & Drop обработчики
+    row.addEventListener("dragstart", handleDragStart);
+    row.addEventListener("dragover", handleDragOver);
+    row.addEventListener("drop", handleDrop);
+    row.addEventListener("dragend", handleDragEnd);
+    row.addEventListener("dragenter", handleDragEnter);
+    row.addEventListener("dragleave", handleDragLeave);
 
     const imgNode = buildImageNode(cat);
     const name = document.createElement("div");
     name.className = "category-name";
     name.textContent = cat.name;
+
+    // Добавим индикатор для перетаскивания
+    const dragHandle = document.createElement("div");
+    dragHandle.className = "drag-handle";
+    dragHandle.innerHTML = "☰";
+    dragHandle.style.cssText =
+      "cursor: grab; padding: 0 8px; color: #666; font-size: 18px;";
 
     const actions = document.createElement("div");
     actions.className = "category-actions";
@@ -443,7 +259,6 @@ document.addEventListener("DOMContentLoaded", () => {
     status.className = "upload-status";
     status.textContent = "";
 
-    // кнопка удалить категорию
     const delBtn = document.createElement("button");
     delBtn.className = "delete-btn";
     delBtn.textContent = "Delete";
@@ -453,7 +268,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       status.textContent = "Uploading...";
-      label.disabled = true;
       try {
         const fd = new FormData();
         fd.append("category_name", cat.name);
@@ -475,7 +289,6 @@ document.addEventListener("DOMContentLoaded", () => {
           data.image_url ||
           (data.image_path ? `/static/${data.image_path}` : null);
         if (newUrl) {
-          // заменяем картинку или блок "Нет фото"
           const newImg = document.createElement("img");
           newImg.className = "category-thumb";
           newImg.src = newUrl + `?v=${Date.now()}`;
@@ -487,10 +300,8 @@ document.addEventListener("DOMContentLoaded", () => {
           if (imgNode.parentElement) {
             imgNode.replaceWith(newImg);
           } else {
-            // fallback
             row.insertBefore(newImg, name);
           }
-          // обновим ссылку/данные
           cat.image_path = data.image_path || cat.image_path;
           cat.image_url = newUrl;
           status.textContent = "Updated";
@@ -510,12 +321,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     delBtn.addEventListener("click", async () => {
-      if (
-        !confirm(
-          `Удалить категорию "${cat.name}"? Это действие нельзя будет отменить.`
-        )
-      )
-        return;
+      if (!confirm(`Удалить категорию "${cat.name}"?`)) return;
       try {
         const resp = await fetch(window.URLS.delete_category, {
           method: "POST",
@@ -529,13 +335,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         const data = await resp.json();
         if (data.success) {
-          // удалить из локального массива
           const idx = categories.findIndex((c) => c.name === cat.name);
           if (idx !== -1) categories.splice(idx, 1);
-          // удалить DOM
           row.remove();
-          // удалить опцию из select
-          const opt = Array.from(productCategorySelect.options).find(
+          const opt = Array.from(productCategory.options).find(
             (o) => o.value === cat.name
           );
           if (opt) opt.remove();
@@ -552,6 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     actions.appendChild(status);
     actions.appendChild(delBtn);
 
+    row.appendChild(dragHandle);
     row.appendChild(imgNode);
     row.appendChild(name);
     row.appendChild(actions);
@@ -559,26 +363,116 @@ document.addEventListener("DOMContentLoaded", () => {
     return row;
   }
 
-  function renderCategories() {
-    list.innerHTML = "";
-    // очистим select (кроме первой опции)
-    while (productCategorySelect.options.length > 1)
-      productCategorySelect.remove(1);
+  // ---- Drag & Drop обработчики ----
+  function handleDragStart(e) {
+    draggedElement = this;
+    this.style.opacity = "0.4";
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/html", this.innerHTML);
+  }
 
-    categories.forEach((cat) => {
+  function handleDragOver(e) {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = "move";
+    return false;
+  }
+
+  function handleDragEnter(e) {
+    if (this !== draggedElement) {
+      this.classList.add("drag-over");
+    }
+  }
+
+  function handleDragLeave(e) {
+    this.classList.remove("drag-over");
+  }
+
+  function handleDrop(e) {
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+
+    if (draggedElement !== this) {
+      // Получаем все строки категорий
+      const allRows = Array.from(
+        categoryList.querySelectorAll(".category-row")
+      );
+      const draggedIndex = allRows.indexOf(draggedElement);
+      const targetIndex = allRows.indexOf(this);
+
+      // Переставляем в DOM
+      if (draggedIndex < targetIndex) {
+        this.parentNode.insertBefore(draggedElement, this.nextSibling);
+      } else {
+        this.parentNode.insertBefore(draggedElement, this);
+      }
+
+      // Обновляем порядок на сервере
+      saveNewOrder();
+    }
+
+    this.classList.remove("drag-over");
+    return false;
+  }
+
+  function handleDragEnd(e) {
+    this.style.opacity = "1";
+    const allRows = categoryList.querySelectorAll(".category-row");
+    allRows.forEach((row) => {
+      row.classList.remove("drag-over");
+    });
+  }
+
+  // Сохранение нового порядка на сервере
+  async function saveNewOrder() {
+    const allRows = Array.from(categoryList.querySelectorAll(".category-row"));
+    const order = allRows.map((row) => row.dataset.name);
+
+    try {
+      const resp = await fetch(window.URLS.reorder_categories, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order }),
+        credentials: "same-origin",
+      });
+
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`Server error: ${resp.status} ${text}`);
+      }
+
+      const data = await resp.json();
+      console.log("Order updated:", data);
+    } catch (err) {
+      console.error("Failed to save order:", err);
+      alert("Не удалось сохранить порядок категорий");
+    }
+  }
+
+  function renderCategories() {
+    categoryList.innerHTML = "";
+    while (productCategory.options.length > 1) productCategory.remove(1);
+
+    // Сортируем по tier
+    const sortedCategories = [...categories].sort(
+      (a, b) => (a.tier || 0) - (b.tier || 0)
+    );
+
+    sortedCategories.forEach((cat) => {
       const row = makeCategoryRow(cat);
-      list.appendChild(row);
+      categoryList.appendChild(row);
 
       const opt = document.createElement("option");
       opt.value = cat.name;
       opt.textContent = cat.name;
-      productCategorySelect.appendChild(opt);
+      productCategory.appendChild(opt);
     });
   }
 
-  // Добавление категории (через add_category)
-  const catForm = document.getElementById("category-form");
-  catForm.addEventListener("submit", async (e) => {
+  // Добавление категории
+  categoryForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const input = document.getElementById("category-name");
     const name = input.value.trim();
@@ -594,7 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const text = await resp.text();
         throw new Error(text || "Add failed");
       }
-      const newCat = await resp.json(); // ожидаем { name, image_path? }
+      const newCat = await resp.json();
       categories.push(newCat);
       renderCategories();
       input.value = "";
@@ -604,5 +498,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  renderCategories();
-});
+  // Инициализация
+  document.addEventListener("DOMContentLoaded", () => {
+    categories = window.INITIAL_CATEGORIES || [];
+    renderCategories();
+  });
+})();

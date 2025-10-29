@@ -50,24 +50,39 @@ def index():
     try:
         data_path = os.path.join(os.getcwd(), "data.json")
         selected_ids = []
+        selected_categories = []
+
         if os.path.exists(data_path):
             try:
                 with open(data_path, "r", encoding="utf-8") as f:
                     d = json.load(f)
-                    selected_ids = [x for x in d.get("selected_products", []) if x]
             except:
-                selected_ids = []
+                d = {}
 
-        selected_products = []
+            selected_ids = [int(x) for x in d.get("selected_categories", []) if x]
+
+            if not selected_ids:
+                product_ids = [int(x) for x in d.get("selected_products", []) if x]
+                if product_ids:
+                    products = [db.get(Product, pid) for pid in product_ids]
+                    seen = set()
+                    ordered_cat_ids = []
+                    for p in products:
+                        if p and p.category:
+                            cid = p.category.id
+                            if cid not in seen:
+                                seen.add(cid)
+                                ordered_cat_ids.append(cid)
+                    selected_ids = ordered_cat_ids
+
         if selected_ids:
-            selected_products = (
-                db.query(Product)
-                .options(joinedload(Product.images), joinedload(Product.category))
-                .filter(Product.id.in_(selected_ids))
-                .all()
-            )
+            cats = db.query(Category).filter(Category.id.in_(selected_ids)).all()
+            cats_by_id = {c.id: c for c in cats}
+            selected_categories = [
+                cats_by_id[i] for i in selected_ids if i in cats_by_id
+            ]
 
-        return render_template("index.html", selected_products=selected_products)
+        return render_template("index.html", selected_categories=selected_categories)
     finally:
         db.close()
 
@@ -76,7 +91,13 @@ def index():
 def categories_view():
     db = SessionLocal()
     try:
-        cats = db.query(Category).order_by(Category.name).all()
+        cats = db.query(Category).all()
+        cats.sort(
+            key=lambda c: (
+                (c.tier if c.tier is not None else 0),
+                (c.name or "").lower(),
+            )
+        )
         out = []
         for c in cats:
             img = None
@@ -88,15 +109,14 @@ def categories_view():
                     img = url_for("static", filename=p)
             else:
                 img = None
-
             out.append(
                 {
                     "id": c.id,
                     "name": c.name,
                     "image_url": img,
+                    "tier": c.tier if c.tier is not None else 0,
                 }
             )
-
         return render_template("categories.html", categories=out)
     finally:
         db.close()
@@ -153,7 +173,45 @@ def about():
 
 @app.route("/services")
 def services():
-    return render_template("services.html")
+    db = SessionLocal()
+    try:
+        data_path = os.path.join(os.getcwd(), "data.json")
+        selected_ids = []
+        selected_categories = []
+
+        if os.path.exists(data_path):
+            try:
+                with open(data_path, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+            except:
+                d = {}
+
+            selected_ids = [int(x) for x in d.get("selected_categories", []) if x]
+
+            if not selected_ids:
+                product_ids = [int(x) for x in d.get("selected_products", []) if x]
+                if product_ids:
+                    products = [db.get(Product, pid) for pid in product_ids]
+                    seen = set()
+                    ordered_cat_ids = []
+                    for p in products:
+                        if p and p.category:
+                            cid = p.category.id
+                            if cid not in seen:
+                                seen.add(cid)
+                                ordered_cat_ids.append(cid)
+                    selected_ids = ordered_cat_ids
+
+        if selected_ids:
+            cats = db.query(Category).filter(Category.id.in_(selected_ids)).all()
+            cats_by_id = {c.id: c for c in cats}
+            selected_categories = [
+                cats_by_id[i] for i in selected_ids if i in cats_by_id
+            ]
+
+        return render_template("services.html", selected_categories=selected_categories)
+    finally:
+        db.close()
 
 
 @app.route("/contact")

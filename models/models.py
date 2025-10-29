@@ -1,4 +1,3 @@
-# models.py
 from datetime import datetime
 from sqlalchemy import (
     Column,
@@ -20,6 +19,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(150), unique=True, nullable=False)
     image_path = Column(String(512), nullable=True)
+    tier = Column(Integer)
 
     products = relationship(
         "Product", back_populates="category", cascade="all, delete-orphan"

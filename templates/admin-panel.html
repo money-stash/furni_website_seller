@@ -12,6 +12,32 @@
       gap: 12px;
       padding: 8px;
       border-bottom: 1px solid #eaeaea;
+      transition: all 0.2s ease;
+      cursor: move;
+      background: white;
+    }
+    .category-row:hover {
+      background: #f8f9fa;
+    }
+    .category-row.drag-over {
+      border-top: 3px solid #2f72d6;
+      background: #e3f2fd;
+    }
+    .category-row[draggable="true"] {
+      user-select: none;
+    }
+    .drag-handle {
+      cursor: grab;
+      padding: 0 8px;
+      color: #666;
+      font-size: 18px;
+      transition: color 0.2s;
+    }
+    .drag-handle:hover {
+      color: #2f72d6;
+    }
+    .category-row:active .drag-handle {
+      cursor: grabbing;
     }
     .category-thumb {
       width: 56px;
@@ -46,6 +72,10 @@
       cursor:pointer;
       font-size:14px;
       text-decoration:none;
+      transition: background 0.2s;
+    }
+    .upload-label:hover {
+      background: #1e5bb8;
     }
     .delete-btn {
       padding:6px 10px;
@@ -55,6 +85,10 @@
       cursor:pointer;
       border: none;
       font-size:14px;
+      transition: background 0.2s;
+    }
+    .delete-btn:hover {
+      background: #c93535;
     }
     .upload-input { display:none; }
     .upload-status { font-size:13px; color:#666; min-width:84px; text-align:right; }
@@ -73,6 +107,9 @@
   <!-- Категории -->
   <section class="section">
     <h2>Categories</h2>
+    <p style="color: #666; font-size: 14px; margin-bottom: 12px;">
+      💡 Перетаскивайте категории для изменения их порядка
+    </p>
     <form id="category-form">
       <input type="text" id="category-name" placeholder="New category name" required>
       <button type="submit">Add Category</button>
@@ -118,7 +155,8 @@
   window.URLS = {
     delete_category: "{{ url_for('categories.delete_category') }}",
     add_category: "{{ url_for('categories.add_category') }}",
-    upload_category_image: "{{ url_for('categories.upload_category_image') }}"
+    upload_category_image: "{{ url_for('categories.upload_category_image') }}",
+    reorder_categories: "{{ url_for('categories.reorder_categories') }}"
   };
   window.INITIAL_CATEGORIES = {{ categories | tojson }};
 </script>

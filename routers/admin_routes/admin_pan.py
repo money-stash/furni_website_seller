@@ -76,7 +76,8 @@ def admin_panel():
         categories = db.query(Category).order_by(Category.name).all()
         # Передаём и имя, и путь к изображению
         category_data = [
-            {"name": c.name, "image_path": c.image_path} for c in categories
+            {"name": c.name, "image_path": c.image_path, "tier": c.tier}
+            for c in categories
         ]
     finally:
         db.close()
@@ -88,7 +89,7 @@ def admin_panel():
 def admin_settings():
     db = SessionLocal()
     try:
-        products = db.query(Product).order_by(Product.id.desc()).all()
+        categories = db.query(Category).order_by(Category.id.desc()).all()
 
         saved_selected = None
         data_path = os.path.join(os.getcwd(), "data.json")
@@ -96,25 +97,24 @@ def admin_settings():
             try:
                 with open(data_path, "r", encoding="utf-8") as f:
                     d = json.load(f)
-                    saved_selected = d.get("selected_products")
+                    saved_selected = d.get("selected_categories")
             except:
                 saved_selected = None
 
         if request.method == "POST":
-            p1 = request.form.get("product_1") or None
-            p2 = request.form.get("product_2") or None
-            p3 = request.form.get("product_3") or None
-            selected = [p1, p2, p3]
-            data = {"selected_products": [int(x) if x else None for x in selected]}
+            c1 = request.form.get("category_1") or None
+            c2 = request.form.get("category_2") or None
+            c3 = request.form.get("category_3") or None
+            selected = [c1, c2, c3]
+            data = {"selected_categories": [int(x) if x else None for x in selected]}
             with open(data_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=2)
             return redirect(url_for("admin.admin_settings", saved=1))
 
         saved = request.args.get("saved") is not None
-        print(products)
         return render_template(
             "admin_settings.html",
-            products=products,
+            categories=categories,
             saved=saved,
             selected=saved_selected,
         )

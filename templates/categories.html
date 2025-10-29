@@ -66,26 +66,26 @@
       </div>
 
       <!-- Сетка категорий -->
-<div class="row g-3">
-  {% for cat in categories %}
-  <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-    <a href="{{ url_for('shop', category=cat.name|lower) }}" class="text-decoration-none">
-      <div class="category-card card h-100 shadow-sm">
-        <div class="category-image">
-          {% if cat.image_url %}
-            <img src="{{ cat.image_url }}" alt="{{ cat.name }}" loading="lazy" />
-          {% else %}
-            <div class="no-image">Немає фото</div>
-          {% endif %}
+      <div class="row g-3">
+        {% for cat in categories %}
+        <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+          <a href="{{ url_for('shop', category=cat.name|lower) }}" class="text-decoration-none">
+            <div class="category-card card h-100 shadow-sm">
+              <div class="category-image">
+                {% if cat.image_url %}
+                  <img src="{{ cat.image_url }}" alt="{{ cat.name }}" loading="lazy" />
+                {% else %}
+                  <div class="no-image">Немає фото</div>
+                {% endif %}
+              </div>
+              <div class="card-body d-flex align-items-center justify-content-center">
+                <h5 class="category-title text-center mb-0">{{ cat.name }}</h5>
+              </div>
+            </div>
+          </a>
         </div>
-        <div class="card-body d-flex align-items-center justify-content-center">
-          <h5 class="category-title text-center mb-0">{{ cat.name }}</h5>
-        </div>
+        {% endfor %}
       </div>
-    </a>
-  </div>
-  {% endfor %}
-</div>
 
       <!-- Если нет категорий -->
       {% if categories|length == 0 %}

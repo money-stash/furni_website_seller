@@ -36,31 +36,31 @@
     <section class="section">
       <form method="post" action="{{ url_for('admin.admin_settings') }}">
         <div class="select-row">
-          <label for="product_1">Товар 1</label>
-          <select name="product_1" id="product_1">
+          <label for="category_1">Категория 1</label>
+          <select name="category_1" id="category_1">
             <option value="">-- не выбрано --</option>
-            {% for p in products %}
-              <option value="{{ p.id }}" {% if selected and selected[0]==p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% for c in categories %}
+              <option value="{{ c.id }}" {% if selected and selected[0]==c.id %}selected{% endif %}>{{ c.name }}</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="select-row">
-          <label for="product_2">Товар 2</label>
-          <select name="product_2" id="product_2">
+          <label for="category_2">Категория 2</label>
+          <select name="category_2" id="category_2">
             <option value="">-- не выбрано --</option>
-            {% for p in products %}
-              <option value="{{ p.id }}" {% if selected and selected[1]==p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% for c in categories %}
+              <option value="{{ c.id }}" {% if selected and selected[1]==c.id %}selected{% endif %}>{{ c.name }}</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="select-row">
-          <label for="product_3">Товар 3</label>
-          <select name="product_3" id="product_3">
+          <label for="category_3">Категория 3</label>
+          <select name="category_3" id="category_3">
             <option value="">-- не выбрано --</option>
-            {% for p in products %}
-              <option value="{{ p.id }}" {% if selected and selected[2]==p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% for c in categories %}
+              <option value="{{ c.id }}" {% if selected and selected[2]==c.id %}selected{% endif %}>{{ c.name }}</option>
             {% endfor %}
           </select>
         </div>
