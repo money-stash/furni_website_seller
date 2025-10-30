@@ -21,24 +21,24 @@
 </head>
 <body>
   <nav class="admin-nav">
-    <a class="nav-btn" href="{{ url_for('admin.admin_panel') }}">Главное управление</a>
-    <a class="nav-btn" href="{{ url_for('admin.admin_products') }}">Управление товарами</a>
-    <a class="nav-btn active" href="{{ url_for('admin.admin_settings') }}">Настройки сайта</a>
+  <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Головне управління</a>
+  <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управління товарами</a>
+  <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Налаштування сайту</a>
   </nav>
 
   <div class="admin-container">
-    <h1>Настройки сайта</h1>
+    <h1>Налаштування сайту</h1>
 
     {% if saved %}
-      <div class="message">Настройки успешно сохранены.</div>
+      <div class="message">Налаштування успішно збережено.</div>
     {% endif %}
 
     <section class="section">
       <form method="post" action="{{ url_for('admin.admin_settings') }}">
         <div class="select-row">
-          <label for="category_1">Категория 1</label>
+          <label for="category_1">Категорія 1</label>
           <select name="category_1" id="category_1">
-            <option value="">-- не выбрано --</option>
+            <option value="">-- не вибрано --</option>
             {% for c in categories %}
               <option value="{{ c.id }}" {% if selected and selected[0]==c.id %}selected{% endif %}>{{ c.name }}</option>
             {% endfor %}
@@ -46,9 +46,9 @@
         </div>
 
         <div class="select-row">
-          <label for="category_2">Категория 2</label>
+          <label for="category_2">Категорія 2</label>
           <select name="category_2" id="category_2">
-            <option value="">-- не выбрано --</option>
+            <option value="">-- не вибрано --</option>
             {% for c in categories %}
               <option value="{{ c.id }}" {% if selected and selected[1]==c.id %}selected{% endif %}>{{ c.name }}</option>
             {% endfor %}
@@ -56,16 +56,16 @@
         </div>
 
         <div class="select-row">
-          <label for="category_3">Категория 3</label>
+          <label for="category_3">Категорія 3</label>
           <select name="category_3" id="category_3">
-            <option value="">-- не выбрано --</option>
+            <option value="">-- не вибрано --</option>
             {% for c in categories %}
               <option value="{{ c.id }}" {% if selected and selected[2]==c.id %}selected{% endif %}>{{ c.name }}</option>
             {% endfor %}
           </select>
         </div>
 
-        <button type="submit" class="save-btn">Сохранить</button>
+        <button type="submit" class="save-btn">Зберегти</button>
       </form>
     </section>
   </div>

@@ -30,9 +30,9 @@ app.secret_key = "Lql8aLsBzUVWvY6Ood1egDyanmTwN2GV"  # обязательно д
 app.register_blueprint(user_reg.reg_bp)
 app.register_blueprint(auth.auth)
 app.register_blueprint(admin_pan.admin_bp)
-app.register_blueprint(products.products_bp)
 app.register_blueprint(categories.categories_bp)
 app.register_blueprint(cart_routes.cart_bp)
+app.register_blueprint(products.products_bp)
 
 # ---- upload settings (без изменений) ----
 

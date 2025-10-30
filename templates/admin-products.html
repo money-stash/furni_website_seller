@@ -12,24 +12,24 @@
 <body>
   <!-- Навигация (совместима с тем, что ты уже добавил) -->
   <nav class="admin-nav">
-      <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Главное управление</a>
-      <a href="{{ url_for('admin.admin_products') }}" class="nav-btn active">Управление товарами</a>
-      <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Настройки сайта</a>
+  <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Головне управління</a>
+  <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управління товарами</a>
+  <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Налаштування сайту</a>
   </nav>
 
   <div class="admin-container">
-    <h1>Управление товарами</h1>
+    <h1>Управління товарами</h1>
 
     <div class="controls-row">
       <div class="search-wrap">
-        <input id="product-search" type="search" placeholder="Поиск товара по имени..." />
-        <button id="clear-search" title="Сбросить поиск">×</button>
+        <input id="product-search" type="search" placeholder="Пошук товару за назвою..." />
+        <button id="clear-search" title="Скинути пошук">×</button>
       </div>
 
       <div class="filter-wrap">
-        <label for="category-filter">Категория:</label>
+        <label for="category-filter">Категорія:</label>
         <select id="category-filter">
-          <option value="">Все категории</option>
+          <option value="">Всі категорії</option>
           {% for cat in categories %}
             <option value="{{ cat.id }}">{{ cat.name }}</option>
           {% endfor %}
@@ -55,23 +55,23 @@
           {% elif p.image_url %}
             <img src="{{ p.image_url }}" alt="{{ p.name }}">
           {% else %}
-            <div class="no-image">Нет изображения</div>
+            <div class="no-image">Немає зображення</div>
           {% endif %}
         </div>
         <div class="card-body">
           <h3 class="product-name">{{ p.name }}</h3>
           <div class="product-meta">
-            <span class="product-category">{{ p.category.name if p.category else 'Без категории' }}</span>
+            <span class="product-category">{{ p.category.name if p.category else 'Без категорії' }}</span>
             <span class="product-price">{{ p.price }}</span>
           </div>
           <div class="card-actions">
             {% if p.id %}
-            <a class="btn small" href="{{ url_for('products.update_product', product_id=p.id) }}">Редактировать</a>
+            <a class="btn small" href="{{ url_for('products.update_product', product_id=p.id) }}">Редагувати</a>
             {% else %}
-            <span class="disabled">ID отсутствует</span>
+            <span class="disabled">ID відсутній</span>
             {% endif %}
-            <form method="post" action="{{ url_for('products.delete_product', product_id=p.id) }}" onsubmit="return confirm('Удалить товар?');" style="display:inline;">
-              <button class="btn small danger" type="submit">Удалить</button>
+            <form method="post" action="{{ url_for('products.delete_product', product_id=p.id) }}" onsubmit="return confirm('Видалити товар?');" style="display:inline;">
+              <button class="btn small danger" type="submit">Видалити</button>
             </form>
           </div>
         </div>
@@ -80,7 +80,7 @@
     </div>
 
     <div id="no-results" class="no-results" style="display:none;">
-      По вашему запросу товаров не найдено.
+      По вашому запиту товарів не знайдено.
     </div>
   </div>
 

@@ -148,9 +148,61 @@ def update_product(product_id):
         db.close()
 
 
-@products_bp.route("/delete_product/<int:product_id>")
+def _is_within_directory(path, directory):
+    path = os.path.realpath(path)
+    directory = os.path.realpath(directory)
+    return os.path.commonpath([path]) == os.path.commonpath([path, directory])
+
+
+@products_bp.route("/delete_product/<int:product_id>", methods=["GET", "POST"])
 def delete_product(product_id):
-    return render_template("delete_product.html", product_id=product_id)
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+    db = SessionLocal()
+    try:
+        product = db.query(Product).options(joinedload(Product.images)).get(product_id)
+        if request.method == "GET":
+            if not product:
+                flash("Товар не найден", "error")
+                return redirect(url_for("admin.admin_products"))
+            return render_template("delete_product.html", product=product)
+        # POST -> удалить
+        if not product:
+            flash("Товар не найден", "error")
+            return redirect(url_for("admin.admin_products"))
+        if product.preview:
+            try:
+                full_preview = os.path.join(BASE_DIR, product.preview)
+                if os.path.exists(full_preview) and _is_within_directory(
+                    full_preview, BASE_DIR
+                ):
+                    os.remove(full_preview)
+            except Exception as e:
+                print("Error deleting preview file:", e)
+        for img in list(product.images):
+            try:
+                full_img = os.path.join(BASE_DIR, img.path)
+                if os.path.exists(full_img) and _is_within_directory(
+                    full_img, BASE_DIR
+                ):
+                    os.remove(full_img)
+            except Exception as e:
+                print("Error deleting product image file:", e)
+            try:
+                db.delete(img)
+            except Exception as e:
+                print("Error deleting ProductImage record:", e)
+        try:
+            db.delete(product)
+            db.commit()
+            flash("Товар удалён", "success")
+        except Exception as e:
+            db.rollback()
+            print("DB error while deleting product:", e)
+            flash("Ошибка при удалении товара. Смотрите логи.", "error")
+        return redirect(url_for("admin.admin_products"))
+    finally:
+        db.close()
 
 
 def allowed_file(filename):

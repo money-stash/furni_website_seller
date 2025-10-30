@@ -96,55 +96,55 @@
 </head>
 <body>
 <nav class="admin-nav">
-  <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Главное управление</a>
-  <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управление товарами</a>
-  <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Настройки сайта</a>
+  <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Головне управління</a>
+  <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управління товарами</a>
+  <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Налаштування сайту</a>
 </nav>
 
 <div class="admin-container">
-  <h1>Product Management</h1>
+  <h1>Управління товарами</h1>
 
   <!-- Категории -->
   <section class="section">
-    <h2>Categories</h2>
+    <h2>Категорії</h2>
     <p style="color: #666; font-size: 14px; margin-bottom: 12px;">
-      💡 Перетаскивайте категории для изменения их порядка
+      💡 Перетягуйте категорії, щоб змінити їх порядок
     </p>
     <form id="category-form">
-      <input type="text" id="category-name" placeholder="New category name" required>
-      <button type="submit">Add Category</button>
+      <input type="text" id="category-name" placeholder="Назва нової категорії" required>
+      <button type="submit">Додати категорію</button>
     </form>
     <div id="category-list" aria-live="polite"></div>
   </section>
 
   <!-- Товары -->
   <section class="section">
-    <h2>Products</h2>
+    <h2>Товари</h2>
     <form id="product-form" action="{{ url_for('products.add_product') }}" method="post" enctype="multipart/form-data">
-      <input type="text" id="product-name" name="product-name" placeholder="Product name" required>
+      <input type="text" id="product-name" name="product-name" placeholder="Назва товару" required>
       <select id="product-category" name="product-category" required>
-        <option value="">Select category</option>
+        <option value="">Виберіть категорію</option>
       </select>
-      <textarea id="product-description" name="product-description" placeholder="Description"></textarea>
+      <textarea id="product-description" name="product-description" placeholder="Опис"></textarea>
 
-      <label>Attributes</label>
+      <label>Атрибути</label>
       <div id="attributes-container">
         <div class="attribute-wrapper">
-          <input type="text" name="attribute" placeholder="Attribute (e.g., width: 50cm)">
+          <input type="text" name="attribute" placeholder="Атрибут (наприклад, ширина: 50см)">
           <button type="button" class="delete-btn" onclick="this.parentElement.remove()">×</button>
         </div>
       </div>
-      <button type="button" id="add-attribute-btn">Add Attribute</button>
+      <button type="button" id="add-attribute-btn">Додати атрибут</button>
 
-      <label>Preview Image</label>
+      <label>Зображення прев'ю</label>
       <input type="file" id="product-preview" name="product-preview" accept="image/*">
       <div id="preview-container" class="preview-container"></div>
 
-      <label>Additional Images</label>
+      <label>Додаткові зображення</label>
       <input type="file" id="product-images" name="product-images" accept="image/*" multiple>
       <div id="images-container" class="preview-container"></div>
 
-      <button type="submit">Add Product (Upload)</button>
+      <button type="submit">Додати товар (Завантажити)</button>
     </form>
 
     <ul id="product-list"></ul>

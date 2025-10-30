@@ -250,7 +250,7 @@
 
     const label = document.createElement("label");
     label.className = "upload-label";
-    label.textContent = "Upload";
+    label.textContent = "Завантажити зображення";
     label.title = "Загрузить новое изображение";
     label.style.cursor = "pointer";
     label.appendChild(input);
@@ -261,7 +261,7 @@
 
     const delBtn = document.createElement("button");
     delBtn.className = "delete-btn";
-    delBtn.textContent = "Delete";
+    delBtn.textContent = "Видалити категорію";
     delBtn.title = "Удалить категорию";
 
     input.addEventListener("change", async (e) => {
