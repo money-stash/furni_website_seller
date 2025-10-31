@@ -82,7 +82,34 @@ def index():
                 cats_by_id[i] for i in selected_ids if i in cats_by_id
             ]
 
-        return render_template("index.html", selected_categories=selected_categories)
+        cats = db.query(Category).all()
+        cats.sort(
+            key=lambda c: (
+                (c.tier if c.tier is not None else 0),
+                (c.name or "").lower(),
+            )
+        )
+        out = []
+        for c in cats:
+            img = None
+            if c.image_path:
+                p = c.image_path.strip()
+                if p.startswith("http://") or p.startswith("https://"):
+                    img = p
+                else:
+                    img = url_for("static", filename=p)
+            out.append(
+                {
+                    "id": c.id,
+                    "name": c.name,
+                    "image_url": img,
+                    "tier": c.tier if c.tier is not None else 0,
+                }
+            )
+
+        return render_template(
+            "index.html", selected_categories=selected_categories, categories=out
+        )
     finally:
         db.close()
 
@@ -209,7 +236,34 @@ def services():
                 cats_by_id[i] for i in selected_ids if i in cats_by_id
             ]
 
-        return render_template("services.html", selected_categories=selected_categories)
+        cats = db.query(Category).all()
+        cats.sort(
+            key=lambda c: (
+                (c.tier if c.tier is not None else 0),
+                (c.name or "").lower(),
+            )
+        )
+        out = []
+        for c in cats:
+            img = None
+            if c.image_path:
+                p = c.image_path.strip()
+                if p.startswith("http://") or p.startswith("https://"):
+                    img = p
+                else:
+                    img = url_for("static", filename=p)
+            out.append(
+                {
+                    "id": c.id,
+                    "name": c.name,
+                    "image_url": img,
+                    "tier": c.tier if c.tier is not None else 0,
+                }
+            )
+
+        return render_template(
+            "index.html", selected_categories=selected_categories, categories=out
+        )
     finally:
         db.close()
 

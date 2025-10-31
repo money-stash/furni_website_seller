@@ -28,7 +28,10 @@
     <!-- Start Header/Navigation -->
     <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
       <div class="container position-relative d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Lotos<span>.</span></a>
+        <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='images/lotos_white.png') }}" alt="Lotos Logo" style="height: 62px; width: auto;">
+          Lotos<span>.</span>
+        </a>
 
         <!-- Иконки профиля и корзины всегда сверху -->
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
@@ -165,7 +168,10 @@
         <div class="row g-5 mb-5">
           <div class="col-lg-4">
             <div class="mb-4 footer-logo-wrap">
-              <a href="#" class="footer-logo">Lotos<span>.</span></a>
+              <a href="{{ url_for('index') }}" class="footer-logo d-flex align-items-center gap-2">
+                <img src="{{ url_for('static', filename='images/lotos_dark.png') }}" alt="Lotos Logo" style="height:62px; width:auto;">
+                Lotos<span>.</span>
+              </a>
             </div>
             <p class="mb-4">
               Lotos — це більше, ніж просто магазин меблів. Ми створюємо простір, у якому вам хочеться жити, відпочивати й надихатись.
@@ -182,21 +188,21 @@
             <div class="row links-wrap">
               <div class="col-6 col-sm-6 col-md-3">
                 <ul class="list-unstyled">
-                  <li><a href="#">Про нас</a></li>
-                  <li><a href="#">Послуги</a></li>
-                  <li><a href="#">Зв'яжіться з нами</a></li>
+                  <li><a class="nav-link" href="{{ url_for('about') }}">Про нас</a></li>
+                  <li><a class="nav-link" href="{{ url_for('services') }}">Послуги</a></li>
+                  <li><a class="nav-link" href="{{ url_for('contact') }}">Зв'яжіться з нами</a></li>
                 </ul>
               </div>
 
               <div class="col-6 col-sm-6 col-md-3">
                 <ul class="list-unstyled">
-                  <li><a href="#">Підтримка</a></li>
+                  <li><a class="nav-link" href="{{ url_for('contact') }}">Послуги</a></li>
                 </ul>
               </div>
 
               <div class="col-6 col-sm-6 col-md-3">
                 <ul class="list-unstyled">
-                  <li><a href="#">Наша команда</a></li>
+                  
                   <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
                 </ul>
               </div>
