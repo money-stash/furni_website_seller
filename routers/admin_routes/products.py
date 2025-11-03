@@ -6,21 +6,14 @@ from models.models import (
     Category,
     Product,
     ProductImage,
+    AddOnCategory,
+    AddOnItem,
 )
 from sqlalchemy.orm import joinedload
 
 from flask import Blueprint, flash, render_template, request, redirect, session, url_for
-from flask import (
-    render_template,
-    redirect,
-    url_for,
-)
 
 from config import UPLOAD_FOLDER, ALLOWED_EXT, BASE_DIR
-
-from initdb import SessionLocal
-from models.models import Category, Product
-from sqlalchemy.orm import joinedload
 
 products_bp = Blueprint("products", __name__, template_folder="../templates")
 
@@ -31,19 +24,21 @@ def update_product(product_id):
     try:
         product = (
             db.query(Product)
-            .options(joinedload(Product.images), joinedload(Product.category))
+            .options(
+                joinedload(Product.images),
+                joinedload(Product.category),
+                joinedload(Product.addon_categories).joinedload(AddOnCategory.items),
+            )
             .get(product_id)
         )
         categories = db.query(Category).order_by(Category.name).all()
         if request.method == "GET":
-            # Передаем список атрибутов (если есть)
             attributes = []
             if product and getattr(product, "attributes", None):
                 try:
                     attributes = [a for a in product.attributes.split(";") if a]
                 except Exception:
                     attributes = []
-
             return render_template(
                 "edit_product.html",
                 product=product,
@@ -51,7 +46,6 @@ def update_product(product_id):
                 attributes=attributes,
             )
 
-        # POST: обработка формы
         name = request.form.get("product-name", "").strip()
         description = request.form.get("product-description", "").strip()
         price = float(request.form.get("product-price", 0) or 0)
@@ -59,14 +53,12 @@ def update_product(product_id):
         category_id = request.form.get("product-category")
         delete_preview = request.form.get("delete_preview") == "1"
 
-        # обновляем поля
         product.name = name
         product.description = description
         product.price = price
         product.discount_percent = discount_percent
         product.category_id = int(category_id) if category_id else None
 
-        # Обработка превью
         preview_file = request.files.get("product-preview")
         if delete_preview and product.preview:
             try:
@@ -83,31 +75,21 @@ def update_product(product_id):
             preview_file.save(save_path)
             product.preview = os.path.relpath(save_path, BASE_DIR)
 
-        # На фронте для оставшихся изображений приходят hidden inputs name="existing_images".
-        # Соберём список тех путей, которые остались, и удалим все ProductImage, которые есть в БД, но которых нет в этом списке.
-        keep_images = request.form.getlist(
-            "existing_images"
-        )  # список путей (точно такие же строки, что в img.path)
-        # Нормализация: уберём пустые значения
+        keep_images = request.form.getlist("existing_images")
         keep_images = [p for p in keep_images if p]
-        # Создаём копию списка product.images, т.к. будем удалять элементы
         for img in list(product.images):
-            # img.path должен совпадать со значением в hidden input; при необходимости нормализуй формат сравнения
             if img.path not in keep_images:
-                # удаляем файл с диска (если существует)
                 try:
                     full_path = os.path.join(BASE_DIR, img.path)
                     if os.path.exists(full_path):
                         os.remove(full_path)
                 except Exception as e:
                     print("Cannot delete product image file:", e)
-                # удаляем запись из сессии/БД
                 try:
                     db.delete(img)
                 except Exception as e:
                     print("Cannot delete ProductImage record:", e)
 
-        # Обработка дополнительных изображений (новые файлы)
         new_images = request.files.getlist("product-images")
         for f in new_images:
             if f and f.filename != "":
@@ -120,9 +102,6 @@ def update_product(product_id):
                 )
                 db.add(img)
 
-        # Сохраняем атрибуты — поддерживаем два формата:
-        # 1) одна строка 'attributes' (например "size;color;material") — форму собирает JS
-        # 2) несколько полей 'attribute' (обычная HTML-форма)
         attributes_field = request.form.get("attributes")
         if attributes_field:
             form_attributes = [
@@ -132,8 +111,112 @@ def update_product(product_id):
             form_attributes = [
                 a.strip() for a in request.form.getlist("attribute") if a.strip()
             ]
-
         product.attributes = ";".join(form_attributes) if form_attributes else None
+
+        existing_addon_ids = [
+            int(i) for i in request.form.getlist("existing_addon_category_ids") if i
+        ]
+        for addon in list(product.addon_categories):
+            if addon.id not in existing_addon_ids:
+                for item in list(addon.items):
+                    try:
+                        full_path = os.path.join(BASE_DIR, item.image_path)
+                        if os.path.exists(full_path):
+                            os.remove(full_path)
+                    except Exception as e:
+                        print("Cannot delete addon item file:", e)
+                    try:
+                        db.delete(item)
+                    except Exception as e:
+                        print("Cannot delete AddOnItem record:", e)
+                try:
+                    db.delete(addon)
+                except Exception as e:
+                    print("Cannot delete AddOnCategory record:", e)
+
+        for addon_id_str in request.form.getlist("existing_addon_category_ids"):
+            if not addon_id_str:
+                continue
+            try:
+                addon_id = int(addon_id_str)
+            except ValueError:
+                continue
+            addon = next(
+                (a for a in product.addon_categories if a.id == addon_id), None
+            )
+            if not addon:
+                continue
+            name_field = request.form.get(f"addon_name_{addon_id}", "").strip()
+            price_field = request.form.get(f"addon_price_{addon_id}", "")
+            try:
+                price_val = float(price_field or 0)
+            except Exception:
+                price_val = 0.0
+            addon.name = name_field or addon.name
+            addon.price = price_val
+
+            keep_items = request.form.getlist(f"existing_addon_items_{addon_id}")
+            keep_items = [p for p in keep_items if p]
+            for item in list(addon.items):
+                if item.image_path not in keep_items:
+                    try:
+                        full_path = os.path.join(BASE_DIR, item.image_path)
+                        if os.path.exists(full_path):
+                            os.remove(full_path)
+                    except Exception as e:
+                        print("Cannot delete addon item file:", e)
+                    try:
+                        db.delete(item)
+                    except Exception as e:
+                        print("Cannot delete AddOnItem record:", e)
+
+            files_key = f"addon_items_{addon_id}"
+            if files_key in request.files:
+                files = request.files.getlist(files_key)
+                for f in files:
+                    if f and f.filename != "":
+                        filename = secure_filename(f.filename)
+                        save_name = f"addon_{addon_id}_{filename}"
+                        save_path = os.path.join(UPLOAD_FOLDER, save_name)
+                        f.save(save_path)
+                        item = AddOnItem(
+                            addon_category_id=addon.id,
+                            image_path=os.path.relpath(save_path, BASE_DIR),
+                        )
+                        db.add(item)
+
+        new_addon_names = request.form.getlist("addon_name_new[]")
+        new_addon_prices = request.form.getlist("addon_price_new[]")
+        for idx, name_new in enumerate(new_addon_names):
+            name_new = (name_new or "").strip()
+            price_new_raw = (
+                new_addon_prices[idx] if idx < len(new_addon_prices) else "0"
+            )
+            try:
+                price_new = float(price_new_raw or 0)
+            except Exception:
+                price_new = 0.0
+            if not name_new:
+                continue
+            new_addon = AddOnCategory(
+                product_id=product.id, name=name_new, price=price_new
+            )
+            db.add(new_addon)
+            db.flush()
+            files_key_new = f"addon_items_new_{idx}"
+            if files_key_new in request.files:
+                files = request.files.getlist(files_key_new)
+                for f in files:
+                    if f and f.filename != "":
+                        filename = secure_filename(f.filename)
+                        save_name = f"addon_new_{new_addon.id}_{filename}"
+                        save_path = os.path.join(UPLOAD_FOLDER, save_name)
+                        f.save(save_path)
+                        item = AddOnItem(
+                            addon_category_id=new_addon.id,
+                            image_path=os.path.relpath(save_path, BASE_DIR),
+                        )
+                        db.add(item)
 
         db.commit()
         flash("Товар обновлен", "success")

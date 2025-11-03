@@ -35,9 +35,9 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
     description = Column(Text, default="")
-    price = Column(Float, default=0.0, nullable=False)  # базовая цена
+    price = Column(Float, default=0.0, nullable=False)
     discount_percent = Column(Float, default=0.0, nullable=False)
-    preview = Column(String(512), nullable=True)  # путь к превью/файлу
+    preview = Column(String(512), nullable=True)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
     attributes = Column(Text, default="")
 
@@ -48,9 +48,11 @@ class Product(Base):
     images = relationship(
         "ProductImage", back_populates="product", cascade="all, delete-orphan"
     )
+    addon_categories = relationship(
+        "AddOnCategory", back_populates="product", cascade="all, delete-orphan"
+    )
 
     def price_after_discount(self) -> float:
-        """Возвращает цену с учётом процента скидки."""
         try:
             discount = max(0.0, min(100.0, float(self.discount_percent or 0.0)))
             return round(float(self.price) * (1.0 - discount / 100.0), 2)
@@ -68,6 +70,7 @@ class Product(Base):
             "preview": self.preview,
             "images": [img.path for img in self.images],
             "category": self.category.name if self.category else None,
+            "addon_categories": [ac.as_dict() for ac in self.addon_categories],
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
@@ -81,12 +84,58 @@ class ProductImage(Base):
     id = Column(Integer, primary_key=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     path = Column(String(512), nullable=False)
-    sort_order = Column(Integer, default=0)  # опционально — порядок отображения
+    sort_order = Column(Integer, default=0)
 
     product = relationship("Product", back_populates="images")
 
     def __repr__(self):
         return f"<ProductImage(id={self.id}, product_id={self.product_id}, path={self.path!r})>"
+
+
+class AddOnCategory(Base):
+    __tablename__ = "addon_categories"
+
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    name = Column(String(255), nullable=False)
+    price = Column(Float, default=0.0, nullable=False)
+
+    product = relationship("Product", back_populates="addon_categories")
+    items = relationship(
+        "AddOnItem", back_populates="addon_category", cascade="all, delete-orphan"
+    )
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "items": [item.as_dict() for item in self.items],
+        }
+
+    def __repr__(self):
+        return f"<AddOnCategory(id={self.id}, name={self.name!r}, price={self.price})>"
+
+
+class AddOnItem(Base):
+    __tablename__ = "addon_items"
+
+    id = Column(Integer, primary_key=True)
+    addon_category_id = Column(
+        Integer, ForeignKey("addon_categories.id"), nullable=False
+    )
+    image_path = Column(String(512), nullable=False)
+
+    addon_category = relationship("AddOnCategory", back_populates="items")
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "image_path": self.image_path,
+        }
+
+    def __repr__(self):
+        return f"<AddOnItem(id={self.id}, addon_category_id={self.addon_category_id})>"
 
 
 class User(Base):
@@ -121,11 +170,9 @@ class Cart(Base):
     )
 
     def total_price(self) -> float:
-        """Возвращает общую сумму всех товаров в корзине."""
         return round(sum(item.subtotal() for item in self.items), 2)
 
     def total_items(self) -> int:
-        """Возвращает общее количество товаров в корзине."""
         return sum(item.quantity for item in self.items)
 
     def __repr__(self):
@@ -145,7 +192,6 @@ class CartItem(Base):
     product = relationship("Product")
 
     def subtotal(self) -> float:
-        """Возвращает стоимость данной позиции (цена со скидкой * количество)."""
         return round(self.product.price_after_discount() * self.quantity, 2)
 
     def as_dict(self):

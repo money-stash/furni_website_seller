@@ -8,10 +8,21 @@
   <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
   <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
   <link href="{{url_for('static', filename='css/product-gallery.css')}}" rel="stylesheet">
+  <style>
+    .addon-section { margin-top: 18px; border-top: 1px solid #eee; padding-top: 18px; }
+    .addon-category-row { margin-bottom: 14px; }
+    .addon-title { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .addon-items { display:flex; gap:10px; flex-wrap:wrap; }
+    .addon-item { border:1px solid #e6e6e6; padding:6px; border-radius:6px; text-align:center; width:100px; cursor:pointer; position:relative; }
+    .addon-item img { max-width:100%; height:70px; object-fit:cover; display:block; margin-bottom:6px; }
+    .addon-item input[type="radio"] { position:absolute; top:6px; left:6px; }
+    .addon-item.selected { box-shadow:0 0 0 3px rgba(0,123,255,0.12); border-color:#007bff; }
+    .addon-price { font-size:0.95rem; color:#2c3e50; }
+    .total-row { margin-top:12px; display:flex; align-items:center; gap:12px; }
+  </style>
 </head>
 <body>
 
-  <!-- Start Header/Navigation -->
     <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
       <div class="container position-relative d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
@@ -19,7 +30,6 @@
           Lotos<span>.</span>
         </a>
 
-        <!-- Иконки профиля и корзины всегда сверху -->
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 d-flex flex-row profile-cart-icons">
           <li class="nav-item me-3">
             <a class="nav-link" href="{{ url_for('profile') }}">
@@ -48,15 +58,12 @@
         </div>
       </div>
     </nav>
-    <!-- End Header/Navigation -->
 
-  <!-- HERO -->
   <div class="hero small-hero">
     <div class="container">
       <div class="row">
         <div class="col">
           <div class="intro-excerpt">
-            <!-- Кнопка "Назад" сверху -->
             <div class="mb-3">
               <button onclick="history.back()" class="btn btn-outline-light btn-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
@@ -65,10 +72,7 @@
                 Повернутися назад
               </button>
             </div>
-            
             <h1>{{ product.name }}</h1>
-            
-            <!-- Breadcrumb навігація -->
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb breadcrumb-custom">
                 <li class="breadcrumb-item">
@@ -90,16 +94,14 @@
       </div>
     </div>
   </div>
-  <!-- PRODUCT CARD -->
+
   <div class="pg-product-section">
     <div class="container">
       <div class="row g-4">
 
-        <!-- LEFT: Галерея с изолированными классами -->
         <div class="col-12 col-md-6">
           <div class="pg-container">
             <div class="pg-gallery-wrapper" role="region" aria-label="Product gallery">
-              <!-- Колонка миниатюр -->
               <div class="pg-thumbs-column" id="pgThumbsColumn">
                 {% for image in product.images %}
                   <img class="pg-thumb {% if loop.first %}pg-active{% endif %}" 
@@ -111,10 +113,9 @@
                 {% endfor %}
               </div>
 
-              <!-- Основное изображение -->
               <div class="pg-main-image-area">
                 <img id="pgMainImage" 
-                src="{{ url_for('static', filename=product.images[0].path[7:] if product.images|length > 0 and product.images[0].path.startswith('static/') else product.images[0].path) }}" 
+                src="{{ url_for('static', filename=product.images[0].path[7:] if product.images|length > 0 and product.images[0].path.startswith('static/') else (product.images[0].path if product.images|length>0 else url_for('static', filename='images/no-image.png'))) }}" 
                 alt="Main product image" 
                 class="pg-main-image" 
                 loading="lazy"
@@ -124,7 +125,6 @@
           </div>
         </div>
 
-        <!-- RIGHT: детали продукта -->
         <div class="col-12 col-md-6">
           <div class="pg-details-card">
             <h2 class="product-title">{{ product.name }}</h2>
@@ -132,11 +132,13 @@
 
             <div class="price-row d-flex align-items-end gap-3 mb-3">
               <div>
+                {% set base_price = product.price_after_discount() if product.discount_percent else product.price %}
+                <div id="base-price" style="display:none;">{{ '%.2f' % base_price }}</div>
                 {% if product.discount_percent %}
-                  <div class="product-price-big text-success">₴{{ '%.2f' % (product.price * (1 - product.discount_percent / 100)) }}</div>
+                  <div class="product-price-big text-success" id="display-base-price">₴{{ '%.2f' % (product.price * (1 - product.discount_percent / 100)) }}</div>
                   <div class="product-price-old text-muted text-danger"><s>₴{{ '%.2f' % product.price }}</s></div>
                 {% else %}
-                  <div class="product-price-big">₴{{ '%.2f' % product.price }}</div>
+                  <div class="product-price-big" id="display-base-price">₴{{ '%.2f' % product.price }}</div>
                 {% endif %}
               </div>
               <div class="ms-auto">
@@ -154,6 +156,11 @@
               <div class="d-flex gap-2">
                 <button id="buyBtn" class="btn btn-primary btn-lg">Купити зараз</button>
                 <button id="addToCartBtn" class="btn btn-outline-secondary">Додати до кошика</button>
+              </div>
+
+              <div class="total-row">
+                <div>Всього:</div>
+                <div class="product-price-big" id="total-price">₴{{ '%.2f' % base_price }}</div>
               </div>
             </div>
 
@@ -183,14 +190,39 @@
               </tbody>
             </table>
 
+            {% if product.addon_categories and product.addon_categories | length > 0 %}
+            <div class="addon-section" id="addon-section">
+              <h5>Додаткові опції</h5>
+              {% for addon in product.addon_categories %}
+                <div class="addon-category-row" data-addon-id="{{ addon.id }}" data-addon-price="{{ '%.2f' % addon.price }}">
+                  <div class="addon-title">
+                    <strong>{{ addon.name }}</strong>
+                    <div class="addon-price">(+₴{{ '%.2f' % addon.price }})</div>
+                  </div>
+                  <div class="addon-items" role="list" aria-label="{{ addon.name }}">
+                    <label class="addon-item" tabindex="0" data-addon-id="{{ addon.id }}" data-item-id="0" data-item-price="{{ '%.2f' % addon.price }}">
+                      <input type="radio" name="addon_select_{{ addon.id }}" value="" checked>
+                      <div class="no-selection text-muted"><em>Без вибору</em></div>
+                    </label>
+                    {% for item in addon.items %}
+                      <label class="addon-item" tabindex="0" data-addon-id="{{ addon.id }}" data-item-id="{{ item.id }}" data-item-price="{{ '%.2f' % addon.price }}">
+                        <input type="radio" name="addon_select_{{ addon.id }}" value="{{ item.id }}">
+                        <img src="{{ url_for('static', filename=item.image_path[7:] if item.image_path.startswith('static/') else item.image_path) }}">
+                      </label>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+
           </div>
         </div>
 
-      </div> <!-- row -->
-    </div> <!-- container -->
-  </div> <!-- section -->
+      </div>
+    </div>
+  </div>
 
-  <!-- Start Footer Section -->
     <footer class="footer-section">
       <div class="container relative">
         <div class="row g-5 mb-5">
@@ -230,8 +262,8 @@
 
               <div class="col-6 col-sm-6 col-md-3">
                 <ul class="list-unstyled">
-                  
                   <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
+                  <li><a class="nav-link" href="{{ url_for('guarantee') }}">Гарантія</a></li>
                 </ul>
               </div>
             </div>
@@ -243,41 +275,29 @@
             <div class="col-lg-6">
               <p class="mb-2 text-center text-lg-start">
                 Copyright &copy;
-                <script>
-                  document.write(new Date().getFullYear());
-                </script>
+                <script>document.write(new Date().getFullYear());</script>
                 . All Rights Reserved. &mdash; Designed with love
               </p>
-            </div>
-
-            <div class="col-lg-6 text-center text-lg-end">
-              <ul class="list-unstyled d-inline-flex ms-auto">
-                <li><a href="{{ url_for('terms') }}"> Угода користувача </a></li>
-              </ul>
             </div>
           </div>
         </div>
       </div>
     </footer>
-    <!-- End Footer Section -->
 
   <script src="js/bootstrap.bundle.min.js"></script>
 
   <script>
   (function () {
-    // Галерея с новыми классами
     const mainImg = document.getElementById('pgMainImage');
     const thumbs = Array.from(document.querySelectorAll('.pg-thumb'));
 
     if (mainImg && thumbs.length > 0) {
-      // Устанавливаем начальное изображение
       const first = thumbs.find(t => t.classList.contains('pg-active')) || thumbs[0];
       if (first) {
         first.classList.add('pg-active');
         mainImg.src = first.getAttribute('data-large') || first.src;
       }
 
-      // Обработка кликов и клавиатуры
       thumbs.forEach(t => {
         const activate = () => {
           thumbs.forEach(x => x.classList.remove('pg-active'));
@@ -308,7 +328,6 @@
       });
     }
 
-    // Контроль количества
     const qtyInput = document.getElementById('qtyInput');
     const incBtn = document.querySelector('.qty-increase');
     const decBtn = document.querySelector('.qty-decrease');
@@ -316,11 +335,13 @@
     if (incBtn && qtyInput) {
       incBtn.addEventListener('click', () => {
         qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') + 1);
+        recalcTotal();
       });
     }
     if (decBtn && qtyInput) {
       decBtn.addEventListener('click', () => {
         qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') - 1);
+        recalcTotal();
       });
     }
 
@@ -330,122 +351,302 @@
         let v = parseInt(qtyInput.value || '1');
         if (isNaN(v) || v < 1) v = 1;
         qtyInput.value = v;
+        recalcTotal();
       });
     }
-  })();
 
-
-  // плавное изображение
-  const mainImg = document.getElementById('pgMainImage');
-
-    function changeMainImage(src, alt) {
-    mainImg.style.opacity = 0;
-    setTimeout(() => {
-        mainImg.src = src;
-        mainImg.alt = alt || 'Product image';
-        mainImg.style.opacity = 1;
-    }, 150); // полупериод для плавного перехода
+    const addonSection = document.getElementById('addon-section');
+    function attachAddonHandlers() {
+      if (!addonSection) return;
+      addonSection.querySelectorAll('.addon-items').forEach(container => {
+        container.querySelectorAll('.addon-item').forEach(item => {
+          const radio = item.querySelector('input[type="radio"]');
+          item.addEventListener('click', () => {
+            if (radio) { radio.checked = true; }
+            container.querySelectorAll('.addon-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            recalcTotal();
+          });
+          item.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
+              ev.preventDefault();
+              item.click();
+            }
+          });
+        });
+      });
+      addonSection.querySelectorAll('input[type="radio"]').forEach(r => {
+        r.addEventListener('change', recalcTotal);
+      });
     }
 
-    thumbs.forEach(t => {
-    const activate = () => {
-        thumbs.forEach(x => x.classList.remove('pg-active'));
-        t.classList.add('pg-active');
-        const large = t.getAttribute('data-large') || t.src;
-        changeMainImage(large, t.alt);
-    };
+    attachAddonHandlers();
 
-    t.addEventListener('click', activate);
-    t.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter' || ev.key === ' ' || ev.key === 'Spacebar') {
-        ev.preventDefault();
-        activate();
-        }
-        if (ev.key === 'ArrowDown' || ev.key === 'ArrowRight') {
-        ev.preventDefault();
-        const next = t.nextElementSibling || thumbs[0];
-        if (next && typeof next.focus === 'function') next.focus();
-        }
-        if (ev.key === 'ArrowUp' || ev.key === 'ArrowLeft') {
-        ev.preventDefault();
-        const prev = t.previousElementSibling || thumbs[thumbs.length - 1];
-        if (prev && typeof prev.focus === 'function') prev.focus();
-        }
-    });
-    });
-
-  </script>
-  <script>
-(function () {
-  const qtyInput = document.getElementById('qtyInput');
-  const incBtn = document.querySelector('.qty-increase');
-  const decBtn = document.querySelector('.qty-decrease');
-
-  if (incBtn && qtyInput) {
-    incBtn.addEventListener('click', () => {
-      qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') + 1);
-    });
-  }
-  if (decBtn && qtyInput) {
-    decBtn.addEventListener('click', () => {
-      qtyInput.value = Math.max(1, parseInt(qtyInput.value || '1') - 1);
-    });
-  }
-  if (qtyInput) {
-    qtyInput.addEventListener('input', () => {
-      if (qtyInput.value === '') return;
-      let v = parseInt(qtyInput.value || '1');
-      if (isNaN(v) || v < 1) v = 1;
-      qtyInput.value = v;
-    });
-  }
-
-  const addToCartBtn = document.getElementById('addToCartBtn');
-  const buyBtn = document.getElementById('buyBtn');
-
-  // получаем product_id из шаблона Flask
-  const productId = {{ product.id }};
-
-  async function addToCart(quantity = 1, redirectToCheckout = false) {
-    try {
-      const response = await fetch('/api/cart/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ product_id: productId, quantity })
-      });
-      const result = await response.json();
-
-      if (result.success) {
-        alert(result.message); // можно заменить на красивое уведомление
-        if (redirectToCheckout) {
-          window.location.href = '/cart'; // редирект на страницу корзины
-        }
-      } else {
-        alert(result.message || 'Ошибка при добавлении в корзину');
+    function recalcTotal() {
+      const base = parseFloat(document.getElementById('base-price').textContent || '0') || 0;
+      let addonsSum = 0;
+      if (addonSection) {
+        addonSection.querySelectorAll('.addon-category-row').forEach(row => {
+          const addonId = row.getAttribute('data-addon-id');
+          const price = parseFloat(row.getAttribute('data-addon-price') || '0') || 0;
+          const selected = row.querySelector(`input[name="addon_select_${addonId}"]:checked`);
+          if (selected && selected.value && selected.value !== '') {
+            addonsSum += price;
+          }
+        });
       }
-    } catch (err) {
-      console.error(err);
-      alert('Сервер недоступен, попробуйте позже.');
+      const qty = parseInt(qtyInput.value || '1') || 1;
+      const total = (base + addonsSum) * qty;
+      document.getElementById('total-price').textContent = '₴' + total.toFixed(2);
     }
-  }
 
-  if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', () => {
-      const qty = parseInt(qtyInput.value || '1');
-      addToCart(qty, false);
+    recalcTotal();
+
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const buyBtn = document.getElementById('buyBtn');
+    const productId = {{ product.id }};
+
+    async function addToCart(quantity = 1, redirectToCheckout = false) {
+      const addons = [];
+      if (addonSection) {
+        addonSection.querySelectorAll('.addon-category-row').forEach(row => {
+          const addonId = row.getAttribute('data-addon-id');
+          const selected = row.querySelector(`input[name="addon_select_${addonId}"]:checked`);
+          if (selected && selected.value) {
+            addons.push({ addon_category_id: parseInt(addonId), addon_item_id: parseInt(selected.value) });
+          }
+        });
+      }
+
+      try {
+        const response = await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: productId, quantity, addons })
+        });
+        const result = await response.json();
+        if (result && result.success) {
+          if (redirectToCheckout) {
+            window.location.href = '/cart';
+            return;
+          }
+          alert(result.message || 'Додано до кошика');
+        } else {
+          alert(result && result.message ? result.message : 'Помилка при додаванні');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Сервер недоступний, спробуйте пізніше.');
+      }
+    }
+
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value || '1');
+        addToCart(qty, false);
+      });
+    }
+
+    if (buyBtn) {
+      buyBtn.addEventListener('click', () => {
+        const qty = parseInt(qtyInput.value || '1');
+        addToCart(qty, true);
+      });
+    }
+
+  })();
+  </script>
+  <style>
+/* lightbox styles */
+.lb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.lb-overlay.visible { display: flex; }
+.lb-inner {
+  position: relative;
+  max-width: 95%;
+  max-height: 95%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lb-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.lb-close, .lb-prev, .lb-next {
+  position: absolute;
+  background: rgba(0,0,0,0.45);
+  border: none;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 10;
+}
+.lb-close { top: 16px; right: 16px; }
+.lb-prev { left: 8px; top: 50%; transform: translateY(-50%); }
+.lb-next { right: 8px; top: 50%; transform: translateY(-50%); }
+.lb-counter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 14px;
+  background: rgba(0,0,0,0.35);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.lb-thumb-row {
+  position: absolute;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  max-width: 80%;
+}
+.lb-thumb-row img { height:48px; width:auto; object-fit:cover; border:2px solid transparent; cursor:pointer; border-radius:4px; }
+.lb-thumb-row img.active { border-color:#fff; box-shadow:0 0 0 3px rgba(255,255,255,0.06); }
+@media (max-width:600px){
+  .lb-thumb-row { display:none; }
+  .lb-prev, .lb-next { padding:8px; }
+}
+</style>
+
+<div id="lightbox-overlay" class="lb-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="lb-inner">
+    <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+    <button class="lb-prev" id="lbPrev" aria-label="Previous">◀</button>
+    <img id="lbImage" class="lb-image" src="" alt=""/>
+    <button class="lb-next" id="lbNext" aria-label="Next">▶</button>
+    <div id="lbCounter" class="lb-counter"></div>
+    <div id="lbThumbRow" class="lb-thumb-row"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const thumbs = Array.from(document.querySelectorAll('.pg-thumb'));
+  const mainImg = document.getElementById('pgMainImage');
+  const overlay = document.getElementById('lightbox-overlay');
+  const lbImg = document.getElementById('lbImage');
+  const lbClose = document.getElementById('lbClose');
+  const lbPrev = document.getElementById('lbPrev');
+  const lbNext = document.getElementById('lbNext');
+  const lbCounter = document.getElementById('lbCounter');
+  const lbThumbRow = document.getElementById('lbThumbRow');
+  const sources = [];
+  const alts = [];
+  thumbs.forEach((t,i)=>{
+    const src = t.getAttribute('data-large') || t.src;
+    sources.push(src);
+    alts.push(t.alt || `Image ${i+1}`);
+  });
+  if(mainImg && sources.length===0){
+    const s = mainImg.src;
+    sources.push(s);
+    alts.push(mainImg.alt || 'Image 1');
+  }
+  let idx = 0;
+  function showOverlay(i){
+    if(i<0) i = sources.length - 1;
+    if(i>=sources.length) i = 0;
+    idx = i;
+    lbImg.src = sources[idx];
+    lbImg.alt = alts[idx] || '';
+    overlay.classList.add('visible');
+    overlay.setAttribute('aria-hidden','false');
+    updateCounter();
+    updateThumbsActive();
+    document.body.style.overflow = 'hidden';
+  }
+  function hideOverlay(){
+    overlay.classList.remove('visible');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+  }
+  function prev(){
+    showOverlay(idx - 1);
+  }
+  function next(){
+    showOverlay(idx + 1);
+  }
+  function updateCounter(){
+    lbCounter.textContent = `${idx+1} / ${sources.length}`;
+  }
+  function updateThumbsActive(){
+    const imgs = lbThumbRow.querySelectorAll('img');
+    imgs.forEach((im,i)=> im.classList.toggle('active', i===idx));
+  }
+  function buildThumbs(){
+    lbThumbRow.innerHTML = '';
+    sources.forEach((s,i)=>{
+      const im = document.createElement('img');
+      im.src = s;
+      im.alt = alts[i] || '';
+      im.tabIndex = 0;
+      im.addEventListener('click', ()=> showOverlay(i));
+      im.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); showOverlay(i); }});
+      lbThumbRow.appendChild(im);
     });
   }
+  buildThumbs();
 
-  if (buyBtn) {
-    buyBtn.addEventListener('click', () => {
-      const qty = parseInt(qtyInput.value || '1');
-      addToCart(qty, true); // после добавления редирект на корзину
+  thumbs.forEach((t,i)=> {
+    t.addEventListener('click', ()=> {
+      thumbs.forEach(x => x.classList.remove('pg-active'));
+      t.classList.add('pg-active');
+      const large = t.getAttribute('data-large') || t.src;
+      if (mainImg) {
+        mainImg.src = large;
+        mainImg.alt = t.alt || 'Product image';
+      }
     });
-  }
+  });
+
+  if(mainImg) mainImg.addEventListener('click', ()=>{
+    const activeIndex = thumbs.findIndex(t => t.classList.contains('pg-active'));
+    const firstIndex = activeIndex >= 0 ? activeIndex : 0;
+    showOverlay(firstIndex);
+  });
+
+  lbClose.addEventListener('click', hideOverlay);
+  lbPrev.addEventListener('click', prev);
+  lbNext.addEventListener('click', next);
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) hideOverlay(); });
+  document.addEventListener('keydown', (e)=>{
+    if(!overlay.classList.contains('visible')) return;
+    if(e.key==='Escape') hideOverlay();
+    if(e.key==='ArrowLeft') prev();
+    if(e.key==='ArrowRight') next();
+  });
+  let startX = 0;
+  let endX = 0;
+  lbImg.addEventListener('touchstart', (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
+  lbImg.addEventListener('touchmove', (e)=>{ endX = e.touches[0].clientX; }, {passive:true});
+  lbImg.addEventListener('touchend', ()=>{
+    const dx = endX - startX;
+    if(Math.abs(dx) > 40){
+      if(dx < 0) next(); else prev();
+    }
+    startX = endX = 0;
+  });
 })();
 </script>
+
 
 
 </body>

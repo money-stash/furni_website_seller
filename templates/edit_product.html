@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -14,21 +15,27 @@
         }
         .preview-img { max-height: 150px; margin-bottom: 10px; display:block; }
         .additional-img { max-height: 100px; margin: 5px; display: block; }
+    .delete-img { background: red; color: white; border: none; cursor: pointer; border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-size: 14px; }
 
-        /* Default delete button style: used inside positioned containers */
-        .delete-img { background: red; color: white; border: none; cursor: pointer; border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-size: 14px; }
+    .attribute-item { display: flex; gap: 8px; margin-bottom: 6px; position: relative; align-items: center; }
+    .attribute-item input { flex: 1; padding-right: 36px; }
+    .attribute-item .delete-img { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); }
 
-        /* Attribute item: make it positioned so the absolute button sits next to the input */
-        .attribute-item { display: flex; gap: 8px; margin-bottom: 6px; position: relative; align-items: center; }
-        .attribute-item input { flex: 1; padding-right: 36px; }
-        /* Place the delete button vertically centered at the right of the attribute input */
-        .attribute-item .delete-img { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); }
+    .image-item { position: relative; display: inline-block; margin: 5px; }
+    .image-item .additional-img { max-height: 100px; display: block; }
+    .image-item .delete-img { position: absolute; top: 4px; right: 4px; }
 
-        /* Image item: keep button in the top-right corner of the image */
-        .image-item { position: relative; display: inline-block; margin: 5px; }
-        .image-item .additional-img { max-height: 100px; display: block; }
-        .image-item .delete-img { position: absolute; top: 4px; right: 4px; }
-    </style>
+    .addon-list { border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+    .addon-category { border: 1px dashed #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px; position: relative; }
+    .addon-category .remove-addon { position: absolute; top: 8px; right: 8px; background:#c0392b; color:#fff; border:none; padding:4px 8px; cursor:pointer; border-radius:4px; }
+    .addon-category h4 { margin: 0 0 8px 0; }
+    .addon-items { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+    .addon-item { position: relative; display:inline-block; }
+    .addon-item img { max-height:80px; display:block; }
+    .addon-item .delete-img { position:absolute; top:4px; right:4px; }
+    .btn-small { padding:6px 10px; border-radius:6px; cursor:pointer; }
+</style>
+
 </head>
 <body>
 <nav class="admin-nav">
@@ -40,97 +47,132 @@
 <div class="admin-container">
     <h1>Редагування товару</h1>
 
-    <form id="edit-product-form" method="POST" action="{{ url_for('products.update_product', product_id=product.id) }}" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="product-name">Назва товару</label>
-            <input type="text" name="product-name" id="product-name" value="{{ product.name }}">
-        </div>
+<form id="edit-product-form" method="POST" action="{{ url_for('products.update_product', product_id=product.id) }}" enctype="multipart/form-data">
+    <input type="hidden" name="product_id" value="{{ product.id }}">
 
-        <div class="form-group">
-            <label for="product-category">Категорія</label>
-            <select name="product-category" id="product-category">
-                <option value="">-- Без категорії --</option>
-                {% for cat in categories %}
-                    <option value="{{ cat.id }}" {% if product.category and product.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+    <div class="form-group">
+        <label for="product-name">Назва товару</label>
+        <input type="text" name="product-name" id="product-name" value="{{ product.name }}">
+    </div>
 
-        <div class="form-group">
-            <label for="product-description">Опис</label>
-            <textarea name="product-description" id="product-description" rows="4">{{ product.description }}</textarea>
-        </div>
+    <div class="form-group">
+        <label for="product-category">Категорія</label>
+        <select name="product-category" id="product-category">
+            <option value="">-- Без категорії --</option>
+            {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if product.category and product.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
 
-        <div class="form-group">
-            <label for="product-price">Ціна</label>
-            <input type="number" step="0.01" name="product-price" id="product-price" value="{{ product.price }}">
-        </div>
+    <div class="form-group">
+        <label for="product-description">Опис</label>
+        <textarea name="product-description" id="product-description" rows="4">{{ product.description }}</textarea>
+    </div>
 
-        <div class="form-group">
-            <label for="discount-percent">Знижка %</label>
-            <input type="number" step="0.01" name="discount_percent" id="discount-percent" value="{{ product.discount_percent }}">
-        </div>
+    <div class="form-group">
+        <label for="product-price">Ціна</label>
+        <input type="number" step="0.01" name="product-price" id="product-price" value="{{ product.price }}">
+    </div>
 
-        <!-- Итоговая цена со скидкой -->
-        <div class="form-group">
-            <label for="price-with-discount">Ціна зі знижкою</label>
-            <input type="text" id="price-with-discount" readonly value="" />
-        </div>
+    <div class="form-group">
+        <label for="discount-percent">Знижка %</label>
+        <input type="number" step="0.01" name="discount_percent" id="discount-percent" value="{{ product.discount_percent }}">
+    </div>
 
-        <!-- Превью -->
-        <div class="form-group">
-            <label>Превью</label>
-            {% if product.preview %}
-                <img src="{{ url_for('static', filename=product.preview[7:] if product.preview.startswith('static/') else product.preview) }}" class="preview-img" id="current-preview">
-                <!-- <label><input type="checkbox" name="delete_preview" value="1"> Удалить текущий превью</label> -->
-            {% endif %}
-            <input type="file" name="product-preview" accept="image/*">
-        </div>
+    <div class="form-group">
+        <label for="price-with-discount">Ціна зі знижкою</label>
+        <input type="text" id="price-with-discount" readonly value="" />
+    </div>
 
-        <!-- Додаткові зображення -->
-        <div class="form-group">
-            <label>Додаткові зображення</label>
-            <div id="additional-images">
-                {% for img_path in product.images|map(attribute='path') %}
-                    <div class="image-item">
-                        <img src="{{ url_for('static', filename=img_path[7:] if img_path.startswith('static/') else img_path) }}" class="additional-img">
-                        <button type="button" class="delete-img">&times;</button>
-                        <input type="hidden" name="existing_images" value="{{ img_path }}">
+    <div class="form-group">
+        <label>Превью</label>
+        {% if product.preview %}
+            <img src="{{ url_for('static', filename=product.preview[7:] if product.preview.startswith('static/') else product.preview) }}" class="preview-img" id="current-preview">
+            <label><input type="checkbox" name="delete_preview" value="1"> Видалити поточний превью</label>
+        {% endif %}
+        <input type="file" name="product-preview" accept="image/*">
+    </div>
+
+    <div class="form-group">
+        <label>Додаткові зображення</label>
+        <div id="additional-images">
+            {% for img in product.images %}
+                <div class="image-item">
+                    <img src="{{ url_for('static', filename=img.path[7:] if img.path.startswith('static/') else img.path) }}" class="additional-img">
+                    <button type="button" class="delete-img">&times;</button>
+                    <input type="hidden" name="existing_images" value="{{ img.path }}">
+                </div>
+            {% endfor %}
+        </div>
+        <input type="file" name="product-images" multiple accept="image/*">
+    </div>
+
+    <div class="form-group">
+        <label>Атрибути</label>
+        <div id="attributes">
+            {% for attr in attributes %}
+                <div class="attribute-item">
+                    <input type="text" name="attribute" value="{{ attr }}">
+                    <button type="button" class="delete-img">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="add-attribute" class="btn-small">Додати атрибут</button>
+    </div>
+
+    <div class="form-group">
+        <label>Додаткові категорії (Add-on)</label>
+        <div id="addon-categories" class="addon-list">
+            {% for addon in product.addon_categories %}
+                <div class="addon-category addon-category-existing" data-addon-id="{{ addon.id }}">
+                    <button type="button" class="remove-addon">Видалити</button>
+                    <h4>Додаткова категорія</h4>
+                    <input type="hidden" name="existing_addon_category_ids" value="{{ addon.id }}">
+                    <div class="form-group">
+                        <label>Назва</label>
+                        <input type="text" name="addon_name_{{ addon.id }}" value="{{ addon.name }}">
                     </div>
-                {% endfor %}
-            </div>
-            <input type="file" name="product-images" multiple accept="image/*">
-        </div>
-
-        <!-- Атрибути -->
-        <div class="form-group">
-            <label>Атрибути</label>
-            <div id="attributes">
-                {% for attr in attributes %}
-                    <div class="attribute-item">
-                        <input type="text" name="attribute" value="{{ attr }}">
-                        <button type="button" class="delete-img">&times;</button>
+                    <div class="form-group">
+                        <label>Ціна</label>
+                        <input type="number" step="0.01" name="addon_price_{{ addon.id }}" value="{{ addon.price }}">
                     </div>
-                {% endfor %}
-            </div>
-            <button type="button" id="add-attribute">Додати атрибут</button>
-        </div>
+                    <div class="form-group">
+                        <label>Елементи (зображення)</label>
+                        <div class="addon-items" data-addon-id="{{ addon.id }}">
+                            {% for item in addon.items %}
+                                <div class="addon-item">
+                                    <img src="{{ url_for('static', filename=item.image_path[7:] if item.image_path.startswith('static/') else item.image_path) }}">
+                                    <button type="button" class="delete-img">&times;</button>
+                                    <input type="hidden" name="existing_addon_items_{{ addon.id }}" value="{{ item.image_path }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <input type="file" name="addon_items_{{ addon.id }}" multiple accept="image/*">
+                    </div>
+                </div>
+            {% endfor %}
 
-        <button type="submit" class="btn">Зберегти зміни</button>
-    </form>
+            <div id="new-addons-container"></div>
+
+            <button type="button" id="add-addon" class="btn-small">Додати доп.категорію</button>
+        </div>
+    </div>
+
+    <button type="submit" class="btn">Зберегти зміни</button>
+</form>
+
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('edit-product-form');
 
-    // Calculate and display price after discount
     const priceInput = document.getElementsByName('product-price')[0];
     const discountInput = document.getElementsByName('discount_percent')[0];
     const priceWithDiscountEl = document.getElementById('price-with-discount');
 
     function formatMoney(val) {
-        // format to 2 decimals and use dot as decimal separator
         return Number(val).toFixed(2);
     }
 
@@ -141,67 +183,94 @@ document.addEventListener('DOMContentLoaded', function() {
         if (priceWithDiscountEl) priceWithDiscountEl.value = formatMoney(discounted);
     }
 
-    // attach listeners
     if (priceInput) priceInput.addEventListener('input', updatePriceWithDiscount);
     if (discountInput) discountInput.addEventListener('input', updatePriceWithDiscount);
-
-    // initial update
     updatePriceWithDiscount();
 
-    // helper — attach delete handler to a .delete-img button inside an .attribute-item or .image-item
     function attachDeleteHandlers(root = document) {
         root.querySelectorAll('.delete-img').forEach(btn => {
-            // avoid attaching twice
             if (btn._hasHandler) return;
             btn._hasHandler = true;
             btn.addEventListener('click', function() {
                 const parentAttr = this.closest('.attribute-item');
                 const parentImg = this.closest('.image-item');
+                const parentAddonItem = this.closest('.addon-item');
                 if (parentAttr) parentAttr.remove();
                 else if (parentImg) parentImg.remove();
+                else if (parentAddonItem) parentAddonItem.remove();
+            });
+        });
+
+        root.querySelectorAll('.remove-addon').forEach(btn => {
+            if (btn._hasHandler) return;
+            btn._hasHandler = true;
+            btn.addEventListener('click', function() {
+                const parentAddon = this.closest('.addon-category');
+                if (parentAddon) parentAddon.remove();
             });
         });
     }
 
     attachDeleteHandlers();
 
-    // Add new attribute row
-    const addBtn = document.getElementById('add-attribute');
-    addBtn.addEventListener('click', function() {
+    const addAttrBtn = document.getElementById('add-attribute');
+    addAttrBtn.addEventListener('click', function() {
         const container = document.getElementById('attributes');
         const div = document.createElement('div');
         div.className = 'attribute-item';
-        div.innerHTML = `
-            <input type="text" name="attribute" value="">
-            <button type="button" class="delete-img">&times;</button>
-        `;
+        div.innerHTML = `<input type="text" name="attribute" value=""><button type="button" class="delete-img">&times;</button>`;
         container.appendChild(div);
         attachDeleteHandlers(div);
     });
 
-    // When submitting, build FormData explicitly so we control what is sent (files, existing images, attributes combined into one string, flags).
+    let newAddonCounter = 0;
+    const newAddonsContainer = document.getElementById('new-addons-container');
+    const addAddonBtn = document.getElementById('add-addon');
+
+    addAddonBtn.addEventListener('click', function() {
+        const idx = newAddonCounter++;
+        const block = document.createElement('div');
+        block.className = 'addon-category addon-category-new';
+        block.setAttribute('data-new-index', idx);
+        block.innerHTML = `
+            <button type="button" class="remove-addon">Видалити</button>
+            <h4>Нова доп.категорія</h4>
+            <div class="form-group">
+                <label>Назва</label>
+                <input type="text" name="addon_name_new[]" value="">
+            </div>
+            <div class="form-group">
+                <label>Ціна</label>
+                <input type="number" step="0.01" name="addon_price_new[]" value="0">
+            </div>
+            <div class="form-group">
+                <label>Елементи (зображення)</label>
+                <div class="addon-items" data-new-index="${idx}"></div>
+                <input type="file" name="addon_items_new_${idx}" multiple accept="image/*">
+            </div>
+        `;
+        newAddonsContainer.appendChild(block);
+        attachDeleteHandlers(block);
+    });
+
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const fd = new FormData();
 
-        // Simple scalar fields
         const scalarFields = ['product-name','product-category','product-description','product-price','discount_percent'];
         scalarFields.forEach(name => {
             const el = document.getElementsByName(name)[0];
             if (el) fd.append(name, el.value);
         });
 
-        // delete_preview checkbox
         const delPrev = document.querySelector('input[name="delete_preview"]');
         if (delPrev && delPrev.checked) fd.append('delete_preview', '1');
 
-        // existing images (hidden inputs kept for images that remain)
         document.querySelectorAll('input[name="existing_images"]').forEach(inp => {
             if (inp.value) fd.append('existing_images', inp.value);
         });
 
-        // Files: preview (single) and additional images (multiple)
         const previewInput = document.querySelector('input[name="product-preview"]');
         if (previewInput && previewInput.files && previewInput.files.length > 0) {
             fd.append('product-preview', previewInput.files[0]);
@@ -209,23 +278,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const imagesInput = document.querySelector('input[name="product-images"]');
         if (imagesInput && imagesInput.files && imagesInput.files.length > 0) {
-            // append each file under same field name so Flask can read request.files.getlist('product-images')
             Array.from(imagesInput.files).forEach(file => fd.append('product-images', file));
         }
 
-        // Attributes: collect all inputs with name="attribute" and join with semicolon
         const attrInputs = Array.from(document.querySelectorAll('input[name="attribute"]'));
         const attrValues = attrInputs.map(i => i.value.trim()).filter(v => v.length > 0);
-        // join with semicolon as requested
         fd.append('attributes', attrValues.join(';'));
 
-        // Include product id if present as part of the form's action URL — but also append as a field just in case
-        const actionUrl = form.getAttribute('action') || window.location.href;
-        // try to get product id from a hidden input or from action url. If there's a hidden input named product_id, include it.
-        const prodIdEl = document.querySelector('input[name="product_id"]');
-        if (prodIdEl && prodIdEl.value) fd.append('product_id', prodIdEl.value);
+        document.querySelectorAll('.addon-category-existing').forEach(block => {
+            const addonId = block.getAttribute('data-addon-id');
+            if (!addonId) return;
+            fd.append('existing_addon_category_ids', addonId);
 
-        // Send via fetch so files and form data go through
+            const nameEl = block.querySelector(`input[name="addon_name_${addonId}"]`);
+            const priceEl = block.querySelector(`input[name="addon_price_${addonId}"]`);
+            if (nameEl) fd.append(`addon_name_${addonId}`, nameEl.value);
+            if (priceEl) fd.append(`addon_price_${addonId}`, priceEl.value);
+
+            block.querySelectorAll(`input[name="existing_addon_items_${addonId}"]`).forEach(h => {
+                if (h.value) fd.append(`existing_addon_items_${addonId}`, h.value);
+            });
+
+            const fileInput = block.querySelector(`input[name="addon_items_${addonId}"]`);
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                Array.from(fileInput.files).forEach(f => fd.append(`addon_items_${addonId}`, f));
+            }
+        });
+
+        document.querySelectorAll('.addon-category-new').forEach(block => {
+            const newIndex = block.getAttribute('data-new-index');
+            const nameEl = block.querySelector('input[name="addon_name_new[]"]');
+            const priceEl = block.querySelector('input[name="addon_price_new[]"]');
+            if (nameEl) fd.append('addon_name_new[]', nameEl.value);
+            if (priceEl) fd.append('addon_price_new[]', priceEl.value);
+
+            const fileInput = block.querySelector(`input[name="addon_items_new_${newIndex}"]`);
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                Array.from(fileInput.files).forEach(f => fd.append(`addon_items_new_${newIndex}`, f));
+            }
+        });
+
+        const actionUrl = form.getAttribute('action') || window.location.href;
+
         try {
             const resp = await fetch(actionUrl, {
                 method: 'POST',
@@ -233,19 +327,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (resp.ok) {
-                // If server returns a redirect url in JSON, follow it; otherwise reload the page.
-                // Try to parse json safely
                 let data = null;
-                try { data = await resp.json(); } catch (_) { /* not json */ }
-
+                try { data = await resp.json(); } catch (_) {}
                 if (data && data.redirect) {
                     window.location.href = data.redirect;
                 } else {
-                    // default: reload to reflect updates
                     window.location.reload();
                 }
             } else {
-                // try to read text and show alert
                 let text = await resp.text();
                 alert('Ошибка при сохранении: ' + resp.status + '\n' + text);
             }
@@ -256,5 +345,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 </body>
 </html>
+

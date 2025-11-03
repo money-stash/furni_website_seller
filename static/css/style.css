@@ -940,8 +940,8 @@ textarea {
 @media (max-width: 768px) {
   .profile-cart-icons {
     position: absolute;
-    top: 0rem;
-    left: 60%;
+    top: 0.8rem;
+    left: 70%;
     transform: translateX(-50%);
     z-index: 1000;
   }

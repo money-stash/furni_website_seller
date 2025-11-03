@@ -24,7 +24,7 @@ def admin_dashboard():
 @admin_bp.route("/admin_products")
 def admin_products():
     if not session.get("admin_logged_in"):
-        return redirect(url_for("admin_login"))
+        return redirect(url_for("admin.admin_login"))
 
     categories = get_all_categories()
     db = SessionLocal()

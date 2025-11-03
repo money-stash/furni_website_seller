@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, session, redirect, url_for
+from flask import jsonify, request, session, redirect, url_for
 
 
 def login_required(f):
@@ -10,3 +10,13 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+def api_login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            return jsonify({"success": False, "message": "Необхідна авторизація"}), 401
+        return f(*args, **kwargs)
+
+    return decorated

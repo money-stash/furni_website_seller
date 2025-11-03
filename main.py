@@ -12,7 +12,7 @@ from flask import (
 )
 from sqlalchemy.orm import joinedload
 
-from models.models import Cart, CartItem, Product, User, Category
+from models.models import AddOnCategory, Cart, CartItem, Product, User, Category
 from initdb import SessionLocal, init_db
 from database.db import get_all_categories
 
@@ -39,7 +39,7 @@ app.register_blueprint(products.products_bp)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16MB лимит на запрос
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16mb лимит на запрос
 
 init_db()
 
@@ -181,13 +181,16 @@ def product_info(product_id):
     try:
         product = (
             db.query(Product)
-            .options(joinedload(Product.images), joinedload(Product.category))
+            .options(
+                joinedload(Product.images),
+                joinedload(Product.category),
+                joinedload(Product.addon_categories).joinedload(AddOnCategory.items),
+            )
             .get(product_id)
         )
         if not product:
             flash("Товар не знайдено", "error")
             return redirect(url_for("shop"))
-
         return render_template("product_info.html", product=product)
     finally:
         db.close()
@@ -262,10 +265,15 @@ def services():
             )
 
         return render_template(
-            "index.html", selected_categories=selected_categories, categories=out
+            "services.html", selected_categories=selected_categories, categories=out
         )
     finally:
         db.close()
+
+
+@app.route("/guarantee")
+def guarantee():
+    return render_template("guarantee.html")
 
 
 @app.route("/contact")

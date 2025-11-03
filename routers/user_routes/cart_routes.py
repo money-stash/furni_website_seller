@@ -2,13 +2,13 @@ from flask import Blueprint, request, jsonify, session
 from sqlalchemy.orm import joinedload
 from models.models import Cart, CartItem, Product, User
 from initdb import SessionLocal
-from middlewares.login import login_required
+from middlewares.login import login_required, api_login_required
 
 cart_bp = Blueprint("cart", __name__, url_prefix="/api/cart")
 
 
 @cart_bp.route("/add", methods=["POST"])
-@login_required
+@api_login_required
 def add_to_cart():
     """Добавить товар в корзину"""
     db = SessionLocal()
@@ -68,7 +68,7 @@ def add_to_cart():
 
 
 @cart_bp.route("/remove", methods=["POST"])
-@login_required
+@api_login_required
 def remove_from_cart():
     """Удалить товар из корзины"""
     db = SessionLocal()
@@ -111,7 +111,7 @@ def remove_from_cart():
 
 
 @cart_bp.route("/update", methods=["POST"])
-@login_required
+@api_login_required
 def update_cart_item():
     """Обновить количество товара в корзине"""
     db = SessionLocal()
@@ -163,7 +163,7 @@ def update_cart_item():
 
 
 @cart_bp.route("/get", methods=["GET"])
-@login_required
+@api_login_required
 def get_cart():
     """Получить содержимое корзины"""
     db = SessionLocal()
