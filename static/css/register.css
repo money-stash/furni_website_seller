@@ -5,7 +5,7 @@ html, body {
 }
 .register-hero {
   padding: 4.5rem 0;
-  background: linear-gradient(180deg, rgba(139,94,60,0.95) 0%, rgba(139,94,60,0.95) 100%);
+  background: #75584a;
 }
 
 /* Card */
