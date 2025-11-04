@@ -15,9 +15,170 @@
 		<link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet">
 		<link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet">
 		<title>Lotos - Послуги </title>
+    
+    <style>
+      /* Боковое меню */
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9998;
+        display: none;
+      }
+      
+      .sidebar-overlay.active {
+        display: block;
+      }
+      
+      .sidebar-menu {
+        position: fixed;
+        top: 0;
+        left: -400px;
+        width: 400px;
+        max-width: 90%;
+        height: 100%;
+        background: white;
+        z-index: 9999;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      }
+      
+      .sidebar-menu.active {
+        left: 0;
+      }
+      
+      .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 10;
+      }
+      
+      .sidebar-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+      
+      .sidebar-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+      }
+      
+      .sidebar-content {
+        padding: 20px;
+      }
+      
+      .category-item {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .category-item:hover {
+        background: #f8f9fa;
+      }
+      
+      .category-item.active {
+        background: #e9ecef;
+        font-weight: 600;
+      }
+      
+      .category-name {
+        font-size: 1rem;
+      }
+      
+      .category-arrow {
+        transition: transform 0.3s;
+      }
+      
+      .category-item.active .category-arrow {
+        transform: rotate(90deg);
+      }
+      
+      .products-list {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: #f8f9fa;
+      }
+      
+      .products-list.active {
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      
+      .product-item {
+        padding: 10px 15px 10px 30px;
+        border-bottom: 1px solid #e9ecef;
+        transition: background 0.2s;
+      }
+      
+      .product-item:hover {
+        background: #e9ecef;
+      }
+      
+      .product-item a {
+        text-decoration: none;
+        color: #333;
+        display: block;
+        font-size: 0.95rem;
+      }
+      
+      .product-item a:hover {
+        color: #3b5d50;
+      }
+    </style>
 	</head>
 
 	<body>
+
+    <!-- Боковое меню -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="sidebar-menu" id="sidebarMenu">
+      <div class="sidebar-header">
+        <h3>Всі категорії</h3>
+        <button class="sidebar-close" id="sidebarClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="sidebar-content">
+        {% for category in categories %}
+        <div class="category-group">
+          <div class="category-item" data-category-id="{{ category.id }}">
+            <span class="category-name">{{ category.name }}</span>
+            <i class="fas fa-chevron-right category-arrow"></i>
+          </div>
+          <div class="products-list" id="products-{{ category.id }}">
+            {% for product in products %}
+              {% if product.category and product.category.id == category.id %}
+              <div class="product-item">
+                <a href="{{ url_for('product_info', product_id=product.id) }}">
+                  {{ product.name }}
+                </a>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
 
 		<!-- Start Header/Navigation -->
     <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
@@ -130,9 +291,9 @@
           <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
             <h2 class="mb-4 section-title">Виготовлено з чудового матеріалу.</h2>
             <p class="mb-4">
-              Кожен виріб створений із любов’ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.
+              Кожен виріб створений із любов'ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.
             </p>
-            <p><a href="{{ url_for('categories_view') }}" class="btn">Пошук</a></p>
+            <p><button class="btn" id="openSidebar">Всі категорії</button></p>
           </div>
 
         {% if (categories is defined and categories|length > 0) or (selected_categories and selected_categories|length > 0) %}
@@ -243,6 +404,55 @@
 		<script src="{{url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
 		<script src="{{url_for('static', filename='js/tiny-slider.js')}}"></script>
 		<script src="{{url_for('static', filename='js/custom.js')}}"></script>
+    
+    <script>
+      // Управление боковым меню
+      const sidebar = document.getElementById('sidebarMenu');
+      const overlay = document.getElementById('sidebarOverlay');
+      const openBtn = document.getElementById('openSidebar');
+      const closeBtn = document.getElementById('sidebarClose');
+      
+      // Открыть меню
+      openBtn.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+      
+      // Закрыть меню
+      const closeSidebar = () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+      
+      closeBtn.addEventListener('click', closeSidebar);
+      overlay.addEventListener('click', closeSidebar);
+      
+      // Раскрытие списка товаров при клике на категорию
+      document.querySelectorAll('.category-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const categoryId = this.dataset.categoryId;
+          const productsList = document.getElementById(`products-${categoryId}`);
+          
+          // Закрыть все другие категории
+          document.querySelectorAll('.category-item').forEach(cat => {
+            if (cat !== this) {
+              cat.classList.remove('active');
+            }
+          });
+          document.querySelectorAll('.products-list').forEach(list => {
+            if (list !== productsList) {
+              list.classList.remove('active');
+            }
+          });
+          
+          // Переключить текущую категорию
+          this.classList.toggle('active');
+          productsList.classList.toggle('active');
+        });
+      });
+    </script>
 	</body>
 
 </html>

@@ -107,8 +107,19 @@ def index():
                 }
             )
 
+        # Загружаем все товары с предзагрузкой связей
+        products = (
+            db.query(Product)
+            .options(joinedload(Product.images), joinedload(Product.category))
+            .order_by(Product.id.desc())
+            .all()
+        )
+
         return render_template(
-            "index.html", selected_categories=selected_categories, categories=out
+            "index.html",
+            selected_categories=selected_categories,
+            categories=out,
+            products=products,
         )
     finally:
         db.close()
@@ -264,8 +275,18 @@ def services():
                 }
             )
 
+        products = (
+            db.query(Product)
+            .options(joinedload(Product.images), joinedload(Product.category))
+            .order_by(Product.id.desc())
+            .all()
+        )
+
         return render_template(
-            "services.html", selected_categories=selected_categories, categories=out
+            "services.html",
+            selected_categories=selected_categories,
+            categories=out,
+            products=products,
         )
     finally:
         db.close()
