@@ -341,14 +341,10 @@ def cart():
             .first()
         )
 
-        # если корзины нет - создаём пустую структуру
         if not cart_obj:
-            # Используем SimpleNamespace, чтобы в шаблонах dot-notation работала как ожидается
             cart_data = SimpleNamespace(items=[], total_price=0.0, total_items=0)
         else:
-            # Преобразуем relationship в список
             items_list = list(cart_obj.items)
-            # Убедимся, что total_price возвращается числом (float)
             try:
                 total_price = float(cart_obj.total_price())
             except Exception:
