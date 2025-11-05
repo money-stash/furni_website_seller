@@ -15,33 +15,39 @@
         }
         .preview-img { max-height: 150px; margin-bottom: 10px; display:block; }
         .additional-img { max-height: 100px; margin: 5px; display: block; }
-    .delete-img { background: red; color: white; border: none; cursor: pointer; border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-size: 14px; }
+        .delete-img { background: red; color: white; border: none; cursor: pointer; border-radius: 50%; width: 22px; height: 22px; line-height: 20px; text-align: center; font-size: 14px; }
 
-    .attribute-item { display: flex; gap: 8px; margin-bottom: 6px; position: relative; align-items: center; }
-    .attribute-item input { flex: 1; padding-right: 36px; }
-    .attribute-item .delete-img { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); }
+        .attribute-item { display: flex; gap: 8px; margin-bottom: 6px; position: relative; align-items: center; }
+        .attribute-item input { flex: 1; padding-right: 36px; }
+        .attribute-item .delete-img { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); }
 
-    .image-item { position: relative; display: inline-block; margin: 5px; }
-    .image-item .additional-img { max-height: 100px; display: block; }
-    .image-item .delete-img { position: absolute; top: 4px; right: 4px; }
+        .image-item { position: relative; display: inline-block; margin: 5px; }
+        .image-item .additional-img { max-height: 100px; display: block; }
+        .image-item .delete-img { position: absolute; top: 4px; right: 4px; }
 
-    .addon-list { border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
-    .addon-category { border: 1px dashed #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px; position: relative; }
-    .addon-category .remove-addon { position: absolute; top: 8px; right: 8px; background:#c0392b; color:#fff; border:none; padding:4px 8px; cursor:pointer; border-radius:4px; }
-    .addon-category h4 { margin: 0 0 8px 0; }
-    .addon-items { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
-    .addon-item { position: relative; display:inline-block; }
-    .addon-item img { max-height:80px; display:block; }
-    .addon-item .delete-img { position:absolute; top:4px; right:4px; }
-    .btn-small { padding:6px 10px; border-radius:6px; cursor:pointer; }
-</style>
+        .addon-list { border: 1px solid #e0e0e0; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        .addon-category { border: 1px dashed #ddd; padding: 10px; margin-bottom: 10px; border-radius: 6px; position: relative; }
+        .addon-category .remove-addon { position: absolute; top: 8px; right: 8px; background:#c0392b; color:#fff; border:none; padding:4px 8px; cursor:pointer; border-radius:4px; }
+        .addon-category h4 { margin: 0 0 8px 0; }
+        .addon-items { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+        .addon-item { position: relative; display:inline-block; border: 1px solid #e0e0e0; padding: 8px; border-radius: 6px; background: #f9f9f9; }
+        .addon-item img { max-height:80px; display:block; margin-bottom: 4px; }
+        .addon-item .delete-img { position:absolute; top:4px; right:4px; }
+        .addon-item input[type="text"] { width: 100%; padding: 4px; font-size: 12px; margin-top: 4px; }
+        .btn-small { padding:6px 10px; border-radius:6px; cursor:pointer; }
+        
+        .new-addon-items-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .new-addon-item-preview { border: 1px solid #e0e0e0; padding: 8px; border-radius: 6px; background: #f9f9f9; display: inline-block; }
+        .new-addon-item-preview img { max-height: 80px; display: block; margin-bottom: 4px; }
+        .new-addon-item-preview input { width: 150px; padding: 4px; font-size: 12px; }
+    </style>
 
 </head>
 <body>
 <nav class="admin-nav">
-      <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Головне управління</a>
-  <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управління товарами</a>
-  <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Налаштування сайту</a>
+    <a href="{{ url_for('admin.admin_panel') }}" class="nav-btn">Головне управління</a>
+    <a href="{{ url_for('admin.admin_products') }}" class="nav-btn">Управління товарами</a>
+    <a href="{{ url_for('admin.admin_settings') }}" class="nav-btn">Налаштування сайту</a>
 </nav>
 
 <div class="admin-container">
@@ -138,17 +144,21 @@
                         <input type="number" step="0.01" name="addon_price_{{ addon.id }}" value="{{ addon.price }}">
                     </div>
                     <div class="form-group">
-                        <label>Елементи (зображення)</label>
+                        <label>Елементи</label>
                         <div class="addon-items" data-addon-id="{{ addon.id }}">
                             {% for item in addon.items %}
                                 <div class="addon-item">
+                                    {% if item.image_path %}
                                     <img src="{{ url_for('static', filename=item.image_path[7:] if item.image_path.startswith('static/') else item.image_path) }}">
+                                    {% endif %}
+                                    <input type="text" name="addon_item_name_{{ addon.id }}_{{ item.id }}" value="{{ item.name }}" placeholder="Назва елемента">
                                     <button type="button" class="delete-img">&times;</button>
-                                    <input type="hidden" name="existing_addon_items_{{ addon.id }}" value="{{ item.image_path }}">
+                                    <input type="hidden" name="existing_addon_item_ids_{{ addon.id }}" value="{{ item.id }}">
                                 </div>
                             {% endfor %}
                         </div>
-                        <input type="file" name="addon_items_{{ addon.id }}" multiple accept="image/*">
+                        <input type="file" name="addon_items_{{ addon.id }}" multiple accept="image/*" class="addon-file-input" data-addon-id="{{ addon.id }}">
+                        <div class="new-addon-items-preview" data-addon-id="{{ addon.id }}"></div>
                     </div>
                 </div>
             {% endfor %}
@@ -195,9 +205,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const parentAttr = this.closest('.attribute-item');
                 const parentImg = this.closest('.image-item');
                 const parentAddonItem = this.closest('.addon-item');
+                const parentNewPreview = this.closest('.new-addon-item-preview');
                 if (parentAttr) parentAttr.remove();
                 else if (parentImg) parentImg.remove();
                 else if (parentAddonItem) parentAddonItem.remove();
+                else if (parentNewPreview) parentNewPreview.remove();
             });
         });
 
@@ -212,6 +224,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     attachDeleteHandlers();
+
+    // Обработка превью для новых файлов существующих addon категорий
+    document.querySelectorAll('.addon-file-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const addonId = this.getAttribute('data-addon-id');
+            const previewContainer = document.querySelector(`.new-addon-items-preview[data-addon-id="${addonId}"]`);
+            if (!previewContainer) return;
+            
+            previewContainer.innerHTML = '';
+            
+            Array.from(this.files).forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'new-addon-item-preview';
+                    div.innerHTML = `
+                        <img src="${e.target.result}">
+                        <input type="text" class="new-addon-item-name" data-index="${idx}" placeholder="Назва елемента">
+                        <button type="button" class="delete-img">&times;</button>
+                    `;
+                    previewContainer.appendChild(div);
+                    attachDeleteHandlers(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    });
 
     const addAttrBtn = document.getElementById('add-attribute');
     addAttrBtn.addEventListener('click', function() {
@@ -244,13 +283,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 <input type="number" step="0.01" name="addon_price_new[]" value="0">
             </div>
             <div class="form-group">
-                <label>Елементи (зображення)</label>
+                <label>Елементи</label>
                 <div class="addon-items" data-new-index="${idx}"></div>
-                <input type="file" name="addon_items_new_${idx}" multiple accept="image/*">
+                <input type="file" name="addon_items_new_${idx}" class="new-addon-file-input" data-new-index="${idx}" multiple accept="image/*">
+                <div class="new-addon-items-preview" data-new-index="${idx}"></div>
             </div>
         `;
         newAddonsContainer.appendChild(block);
         attachDeleteHandlers(block);
+        
+        // Добавляем обработчик для новых файлов
+        const fileInput = block.querySelector('.new-addon-file-input');
+        fileInput.addEventListener('change', function() {
+            const newIndex = this.getAttribute('data-new-index');
+            const previewContainer = block.querySelector(`.new-addon-items-preview[data-new-index="${newIndex}"]`);
+            if (!previewContainer) return;
+            
+            previewContainer.innerHTML = '';
+            
+            Array.from(this.files).forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'new-addon-item-preview';
+                    div.innerHTML = `
+                        <img src="${e.target.result}">
+                        <input type="text" class="new-addon-item-name" data-index="${idx}" placeholder="Назва елемента">
+                        <button type="button" class="delete-img">&times;</button>
+                    `;
+                    previewContainer.appendChild(div);
+                    attachDeleteHandlers(div);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
     });
 
     form.addEventListener('submit', async function(e) {
@@ -285,6 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const attrValues = attrInputs.map(i => i.value.trim()).filter(v => v.length > 0);
         fd.append('attributes', attrValues.join(';'));
 
+        // Существующие addon категории
         document.querySelectorAll('.addon-category-existing').forEach(block => {
             const addonId = block.getAttribute('data-addon-id');
             if (!addonId) return;
@@ -295,16 +362,32 @@ document.addEventListener('DOMContentLoaded', function() {
             if (nameEl) fd.append(`addon_name_${addonId}`, nameEl.value);
             if (priceEl) fd.append(`addon_price_${addonId}`, priceEl.value);
 
-            block.querySelectorAll(`input[name="existing_addon_items_${addonId}"]`).forEach(h => {
-                if (h.value) fd.append(`existing_addon_items_${addonId}`, h.value);
+            // ID существующих элементов
+            block.querySelectorAll(`input[name="existing_addon_item_ids_${addonId}"]`).forEach(h => {
+                if (h.value) fd.append(`existing_addon_item_ids_${addonId}`, h.value);
             });
 
+            // Имена существующих элементов
+            block.querySelectorAll(`input[name^="addon_item_name_${addonId}_"]`).forEach(inp => {
+                fd.append(inp.name, inp.value);
+            });
+
+            // Новые файлы для существующей категории
             const fileInput = block.querySelector(`input[name="addon_items_${addonId}"]`);
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
                 Array.from(fileInput.files).forEach(f => fd.append(`addon_items_${addonId}`, f));
+                
+                // Собираем имена для новых файлов
+                const previewContainer = block.querySelector(`.new-addon-items-preview[data-addon-id="${addonId}"]`);
+                if (previewContainer) {
+                    previewContainer.querySelectorAll('.new-addon-item-name').forEach(inp => {
+                        fd.append(`addon_item_names_${addonId}[]`, inp.value || '');
+                    });
+                }
             }
         });
 
+        // Новые addon категории
         document.querySelectorAll('.addon-category-new').forEach(block => {
             const newIndex = block.getAttribute('data-new-index');
             const nameEl = block.querySelector('input[name="addon_name_new[]"]');
@@ -315,6 +398,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileInput = block.querySelector(`input[name="addon_items_new_${newIndex}"]`);
             if (fileInput && fileInput.files && fileInput.files.length > 0) {
                 Array.from(fileInput.files).forEach(f => fd.append(`addon_items_new_${newIndex}`, f));
+                
+                // Собираем имена для новых файлов
+                const previewContainer = block.querySelector(`.new-addon-items-preview[data-new-index="${newIndex}"]`);
+                if (previewContainer) {
+                    previewContainer.querySelectorAll('.new-addon-item-name').forEach(inp => {
+                        fd.append(`addon_item_names_new_${newIndex}[]`, inp.value || '');
+                    });
+                }
             }
         });
 
@@ -348,4 +439,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
-

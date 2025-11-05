@@ -121,7 +121,7 @@
 
       <div class="col-12 col-md-4 col-lg-3 mb-5 product-col"
            data-category="{{ (p.category.name if p.category else '')|lower }}"
-           data-price="{{ '%.2f' % price_with_discount }}">
+           data-price="{{ '%.0f' % price_with_discount }}">
         <a class="product-item d-block text-decoration-none" href="{{ url_for('product_info', product_id=p.id) }}">
           
           <!-- FIXED THUMBNAIL BLOCK -->
@@ -142,11 +142,11 @@
 
             {% if discount and discount|float > 0 %}
               <div class="d-flex flex-column">
-                <strong class="product-price text-muted" style="text-decoration:line-through;">₴{{ '%.2f' % p.price }}</strong>
-                <div class="product-discount mt-1">→ <strong class="text-success">₴{{ '%.2f' % price_with_discount }}</strong> <small class="text-muted">({{ discount }}% off)</small></div>
+                <strong class="product-price text-muted" style="text-decoration:line-through;">₴{{ '%.0f' % p.price }}</strong>
+                <div class="product-discount mt-1">→ <strong class="text-success">₴{{ '%.0f' % price_with_discount }}</strong> <small class="text-muted">({{ discount }}% off)</small></div>
               </div>
             {% else %}
-              <strong class="product-price" style="color:black;">₴{{ '%.2f' % p.price }}</strong>
+              <strong class="product-price" style="color:black;">₴{{ '%.0f' % p.price }}</strong>
             {% endif %}
           </div>
 

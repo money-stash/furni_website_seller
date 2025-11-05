@@ -124,18 +124,20 @@ class AddOnItem(Base):
     addon_category_id = Column(
         Integer, ForeignKey("addon_categories.id"), nullable=False
     )
-    image_path = Column(String(512), nullable=False)
+    name = Column(String(255), nullable=False)
+    image_path = Column(String(512), nullable=True)
 
     addon_category = relationship("AddOnCategory", back_populates="items")
 
     def as_dict(self):
         return {
             "id": self.id,
+            "name": self.name,
             "image_path": self.image_path,
         }
 
     def __repr__(self):
-        return f"<AddOnItem(id={self.id}, addon_category_id={self.addon_category_id})>"
+        return f"<AddOnItem(id={self.id}, name={self.name!r}, addon_category_id={self.addon_category_id})>"
 
 
 class User(Base):

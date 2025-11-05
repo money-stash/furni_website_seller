@@ -155,36 +155,57 @@ def update_product(product_id):
             addon.name = name_field or addon.name
             addon.price = price_val
 
-            keep_items = request.form.getlist(f"existing_addon_items_{addon_id}")
-            keep_items = [p for p in keep_items if p]
+            # Обработка существующих элементов addon с их именами
+            keep_items_ids = request.form.getlist(f"existing_addon_item_ids_{addon_id}")
+            keep_items_ids = [int(i) for i in keep_items_ids if i]
+
             for item in list(addon.items):
-                if item.image_path not in keep_items:
-                    try:
-                        full_path = os.path.join(BASE_DIR, item.image_path)
-                        if os.path.exists(full_path):
-                            os.remove(full_path)
-                    except Exception as e:
-                        print("Cannot delete addon item file:", e)
+                if item.id not in keep_items_ids:
+                    # Удаляем элемент
+                    if item.image_path:
+                        try:
+                            full_path = os.path.join(BASE_DIR, item.image_path)
+                            if os.path.exists(full_path):
+                                os.remove(full_path)
+                        except Exception as e:
+                            print("Cannot delete addon item file:", e)
                     try:
                         db.delete(item)
                     except Exception as e:
                         print("Cannot delete AddOnItem record:", e)
+                else:
+                    # Обновляем имя элемента
+                    item_name = request.form.get(
+                        f"addon_item_name_{addon_id}_{item.id}", ""
+                    ).strip()
+                    if item_name:
+                        item.name = item_name
 
+            # Добавление новых элементов к существующей категории
             files_key = f"addon_items_{addon_id}"
+            names_key = f"addon_item_names_{addon_id}[]"
             if files_key in request.files:
                 files = request.files.getlist(files_key)
-                for f in files:
+                names = request.form.getlist(names_key)
+                for idx, f in enumerate(files):
                     if f and f.filename != "":
                         filename = secure_filename(f.filename)
                         save_name = f"addon_{addon_id}_{filename}"
                         save_path = os.path.join(UPLOAD_FOLDER, save_name)
                         f.save(save_path)
+
+                        item_name = names[idx].strip() if idx < len(names) else ""
+                        if not item_name:
+                            item_name = f"Элемент {idx + 1}"
+
                         item = AddOnItem(
                             addon_category_id=addon.id,
+                            name=item_name,
                             image_path=os.path.relpath(save_path, BASE_DIR),
                         )
                         db.add(item)
 
+        # Обработка новых категорий addon
         new_addon_names = request.form.getlist("addon_name_new[]")
         new_addon_prices = request.form.getlist("addon_price_new[]")
         for idx, name_new in enumerate(new_addon_names):
@@ -203,17 +224,28 @@ def update_product(product_id):
             )
             db.add(new_addon)
             db.flush()
+
             files_key_new = f"addon_items_new_{idx}"
+            names_key_new = f"addon_item_names_new_{idx}[]"
             if files_key_new in request.files:
                 files = request.files.getlist(files_key_new)
-                for f in files:
+                names = request.form.getlist(names_key_new)
+                for file_idx, f in enumerate(files):
                     if f and f.filename != "":
                         filename = secure_filename(f.filename)
                         save_name = f"addon_new_{new_addon.id}_{filename}"
                         save_path = os.path.join(UPLOAD_FOLDER, save_name)
                         f.save(save_path)
+
+                        item_name = (
+                            names[file_idx].strip() if file_idx < len(names) else ""
+                        )
+                        if not item_name:
+                            item_name = f"Элемент {file_idx + 1}"
+
                         item = AddOnItem(
                             addon_category_id=new_addon.id,
+                            name=item_name,
                             image_path=os.path.relpath(save_path, BASE_DIR),
                         )
                         db.add(item)
