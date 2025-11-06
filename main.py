@@ -3,6 +3,7 @@ import os
 from types import SimpleNamespace
 from flask import (
     Flask,
+    jsonify,
     render_template,
     redirect,
     request,
@@ -107,7 +108,6 @@ def index():
                 }
             )
 
-        # Загружаем все товары с предзагрузкой связей
         products = (
             db.query(Product)
             .options(joinedload(Product.images), joinedload(Product.category))
@@ -115,11 +115,39 @@ def index():
             .all()
         )
 
+        product_dicts = []
+        for p in products:
+            product_dicts.append(
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "description": p.description,
+                    "price": p.price,
+                    "category": {
+                        "id": p.category.id if p.category else None,
+                        "name": p.category.name if p.category else None,
+                    },
+                    "image_url": (
+                        None
+                        if not p.images
+                        else (p.images[0].url if hasattr(p.images[0], "url") else None)
+                    ),
+                    "images": [
+                        {
+                            "id": img.id,
+                            "url": getattr(img, "url", None),
+                            "path": getattr(img, "path", None),
+                        }
+                        for img in getattr(p, "images", [])
+                    ],
+                }
+            )
+
         return render_template(
             "index.html",
             selected_categories=selected_categories,
             categories=out,
-            products=products,
+            products=product_dicts,
         )
     finally:
         db.close()

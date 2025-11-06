@@ -13,133 +13,126 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
     <link href="{{url_for('static', filename='css/tiny-slider.css')}}" rel="stylesheet" />
     <link href="{{url_for('static', filename='css/style.css')}}" rel="stylesheet" />
+    <link href="{{url_for('static', filename='css/index.css')}}" rel="stylesheet" />
     <title>Lotos</title>
-    
     <style>
-      /* Боковое меню */
-      .sidebar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
+      .search-container {
+        position: relative;
+        max-width: 600px;
+      }
+      
+      .search-input-wrapper {
+        position: relative;
+      }
+      
+      .search-input {
         width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 9998;
+        padding: 12px 45px 12px 15px;
+        border: 2px solid #3b5d50;
+        border-radius: 25px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
+      
+      .search-input:focus {
+        outline: none;
+        border-color: #2f4e43;
+        box-shadow: 0 0 0 3px rgba(59, 93, 80, 0.1);
+      }
+      
+      .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #3b5d50;
+        pointer-events: none;
+      }
+      
+      .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        margin-top: 5px;
+        max-height: 400px;
+        overflow-y: auto;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
         display: none;
       }
       
-      .sidebar-overlay.active {
+      .search-results.active {
         display: block;
       }
       
-      .sidebar-menu {
-        position: fixed;
-        top: 0;
-        left: -400px;
-        width: 400px;
-        max-width: 90%;
-        height: 100%;
-        background: white;
-        z-index: 9999;
-        transition: left 0.3s ease;
-        overflow-y: auto;
-        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-      }
-      
-      .sidebar-menu.active {
-        left: 0;
-      }
-      
-      .sidebar-header {
-        padding: 20px;
-        border-bottom: 1px solid #eee;
+      .search-result-item {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        position: sticky;
-        top: 0;
-        background: white;
-        z-index: 10;
-      }
-      
-      .sidebar-header h3 {
-        margin: 0;
-        font-size: 1.5rem;
-      }
-      
-      .sidebar-close {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #333;
-      }
-      
-      .sidebar-content {
-        padding: 20px;
-      }
-      
-      .category-item {
         padding: 12px 15px;
         border-bottom: 1px solid #f0f0f0;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: background-color 0.2s;
+        text-decoration: none;
+        color: inherit;
+      }
+      
+      .search-result-item:hover {
+        background-color: #f8f9fa;
+      }
+      
+      .search-result-item:last-child {
+        border-bottom: none;
+      }
+      
+      .search-result-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .search-result-content {
+        flex: 1;
+      }
+      
+      .search-result-name {
+        font-weight: 500;
+        margin-bottom: 3px;
+        color: #2f4e43;
+      }
+      
+      .search-result-details {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        font-size: 14px;
+        color: #6c757d;
       }
       
-      .category-item:hover {
-        background: #f8f9fa;
+      .search-result-category {
+        font-size: 13px;
       }
       
-      .category-item.active {
-        background: #e9ecef;
+      .search-result-price {
         font-weight: 600;
+        color: #3b5d50;
       }
       
-      .category-name {
-        font-size: 1rem;
+      .search-no-results {
+        padding: 20px;
+        text-align: center;
+        color: #6c757d;
       }
       
-      .category-arrow {
-        transition: transform 0.3s;
-      }
-      
-      .category-item.active .category-arrow {
-        transform: rotate(90deg);
-      }
-      
-      .products-list {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
-        background: #f8f9fa;
-      }
-      
-      .products-list.active {
-        max-height: 500px;
-        overflow-y: auto;
-      }
-      
-      .product-item {
-        padding: 10px 15px 10px 30px;
-        border-bottom: 1px solid #e9ecef;
-        transition: background 0.2s;
-      }
-      
-      .product-item:hover {
-        background: #e9ecef;
-      }
-      
-      .product-item a {
-        text-decoration: none;
-        color: #333;
-        display: block;
-        font-size: 0.95rem;
-      }
-      
-      .product-item a:hover {
+      .search-loading {
+        padding: 20px;
+        text-align: center;
         color: #3b5d50;
       }
     </style>
@@ -159,11 +152,11 @@
       <div class="sidebar-content">
         {% for category in categories %}
         <div class="category-group">
-          <div class="category-item" data-category-id="{{ category.id }}">
+          <a class="category-item" data-category-id="{{ category.id }}" href="{{ url_for('shop', category=(category.name)|lower) }}">
             <span class="category-name">{{ category.name }}</span>
             <i class="fas fa-chevron-right category-arrow"></i>
-          </div>
-          <div class="products-list" id="products-{{ category.id }}">
+          </a>
+          <div class="products-list" id="products-{{ category.id }}" style="display: none;">
             {% for product in products %}
               {% if product.category and product.category.id == category.id %}
               <div class="product-item">
@@ -225,11 +218,8 @@
           <div class="col-lg-5">
             <div class="intro-excerpt">
               <h1>
-                Студія Сучасного <span clsas="d-block">Дизайну Iнтер'єру</span>
+                Інтернет магазин  <span clsas="d-block">сучасних меблів</span>
               </h1>
-              <p class="mb-4">
-                Допоможемо у створенні сучасного дизайну інтер'єру.
-              </p>
               <p>
                 <a href="{{url_for('categories_view')}}" class="btn btn-secondary me-2">Купуйте зараз</a
                 ><a href="{{url_for('categories_view')}}" class="btn btn-white-outline">Пошук</a>
@@ -251,10 +241,26 @@
       <div class="container">
         <div class="row">
           <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-            <h2 class="mb-4 section-title">Виготовлено з чудового матеріалу.</h2>
+            <h2 class="mb-4 section-title">Пошук товарів</h2>
             <p class="mb-4">
-              Кожен виріб створений із любов'ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.
+              Виготовлено з якісних, перевірених матеріалів. Надійність, довговічність і стиль у кожному виробі.
             </p>
+            
+            <!-- Search Container -->
+            <div class="search-container mb-4">
+              <div class="search-input-wrapper">
+                <input 
+                  type="text" 
+                  id="productSearch" 
+                  class="search-input" 
+                  placeholder="Введіть назву товару..."
+                  autocomplete="off"
+                />
+                <i class="fas fa-search search-icon"></i>
+              </div>
+              <div class="search-results" id="searchResults"></div>
+            </div>
+            
             <p><button class="btn" id="openSidebar">Всі категорії</button></p>
           </div>
 
@@ -318,7 +324,7 @@
                     Ми доставляємо меблі по всій Україні швидко та акуратно.
 Ваше замовлення прибуде вчасно й у відмінному стані — без затримок та пошкоджень.
 Вартість доставки розраховується згідно з тарифами перевізника або залежно від відстані.
-Обирайте зручний спосіб отримання — кур’єром «Нової пошти» чи самовивіз із магазину в Полтаві, вул. Соборності, 72.
+Обирайте зручний спосіб отримання — кур'єром «Нової пошти» чи самовивіз із магазину в Полтаві, вул. Соборності, 72.
                   </p>
                 </div>
               </div>
@@ -332,7 +338,7 @@
                   <p>
                     Обирайте меблі легко та з комфортом, не виходячи з дому.
 Наш сайт має зручний інтерфейс, детальні фото та точні описи, щоб ви бачили, що купуєте.
-Оформити замовлення можна в один клік, а наш менеджер зв’яжеться для підтвердження та уточнення деталей.
+Оформити замовлення можна в один клік, а наш менеджер зв'яжеться для підтвердження та уточнення деталей.
 Онлайн-покупки з нами — це швидко, просто та надійно!
                   </p>
                 </div>
@@ -351,7 +357,7 @@
                   <p>
                     Наша команда завжди поруч, щоб допомогти з вибором меблів, оформленням замовлення чи будь-якими питаннями.
 Ми працюємо щодня з 10:00 до 20:00 — без вихідних.
-Зв’язатися з нами можна через соціальні мережі, месенджери або телефоном — обирайте зручний спосіб, і ми швидко відповімо!
+Зв'язатися з нами можна через соціальні мережі, месенджери або телефоном — обирайте зручний спосіб, і ми швидко відповімо!
                   </p>
                 </div>
               </div>
@@ -422,123 +428,6 @@
     </div>
   </div>
   <!-- End We Help Section -->
-
-
-  <!-- Start Testimonial Slider -->
-      <div class="testimonial-section">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-7 mx-auto text-center">
-              <h2 class="section-title">Відгуки</h2>
-            </div>
-          </div>
-
-          <div class="row justify-content-center">
-            <div class="col-lg-12">
-              <div class="testimonial-slider-wrap text-center">
-                <div id="testimonial-nav">
-                  <span class="prev" data-controls="prev"
-                    ><span class="fa fa-chevron-left"></span
-                  ></span>
-                  <span class="next" data-controls="next"
-                    ><span class="fa fa-chevron-right"></span
-                  ></span>
-                </div>
-
-                <div class="testimonial-slider">
-                  <div class="item">
-                    <div class="row justify-content-center">
-                      <div class="col-lg-8 mx-auto">
-                        <div class="testimonial-block text-center">
-                          <blockquote class="mb-5">
-                            <p>
-                              &ldquo;Замовляла шафу та приліжкові тумби. Все отримала через «Нову пошту», доставка швидка, пакування надійне. Колір і якість повністю відповідають опису на сайті. Дуже задоволена покупкою!&rdquo;
-                            </p>
-                          </blockquote>
-
-                          <div class="author-info">
-                            <div class="author-pic">
-                              <img
-                                src="{{url_for('static', filename='images/0.jpeg')}}"
-                                alt="Maria Jones"
-                                class="img-fluid"
-                              />
-                            </div>
-                            <h3 class="font-weight-bold">Олена Мельник</h3>
-                            <span class="position d-block mb-3"
-                              >Київ</span
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- END item -->
-
-                  <div class="item">
-                    <div class="row justify-content-center">
-                      <div class="col-lg-8 mx-auto">
-                        <div class="testimonial-block text-center">
-                          <blockquote class="mb-5">
-                            <p>
-                              &ldquo;Купував комод у вітальню. Замовлення оформив легко, менеджер одразу уточнив деталі та повідомив про терміни. Доставили без затримок, усе ціле, виглядає навіть краще, ніж очікував.&rdquo;
-                            </p>
-                          </blockquote>
-
-                          <div class="author-info">
-                            <div class="author-pic">
-                              <img
-                                src="{{url_for('static', filename='images/secpers.jpeg')}}"
-                                alt="Maria Jones"
-                                class="img-fluid"
-                              />
-                            </div>
-                            <h3 class="font-weight-bold">Андрій Мазур</h3>
-                            <span class="position d-block mb-3"
-                              >Львів</span
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- END item -->
-
-                  <div class="item">
-                    <div class="row justify-content-center">
-                      <div class="col-lg-8 mx-auto">
-                        <div class="testimonial-block text-center">
-                          <blockquote class="mb-5">
-                            <p>
-                              &ldquo;Брала кухонний стіл. Фото на сайті відповідає реальності, поверхня гладенька, без дефектів. Привезли швидко, упаковка міцна, меблі гарної якості. Рекомендую магазин!&rdquo;
-                            </p>
-                          </blockquote>
-
-                          <div class="author-info">
-                            <div class="author-pic">
-                              <img
-                                src="{{url_for('static', filename='images/katya4.jpg')}}"
-                                alt="Maria Jones"
-                                class="img-fluid"
-                              />
-                            </div>
-                            <h3 class="font-weight-bold">Катерина Мартинюк</h3>
-                            <span class="position d-block mb-3"
-                              >Полтава</span
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- END item -->
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- End Testimonial Slider -->
 
     <!-- Start Footer Section -->
     <footer class="footer-section">
@@ -615,52 +504,117 @@
     <script src="{{url_for('static', filename='js/custom.js')}}"></script>
     
     <script>
-      // Управление боковым меню
-      const sidebar = document.getElementById('sidebarMenu');
-      const overlay = document.getElementById('sidebarOverlay');
-      const openBtn = document.getElementById('openSidebar');
-      const closeBtn = document.getElementById('sidebarClose');
-      
-      // Открыть меню
-      openBtn.addEventListener('click', () => {
-        sidebar.classList.add('active');
-        overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-      
-      // Закрыть меню
-      const closeSidebar = () => {
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-      };
-      
-      closeBtn.addEventListener('click', closeSidebar);
-      overlay.addEventListener('click', closeSidebar);
-      
-      // Раскрытие списка товаров при клике на категорию
-      document.querySelectorAll('.category-item').forEach(item => {
-        item.addEventListener('click', function() {
-          const categoryId = this.dataset.categoryId;
-          const productsList = document.getElementById(`products-${categoryId}`);
-          
-          // Закрыть все другие категории
-          document.querySelectorAll('.category-item').forEach(cat => {
-            if (cat !== this) {
-              cat.classList.remove('active');
-            }
-          });
-          document.querySelectorAll('.products-list').forEach(list => {
-            if (list !== productsList) {
-              list.classList.remove('active');
-            }
-          });
-          
-          // Переключить текущую категорию
-          this.classList.toggle('active');
-          productsList.classList.toggle('active');
-        });
-      });
-    </script>
+const sidebar = document.getElementById('sidebarMenu');
+const overlay = document.getElementById('sidebarOverlay');
+const openBtn = document.getElementById('openSidebar');
+const closeBtn = document.getElementById('sidebarClose');
+
+openBtn.addEventListener('click', () => {
+  sidebar.classList.add('active');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+});
+
+const closeSidebar = () => {
+  sidebar.classList.remove('active');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+closeBtn.addEventListener('click', closeSidebar);
+overlay.addEventListener('click', closeSidebar);
+
+document.querySelectorAll('.category-item').forEach(a => {
+  a.addEventListener('click', function() {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+});
+
+const PRODUCTS = {{ products|tojson|safe }};
+
+const searchInput = document.getElementById('productSearch');
+const searchResults = document.getElementById('searchResults');
+let searchTimeout = null;
+
+function getProductImageHtml(p) {
+  const urlCandidates = [];
+  if (p.image_url) urlCandidates.push(p.image_url);
+  if (p.image_path) urlCandidates.push(p.image_path);
+  if (p.images && Array.isArray(p.images) && p.images.length) {
+    if (p.images[0].url) urlCandidates.push(p.images[0].url);
+    if (p.images[0].path) urlCandidates.push(p.images[0].path);
+  }
+  const src = urlCandidates.find(u => !!u) || null;
+  if (src) {
+    return `<img src="${src}" alt="${(p.name||'').replace(/"/g,'&quot;')}" class="search-result-image" />`;
+  } else {
+    return '<div class="search-result-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fas fa-image"></i></div>';
+  }
+}
+
+function formatPrice(p) {
+  if (p == null || p === '' || isNaN(Number(p))) return '';
+  return `${Number(p).toFixed(2)} грн`;
+}
+
+searchInput.addEventListener('input', function() {
+  const query = this.value.trim().toLowerCase();
+  if (searchTimeout) clearTimeout(searchTimeout);
+  if (query.length < 2) {
+    searchResults.classList.remove('active');
+    searchResults.innerHTML = '';
+    return;
+  }
+  searchResults.classList.add('active');
+  searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin"></i> Пошук...</div>';
+  searchTimeout = setTimeout(() => {
+    const matched = PRODUCTS.filter(p => {
+      if (!p) return false;
+      const name = (p.name || '').toString().toLowerCase();
+      const desc = (p.description || '').toString().toLowerCase();
+      const categoryName = (p.category && (p.category.name || p.category)) ? (p.category.name || p.category).toString().toLowerCase() : '';
+      return name.includes(query) || desc.includes(query) || categoryName.includes(query);
+    });
+    if (matched.length === 0) {
+      searchResults.innerHTML = '<div class="search-no-results">Товари не знайдено</div>';
+    } else {
+      const html = matched.slice(0, 30).map(product => {
+        const imageHtml = getProductImageHtml(product);
+        const categoryText = product.category ? (product.category.name || product.category) : '';
+        const priceText = formatPrice(product.price);
+        const safeName = (product.name||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        const href = product.id ? `/product/${product.id}` : '#';
+        return `<a href="${href}" class="search-result-item">
+                  ${imageHtml}
+                  <div class="search-result-content">
+                    <div class="search-result-name">${safeName}</div>
+                    <div class="search-result-details">
+                      ${categoryText ? `<span class="search-result-category">${categoryText}</span>` : ''}
+                      ${priceText ? `<span class="search-result-price">${priceText}</span>` : ''}
+                    </div>
+                  </div>
+                </a>`;
+      }).join('');
+      searchResults.innerHTML = html;
+    }
+  }, 300);
+});
+
+document.addEventListener('click', function(e) {
+  if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+    searchResults.classList.remove('active');
+  }
+});
+
+searchInput.addEventListener('focus', function() {
+  if (this.value.trim().length >= 2 && searchResults.innerHTML) {
+    searchResults.classList.add('active');
+  }
+});
+</script>
+
+
   </body>
 </html>
