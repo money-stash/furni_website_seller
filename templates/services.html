@@ -160,11 +160,11 @@
       <div class="sidebar-content">
         {% for category in categories %}
         <div class="category-group">
-          <div class="category-item" data-category-id="{{ category.id }}">
+          <a class="category-item" href="{{ url_for('shop', category=(category.name)|lower) }}">
             <span class="category-name">{{ category.name }}</span>
             <i class="fas fa-chevron-right category-arrow"></i>
-          </div>
-          <div class="products-list" id="products-{{ category.id }}">
+          </a>
+          <div class="products-list" id="products-{{ category.id }}" style="display: none;">
             {% for product in products %}
               {% if product.category and product.category.id == category.id %}
               <div class="product-item">
@@ -176,6 +176,7 @@
             {% endfor %}
           </div>
         </div>
+
         {% endfor %}
       </div>
     </div>
@@ -290,7 +291,7 @@
           <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
             <h2 class="mb-4 section-title">Виготовлено з чудового матеріалу.</h2>
             <p class="mb-4">
-              Кожен виріб створений із любов'ю до деталей. Ми використовуємо лише перевірені матеріали, які поєднують міцність, довговічність і стиль.
+              Виготовлено з якісних, перевірених матеріалів. Надійність, довговічність і стиль у кожному виробі.
             </p>
             <p><button class="btn" id="openSidebar">Всі категорії</button></p>
           </div>
@@ -355,6 +356,7 @@
     <li>
       <a href="https://www.instagram.com/lotos_mebel_ua"><span class="fa fa-brands fa-instagram"></span></a>
       <a href="https://t.me/Artem050620" target="_blank"><span class="fa fa-brands fa-telegram"></span></a>
+                <a href="https://m.facebook.com/lotosmebelua/" target="_blank"><span class="fa fa-brands fa-facebook"></span></a>
     </li>
   </ul>
 </div>
@@ -432,28 +434,14 @@
       overlay.addEventListener('click', closeSidebar);
       
       // Раскрытие списка товаров при клике на категорию
-      document.querySelectorAll('.category-item').forEach(item => {
-        item.addEventListener('click', function() {
-          const categoryId = this.dataset.categoryId;
-          const productsList = document.getElementById(`products-${categoryId}`);
-          
-          // Закрыть все другие категории
-          document.querySelectorAll('.category-item').forEach(cat => {
-            if (cat !== this) {
-              cat.classList.remove('active');
-            }
-          });
-          document.querySelectorAll('.products-list').forEach(list => {
-            if (list !== productsList) {
-              list.classList.remove('active');
-            }
-          });
-          
-          // Переключить текущую категорию
-          this.classList.toggle('active');
-          productsList.classList.toggle('active');
+      document.querySelectorAll('.category-item').forEach(a => {
+        a.addEventListener('click', function(e) {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
         });
       });
+
     </script>
 	</body>
 
