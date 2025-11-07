@@ -48,92 +48,151 @@
         color: #3b5d50;
         pointer-events: none;
       }
-      
-      .search-results {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
+
+      /* Product card styles */
+      .product-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
         background: white;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        margin-top: 5px;
-        max-height: 400px;
-        overflow-y: auto;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-        display: none;
       }
-      
-      .search-results.active {
-        display: block;
+
+      .product-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
       }
-      
-      .search-result-item {
+
+      .product-image-container {
+        position: relative;
+        width: 100%;
+        padding-top: 100%;
+        overflow: hidden;
+        background: #f8f9fa;
+      }
+
+      .product-image-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-image-container .no-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
-        padding: 12px 15px;
-        border-bottom: 1px solid #f0f0f0;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        text-decoration: none;
-        color: inherit;
+        justify-content: center;
+        color: #999;
+        font-size: 14px;
       }
-      
-      .search-result-item:hover {
-        background-color: #f8f9fa;
-      }
-      
-      .search-result-item:last-child {
-        border-bottom: none;
-      }
-      
-      .search-result-image {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 5px;
-        margin-right: 15px;
-        flex-shrink: 0;
-      }
-      
-      .search-result-content {
+
+      .product-card-body {
+        padding: 15px;
         flex: 1;
+        display: flex;
+        flex-direction: column;
       }
-      
-      .search-result-name {
-        font-weight: 500;
-        margin-bottom: 3px;
+
+      .product-name {
+        font-size: 16px;
+        font-weight: 600;
         color: #2f4e43;
+        margin-bottom: 8px;
+        line-height: 1.3;
+        min-height: 40px;
       }
-      
-      .search-result-details {
+
+      .product-category {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 10px;
+      }
+
+      .product-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: #3b5d50;
+        margin-top: auto;
+      }
+
+      .search-results-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #3b5d50;
+      }
+
+      .search-results-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2f4e43;
+        margin: 0;
+      }
+
+      .search-results-count {
         font-size: 14px;
         color: #6c757d;
       }
-      
-      .search-result-category {
-        font-size: 13px;
+
+      .clear-search-btn {
+        background: #3b5d50;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
       }
-      
-      .search-result-price {
-        font-weight: 600;
-        color: #3b5d50;
+
+      .clear-search-btn:hover {
+        background: #2f4e43;
       }
-      
-      .search-no-results {
-        padding: 20px;
+
+      .no-results {
         text-align: center;
+        padding: 60px 20px;
         color: #6c757d;
       }
-      
-      .search-loading {
-        padding: 20px;
-        text-align: center;
-        color: #3b5d50;
+
+      .no-results i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #ddd;
+      }
+
+      .no-results h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #2f4e43;
+      }
+
+      /* Адаптивность для мобильных устройств */
+      @media (max-width: 767px) {
+        .product-name {
+          font-size: 15px;
+          min-height: 38px;
+        }
+
+        .product-price {
+          font-size: 16px;
+        }
+
+        .search-results-title {
+          font-size: 20px;
+        }
       }
     </style>
   </head>
@@ -253,50 +312,62 @@
                   type="text" 
                   id="productSearch" 
                   class="search-input" 
-                  placeholder="Введіть назву товару..."
+                  placeholder="Введіть назву товару та натисніть Enter..."
                   autocomplete="off"
                 />
                 <i class="fas fa-search search-icon"></i>
               </div>
-              <div class="search-results" id="searchResults"></div>
             </div>
             
             <p><button class="btn" id="openSidebar">Всі категорії</button></p>
           </div>
 
-        {% if (categories is defined and categories|length > 0) or (selected_categories and selected_categories|length > 0) %}
-          {% set cats = categories if categories is defined else selected_categories %}
-          {% set cats = cats|sort(attribute='name') %}
-          {% set cats = cats|sort(attribute='tier') %}
-          <div class="col-12 col-md-9">
-            <div class="row g-3">
-              {% for cat in cats %}
-              <div class="col-6 col-sm-6 col-md-4 col-lg-3">
-                <a href="{{ url_for('shop', category=(cat.name)|lower) }}" class="text-decoration-none">
-                  <div class="category-card card h-100 shadow-sm">
-                    <div class="category-image">
-                      {% if cat.image_url %}
-                        <img src="{{ cat.image_url }}" alt="{{ cat.name }}" loading="lazy" />
-                      {% elif cat.image_path %}
-                        <img src="{{ url_for('static', filename=cat.image_path) }}" alt="{{ cat.name }}" loading="lazy" />
-                      {% else %}
-                        <div class="no-image">Немає фото</div>
-                      {% endif %}
+          <!-- Categories Container -->
+          <div class="col-12 col-md-9" id="categoriesContainer">
+            {% if (categories is defined and categories|length > 0) or (selected_categories and selected_categories|length > 0) %}
+              {% set cats = categories if categories is defined else selected_categories %}
+              {% set cats = cats|sort(attribute='name') %}
+              {% set cats = cats|sort(attribute='tier') %}
+              <div class="row g-3">
+                {% for cat in cats %}
+                <div class="col-6 col-sm-6 col-md-4 col-lg-3">
+                  <a href="{{ url_for('shop', category=(cat.name)|lower) }}" class="text-decoration-none">
+                    <div class="category-card card h-100 shadow-sm">
+                      <div class="category-image">
+                        {% if cat.image_url %}
+                          <img src="{{ cat.image_url }}" alt="{{ cat.name }}" loading="lazy" />
+                        {% elif cat.image_path %}
+                          <img src="{{ url_for('static', filename=cat.image_path) }}" alt="{{ cat.name }}" loading="lazy" />
+                        {% else %}
+                          <div class="no-image">Немає фото</div>
+                        {% endif %}
+                      </div>
+                      <div class="card-body d-flex align-items-center justify-content-center">
+                        <h5 class="category-title text-center mb-0">{{ cat.name }}</h5>
+                      </div>
                     </div>
-                    <div class="card-body d-flex align-items-center justify-content-center">
-                      <h5 class="category-title text-center mb-0">{{ cat.name }}</h5>
-                    </div>
-                  </div>
-                </a>
+                  </a>
+                </div>
+                {% endfor %}
               </div>
-              {% endfor %}
+            {% else %}
+              <div class="alert alert-info">Категорії не вибрані.</div>
+            {% endif %}
+          </div>
+
+          <!-- Search Results Container -->
+          <div class="col-12 col-md-9" id="searchResultsContainer" style="display: none;">
+            <div class="search-results-header">
+              <div>
+                <h2 class="search-results-title">Результати пошуку</h2>
+                <span class="search-results-count" id="searchResultsCount"></span>
+              </div>
+              <button class="clear-search-btn" id="clearSearchBtn">
+                <i class="fas fa-times"></i> Очистити пошук
+              </button>
             </div>
+            <div class="row g-3" id="searchResultsGrid"></div>
           </div>
-        {% else %}
-          <div class="col-12 col-md-9">
-            <div class="alert alert-info">Категорії не вибрані.</div>
-          </div>
-        {% endif %}
         </div>
       </div>
     </div>
@@ -505,6 +576,7 @@
     <script src="{{url_for('static', filename='js/custom.js')}}"></script>
     
     <script>
+// Sidebar functionality
 const sidebar = document.getElementById('sidebarMenu');
 const overlay = document.getElementById('sidebarOverlay');
 const openBtn = document.getElementById('openSidebar');
@@ -533,13 +605,17 @@ document.querySelectorAll('.category-item').forEach(a => {
   });
 });
 
+// Search functionality
 const PRODUCTS = {{ products|tojson|safe }};
 
 const searchInput = document.getElementById('productSearch');
-const searchResults = document.getElementById('searchResults');
-let searchTimeout = null;
+const categoriesContainer = document.getElementById('categoriesContainer');
+const searchResultsContainer = document.getElementById('searchResultsContainer');
+const searchResultsGrid = document.getElementById('searchResultsGrid');
+const searchResultsCount = document.getElementById('searchResultsCount');
+const clearSearchBtn = document.getElementById('clearSearchBtn');
 
-function getProductImageHtml(p) {
+function getProductImage(p) {
   const urlCandidates = [];
   if (p.image_url) urlCandidates.push(p.image_url);
   if (p.image_path) urlCandidates.push(p.image_path);
@@ -547,12 +623,7 @@ function getProductImageHtml(p) {
     if (p.images[0].url) urlCandidates.push(p.images[0].url);
     if (p.images[0].path) urlCandidates.push(p.images[0].path);
   }
-  const src = urlCandidates.find(u => !!u) || null;
-  if (src) {
-    return `<img src="${src}" alt="${(p.name||'').replace(/"/g,'&quot;')}" class="search-result-image" />`;
-  } else {
-    return '<div class="search-result-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #999;"><i class="fas fa-image"></i></div>';
-  }
+  return urlCandidates.find(u => !!u) || null;
 }
 
 function formatPrice(p) {
@@ -560,59 +631,99 @@ function formatPrice(p) {
   return `${Number(p).toFixed(2)} грн`;
 }
 
-searchInput.addEventListener('input', function() {
-  const query = this.value.trim().toLowerCase();
-  if (searchTimeout) clearTimeout(searchTimeout);
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+
+function performSearch() {
+  const query = searchInput.value.trim().toLowerCase();
+  
   if (query.length < 2) {
-    searchResults.classList.remove('active');
-    searchResults.innerHTML = '';
+    // Show categories, hide search results
+    categoriesContainer.style.display = 'block';
+    searchResultsContainer.style.display = 'none';
     return;
   }
-  searchResults.classList.add('active');
-  searchResults.innerHTML = '<div class="search-loading"><i class="fas fa-spinner fa-spin"></i> Пошук...</div>';
-  searchTimeout = setTimeout(() => {
-    const matched = PRODUCTS.filter(p => {
-      if (!p) return false;
-      const name = (p.name || '').toString().toLowerCase();
-      const desc = (p.description || '').toString().toLowerCase();
-      const categoryName = (p.category && (p.category.name || p.category)) ? (p.category.name || p.category).toString().toLowerCase() : '';
-      return name.includes(query) || desc.includes(query) || categoryName.includes(query);
-    });
-    if (matched.length === 0) {
-      searchResults.innerHTML = '<div class="search-no-results">Товари не знайдено</div>';
-    } else {
-      const html = matched.slice(0, 30).map(product => {
-        const imageHtml = getProductImageHtml(product);
-        const categoryText = product.category ? (product.category.name || product.category) : '';
-        const priceText = formatPrice(product.price);
-        const safeName = (product.name||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-        const href = product.id ? `/product/${product.id}` : '#';
-        return `<a href="${href}" class="search-result-item">
-                  ${imageHtml}
-                  <div class="search-result-content">
-                    <div class="search-result-name">${safeName}</div>
-                    <div class="search-result-details">
-                      ${categoryText ? `<span class="search-result-category">${categoryText}</span>` : ''}
-                      ${priceText ? `<span class="search-result-price">${priceText}</span>` : ''}
-                    </div>
-                  </div>
-                </a>`;
-      }).join('');
-      searchResults.innerHTML = html;
-    }
-  }, 300);
-});
 
-document.addEventListener('click', function(e) {
-  if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-    searchResults.classList.remove('active');
+  // Search products
+  const matched = PRODUCTS.filter(p => {
+    if (!p) return false;
+    const name = (p.name || '').toString().toLowerCase();
+    const desc = (p.description || '').toString().toLowerCase();
+    const categoryName = (p.category && (p.category.name || p.category)) ? 
+      (p.category.name || p.category).toString().toLowerCase() : '';
+    return name.includes(query) || desc.includes(query) || categoryName.includes(query);
+  });
+
+  // Hide categories, show search results
+  categoriesContainer.style.display = 'none';
+  searchResultsContainer.style.display = 'block';
+
+  // Update count
+  const count = matched.length;
+  searchResultsCount.textContent = `Знайдено товарів: ${count}`;
+
+  if (count === 0) {
+    searchResultsGrid.innerHTML = `
+      <div class="col-12">
+        <div class="no-results">
+          <i class="fas fa-search"></i>
+          <h3>Нічого не знайдено</h3>
+          <p>Спробуйте змінити параметри пошуку</p>
+        </div>
+      </div>
+    `;
+  } else {
+    // Render products as cards
+    const html = matched.map(product => {
+      const imageSrc = getProductImage(product);
+      const categoryText = product.category ? (product.category.name || product.category) : '';
+      const priceText = formatPrice(product.price);
+      const safeName = escapeHtml(product.name);
+      const href = product.id ? `/product/${product.id}` : '#';
+      
+      const imageHtml = imageSrc 
+        ? `<img src="${imageSrc}" alt="${safeName}" loading="lazy" />`
+        : '<div class="no-image"><i class="fas fa-image"></i></div>';
+
+      return `
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <a href="${href}" class="text-decoration-none">
+            <div class="product-card">
+              <div class="product-image-container">
+                ${imageHtml}
+              </div>
+              <div class="product-card-body">
+                <div class="product-name">${safeName}</div>
+                ${categoryText ? `<div class="product-category">${escapeHtml(categoryText)}</div>` : ''}
+                ${priceText ? `<div class="product-price">${priceText}</div>` : ''}
+              </div>
+            </div>
+          </a>
+        </div>
+      `;
+    }).join('');
+    
+    searchResultsGrid.innerHTML = html;
+  }
+}
+
+// Search on Enter key press
+searchInput.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    performSearch();
   }
 });
 
-searchInput.addEventListener('focus', function() {
-  if (this.value.trim().length >= 2 && searchResults.innerHTML) {
-    searchResults.classList.add('active');
-  }
+// Clear search button
+clearSearchBtn.addEventListener('click', function() {
+  searchInput.value = '';
+  categoriesContainer.style.display = 'block';
+  searchResultsContainer.style.display = 'none';
+  searchInput.focus();
 });
 </script>
 
