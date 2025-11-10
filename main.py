@@ -3,6 +3,7 @@ import os
 from types import SimpleNamespace
 from flask import (
     Flask,
+    Response,
     jsonify,
     render_template,
     redirect,
@@ -396,6 +397,30 @@ def cart():
 @app.route("/forgot-password")
 def forgot_password():
     return render_template("forgot_password.html")
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    content = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.lotos.pl.ua/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
+"""
+    return Response(content, mimetype="application/xml")
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    content = f"""User-agent: *
+Allow: /
+
+Sitemap: {url_for('sitemap_xml', _external=True)}
+"""
+    return Response(content, mimetype="text/plain")
 
 
 # добавить этот роут для передачи url в js
